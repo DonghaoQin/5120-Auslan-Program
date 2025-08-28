@@ -1,0 +1,49 @@
+:root { 
+  --bg:#6c84d4; 
+  --text:#26354e; 
+  --brand:#7bc4ff; 
+}
+
+/* 页面全局基础 */
+* { box-sizing: border-box; }
+body { 
+  margin:0; 
+  font-family: ui-sans-serif, system-ui, Arial; 
+  background: var(--bg); 
+  color: var(--text); 
+}
+a { color: var(--brand); text-decoration: none; }
+
+/* --- 导航栏样式 --- */
+.nav { 
+  position: sticky; 
+  top:0; 
+  z-index:10; 
+  display:flex; 
+  gap:16px; 
+  align-items:center; 
+  justify-content:space-between;
+  padding:12px 16px; 
+  background: rgba(255, 255, 255, 0.952); 
+  border-bottom:1px solid #2c7385; 
+  backdrop-filter: blur(6px); 
+}
+.brand { 
+  font-weight: 800; 
+  letter-spacing: .3px; 
+  color: var(--brand); 
+}
+.links { 
+  display:flex; 
+  gap:12px; 
+  flex-wrap:wrap; 
+}
+.nav-link { 
+  padding:8px 20px; 
+  border-radius: 10px; 
+  color: var(--text); 
+}
+.nav-link.active, 
+.nav-link:hover { 
+  background: #59e282; 
+}
