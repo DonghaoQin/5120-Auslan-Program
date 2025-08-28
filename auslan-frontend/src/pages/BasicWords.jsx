@@ -31,12 +31,12 @@ export default function BasicWords() {
     fontFamily: "Inter, system-ui, sans-serif",
   };
 
-  const h1 = { textAlign: "center", margin: "0 0 8px 0", fontSize: "2.3rem", color: "white" };
-  const sub = { textAlign: "center", color: "#f3e7e7", margin: "0 0 18px 0" };
+  const h1 = { textAlign: "center", margin: "0 0 8px 0", fontSize: "2.3rem", color: "black" };
+  const sub = { textAlign: "center", color: "#0e0d0dff", margin: "0 0 18px 0" };
 
   const progress = {
     maxWidth: 960, margin: "0 auto 16px auto",
-    height: 12, background: "rgba(255,255,255,.25)",
+    height: 12, background: "rgba(31, 29, 29, 0.25)",
     borderRadius: 999, overflow: "hidden",
   };
   const fill = {
@@ -44,7 +44,7 @@ export default function BasicWords() {
     width: `${Math.round((learned.size / all.length) * 100)}%`,
     background: "linear-gradient(90deg,#7bc4ff,#70f0c2)",
   };
-  const label = { textAlign: "center", color: "#fff", fontSize: 12, marginBottom: 12 };
+  const label = { textAlign: "center", color: "#292525ff", fontSize: 12, marginBottom: 12 };
 
   const section = { maxWidth: 1100, margin: "0 auto 18px auto" };
   const grid = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 10 };

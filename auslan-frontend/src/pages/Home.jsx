@@ -19,7 +19,7 @@ export default function Home() {
     textAlign: "center",
     margin: "0",
     paddingTop: 24,
-    color: "white",
+    color: "black",
     textShadow: "0 3px 18px rgba(0,0,0,.4)",
     fontSize: "2.6rem",
     fontWeight: 800,
@@ -27,7 +27,7 @@ export default function Home() {
 
   const sub = {
     textAlign: "center",
-    color: "#f3f4f6",
+    color: "#1f2020ff",
     margin: "8px 0 28px 0",
     fontSize: "1.1rem",
   };

@@ -41,8 +41,8 @@ export default function MiniQuiz() {
     fontFamily: "Inter, system-ui, sans-serif",
   };
 
-  const h1 = { textAlign: "center", margin: "0 0 8px 0", fontSize: "2.3rem", color: "white" };
-  const sub = { textAlign: "center", color: "#f3e7e7", margin: "0 0 18px 0" };
+  const h1 = { textAlign: "center", margin: "0 0 8px 0", fontSize: "2.3rem", color: "black" };
+  const sub = { textAlign: "center", color: "#161515ff", margin: "0 0 18px 0" };
 
   const panel = {
     maxWidth: 800, margin: "0 auto",
