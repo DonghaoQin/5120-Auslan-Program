@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import bgImage from "../assets/homebackground.jpg";
-
+import PyramidAnimated from "../components/PyramidAnimated";
+import AusStateMap from "../components/AusStateMap";
 export default function Insights() {
   const nav = useNavigate();
   const [tab, setTab] = useState("Challenges"); // current selected tab
@@ -62,7 +63,7 @@ export default function Insights() {
     Challenges: {
       title: "Challenges",
       // TODO: Replace this description with backend-provided text
-      desc: "DHH children face home–school communication gaps. Parents new to Auslan don’t know where to start.",
+      desc: "DHH children face homeschool communication gaps. Parents new to Auslan dont know where to start.",
       // TODO: Replace this list with backend-provided facts or statistics
       facts: ["39% of Deaf students report mental health issues vs 14% (study highlights)."],
       // TODO: Replace this source with backend-provided link or media URL
@@ -71,15 +72,15 @@ export default function Insights() {
     Trends: {
       title: "Trends",
       // TODO: Replace with backend text
-      desc: "More schools are offering Auslan. Families want beginner-friendly, learn-together pathways.",
+      desc: "",
       // TODO: Replace with backend data
-      facts: ["NSW plans Auslan elective in schools from 2026."],
+      facts: [],
       source: "Education news",
     },
     Solutions: {
       title: "Solutions",
       // TODO: Replace with backend text
-      desc: "Start small: letters → numbers → daily words → stories in context; repeat often in home routines.",
+      desc: "Start small: letters  numbers  daily words stories in context; repeat often in home routines.",
       // TODO: Replace with backend data
       facts: ["Short, contextual practice improves retention for beginners."],
       source: "Learning science",
@@ -90,7 +91,7 @@ export default function Insights() {
 
   return (
     <div style={page}>
-      <div style={back} onClick={() => nav("/")}>←</div>
+      <div style={back} onClick={() => nav("/")}></div>
 
       <h1 style={h1}>Why Auslan at Home Matters</h1>
       <p style={p1}>Clear, parent-friendly notes to motivate and guide your first steps.</p>
@@ -113,6 +114,41 @@ export default function Insights() {
             <p style={{ marginTop: 0 }}>{current.desc}</p>
             <ul style={{ margin: "0 0 12px 24px" }}>
               {current.facts.map(f => <li key={f}>{f}</li>)}
+              <p style={{ marginTop: 0 }}>{current.desc}</p>
+              <ul style={{ margin: "0 0 12px 24px" }}>
+                {current.facts.map(f => <li key={f}>{f}</li>)}
+              </ul>
+              {tab === "Trends" && (
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                    Auslan Community Age Distribution (2021)
+                  </div>
+
+                  {/* Your existing violin/pyramid chart */}
+                  <PyramidAnimated height={520} />
+
+                  {/* A little spacing */}
+                  <div style={{ height: 24 }} />
+
+                  {/* New: Australia state heat map (2021) */}
+                  <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                    Auslan population by state (2021)
+                  </div>
+                  <AusStateMap />
+
+                  {/* If you still want to list facts, keep a single <ul> below */}
+                  {current.facts.length > 0 && (
+                    <>
+                      <div style={{ height: 16 }} />
+                      <ul style={{ margin: "0 0 12px 24px" }}>
+                        {current.facts.map((f) => (
+                          <li key={f}>{f}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              )}
             </ul>
             {/* TODO: Optionally insert iframe, chart, or image here */}
           </div>
