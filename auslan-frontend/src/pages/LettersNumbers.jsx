@@ -84,47 +84,48 @@ export default function LettersNumbers() {
 
     // Placeholder mapping for images
   // TODO: Replace each placeholder path with the actual Auslan sign image or video
-  const imgMap = {
-    // --- Letters A–Z ---
-    A: "/assets/signs/A.png",  // TODO: replace with Auslan sign for 'A'
-    B: "/assets/signs/B.png",  // TODO: replace with Auslan sign for 'B'
-    C: "/assets/signs/C.png",
-    D: "/assets/signs/D.png",
-    E: "/assets/signs/E.png",
-    F: "/assets/signs/F.png",
-    G: "/assets/signs/G.png",
-    H: "/assets/signs/H.png",
-    I: "/assets/signs/I.png",
-    J: "/assets/signs/J.png",
-    K: "/assets/signs/K.png",
-    L: "/assets/signs/L.png",
-    M: "/assets/signs/M.png",
-    N: "/assets/signs/N.png",
-    O: "/assets/signs/O.png",
-    P: "/assets/signs/P.png",
-    Q: "/assets/signs/Q.png",
-    R: "/assets/signs/R.png",
-    S: "/assets/signs/S.png",
-    T: "/assets/signs/T.png",
-    U: "/assets/signs/U.png",
-    V: "/assets/signs/V.png",
-    W: "/assets/signs/W.png",
-    X: "/assets/signs/X.png",
-    Y: "/assets/signs/Y.png",
-    Z: "/assets/signs/Z.png",
+const imgMap = {
+  A: "/assets/signs/A.PNG",  // TODO: replace with Auslan sign for 'A'
+  B: "/assets/signs/B.PNG",  // TODO: replace with Auslan sign for 'B'
+  C: "/assets/signs/C.PNG",
+  D: "/assets/signs/D.PNG",
+  E: "/assets/signs/E.PNG",
+  F: "/assets/signs/F.PNG",
+  G: "/assets/signs/G.PNG",
+  H: "/assets/signs/H.PNG",
+  I: "/assets/signs/I.PNG",
+  J: "/assets/signs/J.PNG",
+  K: "/assets/signs/K.PNG",
+  L: "/assets/signs/L.PNG",
+  M: "/assets/signs/M.PNG",
+  N: "/assets/signs/N.PNG",
+  O: "/assets/signs/O.PNG",
+  P: "/assets/signs/P.PNG",
+  Q: "/assets/signs/Q.PNG",
+  R: "/assets/signs/R.PNG",
+  S: "/assets/signs/S.PNG",
+  T: "/assets/signs/T.PNG",
+  U: "/assets/signs/U.PNG",
+  V: "/assets/signs/V.PNG",
+  W: "/assets/signs/W.PNG",
+  X: "/assets/signs/X.PNG",
+  Y: "/assets/signs/Y.PNG",
+  Z: "/assets/signs/Z.PNG",
 
-    // --- Numbers 0–9 ---
-    0: "/assets/signs/0.png",  // TODO: replace with Auslan sign for '0'
-    1: "/assets/signs/1.png",
-    2: "/assets/signs/2.png",
-    3: "/assets/signs/3.png",
-    4: "/assets/signs/4.png",
-    5: "/assets/signs/5.png",
-    6: "/assets/signs/6.png",
-    7: "/assets/signs/7.png",
-    8: "/assets/signs/8.png",
-    9: "/assets/signs/9.png",
-  };
+  // --- Numbers 0–9 ---
+  0: "/assets/signs/0.PNG",  // TODO: replace with Auslan sign for '0'
+  1: "/assets/signs/1.PNG",
+  2: "/assets/signs/2.PNG",
+  3: "/assets/signs/3.PNG",
+  4: "/assets/signs/4.PNG",
+  5: "/assets/signs/5.PNG",
+  6: "/assets/signs/6.PNG",
+  7: "/assets/signs/7.PNG",
+  8: "/assets/signs/8.PNG",
+  9: "/assets/signs/9.PNG", 
+};
+
+
 
 
   return (

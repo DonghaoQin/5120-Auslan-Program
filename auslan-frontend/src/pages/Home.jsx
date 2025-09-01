@@ -21,7 +21,7 @@ export default function Home() {
   const headerWrap = {
     position: "absolute",
     top: "24px",
-    left: "24px",
+    left: "300px",
     maxWidth: "480px",
     textAlign: "left",
   };
@@ -45,7 +45,7 @@ export default function Home() {
   // ↓↓↓ 按钮整体下移到页面偏下（25vh）
   const gridWrap = {
     maxWidth: 1000,
-    margin: "25vh auto 0 auto",
+    margin: "60vh auto 0 auto",
   };
 
   const grid = {
