@@ -8,7 +8,7 @@ const GEO_URL =
 
 // 優先用環境變數，沒有就用 Render 網域
 const API_BASE = import.meta.env?.VITE_API_BASE || "https://auslan-backend.onrender.com";
-const ENDPOINT = `${API_BASE}/map/state-pop`; // 期望 { states:[{name,value}] }
+const ENDPOINT = `${API_BASE}/map/state-pop/2021`; // 期望 { states:[{name,value}] }
 
 export default function AusStateMap() {
   const [rows, setRows] = useState([]);   // [{ name, value }]
