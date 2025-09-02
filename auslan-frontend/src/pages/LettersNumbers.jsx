@@ -5,7 +5,21 @@ import bgImage from "../assets/homebackground.jpg";
 
 export default function LettersNumbers() {
   const nav = useNavigate();
+
+  // --- Selection for preview + Learned set for progress ---
   const [selected, setSelected] = useState(null);
+  const [learned, setLearned] = useState(new Set());
+
+  // All items for progress calc
+  const all = [...letters, ...numbers];
+
+  // Click = preview + toggle learned
+  const toggle = (val) => {
+    setSelected(val);
+    const n = new Set(learned);
+    n.has(val) ? n.delete(val) : n.add(val);
+    setLearned(n);
+  };
 
   // --- Styles ---
   const back = {
@@ -20,16 +34,30 @@ export default function LettersNumbers() {
     backgroundImage: `url(${bgImage})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
-    padding: "40px 20px",
+    padding: "40px 20px 60px",
     fontFamily: "'Poppins', sans-serif",
-    color: "white"
+    color: "white",
   };
 
-  const panelWrap = { 
-    maxWidth: 1000, 
-    margin: "0 auto", 
-    display: "grid", 
-    gridTemplateColumns: "1.2fr 1fr",  // 左侧字母/数字，右侧图片
+  // Progress (same pattern as BasicWords)
+  const h1 = { textAlign: "center", margin: "0 0 8px 0", fontSize: "2.1rem", color: "black" };
+  const sub = { textAlign: "center", color: "#0e0d0dff", margin: "0 0 18px 0" };
+  const progress = {
+    maxWidth: 960, margin: "0 auto 10px auto",
+    height: 12, background: "rgba(31,29,29,.25)", borderRadius: 999, overflow: "hidden",
+  };
+  const fill = {
+    height: "100%",
+    width: `${Math.round((learned.size / all.length) * 100)}%`,
+    background: "linear-gradient(90deg,#7bc4ff,#70f0c2)",
+  };
+  const label = { textAlign: "center", color: "#292525ff", fontSize: 12, marginBottom: 18 };
+
+  const panelWrap = {
+    maxWidth: 1000,
+    margin: "0 auto",
+    display: "grid",
+    gridTemplateColumns: "1.2fr 1fr",
     gap: 20,
   };
 
@@ -44,22 +72,14 @@ export default function LettersNumbers() {
 
   const title = { textAlign: "center", fontSize: "1.6rem", marginBottom: 16, color: "#11100aff" };
 
-  const gridLetters = {
-    display: "grid",
-    gridTemplateColumns: "repeat(6, 1fr)",
-    gap: 10,
-    marginBottom: 20
-  };
+  const gridLetters = { display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 10, marginBottom: 20 };
+  const gridNumbers = { display: "grid", gridTemplateColumns: "repeat(10, 1fr)", gap: 8 };
 
-  const gridNumbers = {
-    display: "grid",
-    gridTemplateColumns: "repeat(10, 1fr)",
-    gap: 8,
-  };
-
-  const card = (active) => ({
-    background: active ? "linear-gradient(135deg,#70f0c2,#7bc4ff)" : "rgba(255,255,255,.9)",
-    color: active ? "#000" : "#333",
+  // on = learned? highlight chip
+  // current = previewed item? add subtle outline
+  const card = (on, current) => ({
+    background: on ? "linear-gradient(135deg,#70f0c2,#7bc4ff)" : "rgba(255,255,255,.9)",
+    color: on ? "#000" : "#333",
     borderRadius: 14,
     height: 70,
     display: "grid",
@@ -69,8 +89,22 @@ export default function LettersNumbers() {
     cursor: "pointer",
     userSelect: "none",
     transition: "transform 0.2s, box-shadow 0.2s",
-    boxShadow: "0 6px 16px rgba(0,0,0,.2)",
+    boxShadow: current ? "0 0 0 3px rgba(112,240,194,.9), 0 6px 16px rgba(0,0,0,.2)" : "0 6px 16px rgba(0,0,0,.2)",
+    position: "relative",
   });
+
+  const check = {
+    position: "absolute",
+    top: 6,
+    right: 8,
+    fontSize: 14,
+    fontWeight: 900,
+    background: "rgba(255,255,255,.9)",
+    borderRadius: 999,
+    padding: "2px 6px",
+    lineHeight: 1,
+    color: "#0a0a0a",
+  };
 
   const imageBox = {
     display: "flex",
@@ -82,69 +116,48 @@ export default function LettersNumbers() {
     boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
   };
 
-    // Placeholder mapping for images
-  // TODO: Replace each placeholder path with the actual Auslan sign image or video
-const imgMap = {
-  A: "/assets/signs/A.PNG",  // TODO: replace with Auslan sign for 'A'
-  B: "/assets/signs/B.PNG",  // TODO: replace with Auslan sign for 'B'
-  C: "/assets/signs/C.PNG",
-  D: "/assets/signs/D.PNG",
-  E: "/assets/signs/E.PNG",
-  F: "/assets/signs/F.PNG",
-  G: "/assets/signs/G.PNG",
-  H: "/assets/signs/H.PNG",
-  I: "/assets/signs/I.PNG",
-  J: "/assets/signs/J.PNG",
-  K: "/assets/signs/K.PNG",
-  L: "/assets/signs/L.PNG",
-  M: "/assets/signs/M.PNG",
-  N: "/assets/signs/N.PNG",
-  O: "/assets/signs/O.PNG",
-  P: "/assets/signs/P.PNG",
-  Q: "/assets/signs/Q.PNG",
-  R: "/assets/signs/R.PNG",
-  S: "/assets/signs/S.PNG",
-  T: "/assets/signs/T.PNG",
-  U: "/assets/signs/U.PNG",
-  V: "/assets/signs/V.PNG",
-  W: "/assets/signs/W.PNG",
-  X: "/assets/signs/X.PNG",
-  Y: "/assets/signs/Y.PNG",
-  Z: "/assets/signs/Z.PNG",
-
-  // --- Numbers 0–9 ---
-  0: "/assets/signs/0.PNG",  // TODO: replace with Auslan sign for '0'
-  1: "/assets/signs/1.PNG",
-  2: "/assets/signs/2.PNG",
-  3: "/assets/signs/3.PNG",
-  4: "/assets/signs/4.PNG",
-  5: "/assets/signs/5.PNG",
-  6: "/assets/signs/6.PNG",
-  7: "/assets/signs/7.PNG",
-  8: "/assets/signs/8.PNG",
-  9: "/assets/signs/9.PNG", 
-};
-
-
-
+  // Placeholder mapping for images
+  // TODO: Replace with the actual Auslan sign image/video sources
+  const imgMap = {
+    A: "/assets/signs/A.PNG", B: "/assets/signs/B.PNG", C: "/assets/signs/C.PNG",
+    D: "/assets/signs/D.PNG", E: "/assets/signs/E.PNG", F: "/assets/signs/F.PNG",
+    G: "/assets/signs/G.PNG", H: "/assets/signs/H.PNG", I: "/assets/signs/I.PNG",
+    J: "/assets/signs/J.PNG", K: "/assets/signs/K.PNG", L: "/assets/signs/L.PNG",
+    M: "/assets/signs/M.PNG", N: "/assets/signs/N.PNG", O: "/assets/signs/O.PNG",
+    P: "/assets/signs/P.PNG", Q: "/assets/signs/Q.PNG", R: "/assets/signs/R.PNG",
+    S: "/assets/signs/S.PNG", T: "/assets/signs/T.PNG", U: "/assets/signs/U.PNG",
+    V: "/assets/signs/V.PNG", W: "/assets/signs/W.PNG", X: "/assets/signs/X.PNG",
+    Y: "/assets/signs/Y.PNG", Z: "/assets/signs/Z.PNG",
+    0: "/assets/signs/0.PNG", 1: "/assets/signs/1.PNG", 2: "/assets/signs/2.PNG",
+    3: "/assets/signs/3.PNG", 4: "/assets/signs/4.PNG", 5: "/assets/signs/5.PNG",
+    6: "/assets/signs/6.PNG", 7: "/assets/signs/7.PNG", 8: "/assets/signs/8.PNG", 9: "/assets/signs/9.PNG",
+  };
 
   return (
     <div style={page}>
       <div style={back} onClick={() => nav("/")}>←</div>
 
+      {/* Progress header */}
+      <h1 style={h1}>Letters & Numbers</h1>
+      <p style={sub}>Tap to mark learned. </p>
+      <div style={progress}><div style={fill} /></div>
+      <div style={label}>{learned.size}/{all.length} learned</div>
+
       <div style={panelWrap}>
-        {/* --- Left: Letters & Numbers --- */}
+        {/* Left: Letters & Numbers */}
         <div>
           <div style={panel}>
             <h2 style={title}>Letters (A–Z)</h2>
             <div style={gridLetters}>
-              {letters.map((L) => (
+              {letters.map(L => (
                 <div
                   key={L}
-                  style={card(selected === L)}
-                  onClick={() => setSelected(L)}
+                  style={card(learned.has(L), selected === L)}
+                  onClick={() => toggle(L)}
+                  title="Click to preview and mark learned"
                 >
                   {L}
+                  {learned.has(L) && <div style={check}>✓</div>}
                 </div>
               ))}
             </div>
@@ -153,20 +166,22 @@ const imgMap = {
           <div style={panel}>
             <h2 style={title}>Numbers (0–9)</h2>
             <div style={gridNumbers}>
-              {numbers.map((N) => (
+              {numbers.map(N => (
                 <div
                   key={N}
-                  style={card(selected === N)}
-                  onClick={() => setSelected(N)}
+                  style={card(learned.has(N), selected === N)}
+                  onClick={() => toggle(N)}
+                  title="Click to preview and mark learned"
                 >
                   {N}
+                  {learned.has(N) && <div style={check}>✓</div>}
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* --- Right: Image Display --- */}
+        {/* Right: Image Display */}
         <div style={panel}>
           <h2 style={title}>Auslan Sign</h2>
           <div style={imageBox}>

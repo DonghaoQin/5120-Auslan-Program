@@ -67,7 +67,7 @@ export default function BasicWords() {
       <div style={back} onClick={() => nav("/")}>←</div>
 
       <h1 style={h1}>Basic Words</h1>
-      <p style={sub}>Tap to mark learned. You’ll attach GIF/video later.</p>
+      <p style={sub}>Tap to mark learned.</p>
 
       <div style={progress}><div style={fill} /></div>
       <div style={label}>{learned.size}/{all.length} learned</div>
