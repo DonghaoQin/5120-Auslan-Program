@@ -99,7 +99,7 @@ export default function AusStateMap({ height = 640, scale = 780 }) {
 
   return (
     <div style={{ textAlign: "center", marginTop: 10 }}>
-      <h3 style={{ marginBottom: 8 }}>Auslan Community Population by State (2021)</h3>
+      <h3 style={{ marginBottom: 8 }}></h3>
       {loading && <div>Loading map…</div>}
       {error && <div style={{ color: "#c00" }}>Failed to load data: {error}</div>}
 
