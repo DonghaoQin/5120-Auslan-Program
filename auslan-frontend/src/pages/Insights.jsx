@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import bgImage from "../assets/homebackground.jpg";
 import PyramidAnimated from "../components/PyramidAnimated";
 import AusStateMap from "../components/AusStateMap";
+import YearBarChart from "../components/YearBarChart"; // Import the new component
 export default function Insights() {
   const nav = useNavigate();
   const [tab, setTab] = useState("Challenges"); // current selected tab
