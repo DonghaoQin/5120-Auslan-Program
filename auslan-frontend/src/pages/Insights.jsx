@@ -7,8 +7,9 @@ import YearBarChart from "../components/YearBarChart";
 
 export default function Insights() {
   const nav = useNavigate();
-  const [tab, setTab] = useState("Challenges");
+  const [tab, setTab] = useState("Challenges"); // default tab
 
+  // Styles for various elements (inline styles used for quick theming)
   const back = {
     position: "absolute", top: 12, right: 20, fontSize: "2rem",
     color: "white", background: "rgba(0,0,0,.3)", borderRadius: "50%",
@@ -57,7 +58,9 @@ export default function Insights() {
   const meta = { display: "flex", gap: 12, padding: "0 28px 28px", flexWrap: "wrap" };
   const badge = { background: "rgba(0,0,0,.06)", padding: "6px 12px", borderRadius: 999, fontSize: 14 };
 
-  // NEW: allow sections to use either {desc + facts} OR a richer {content: [para,...]}
+  // 🔄 Updated sections object
+  // Removed the old simple Resources
+  // Kept only one "Resources" section with cards
   const sections = {
     Challenges: {
       title: "Challenges",
@@ -69,24 +72,58 @@ export default function Insights() {
       ],
       source: "National surveys; 2021 Census; NSW Education Department",
     },
+
     "Population Analysis": {
       title: "Population Analysis",
       desc: "",
       facts: [],
       source: "https://www.abs.gov.au/",
     },
-    Solutions: {
-      title: "Solutions",
-      desc: "Start small: letters, numbers, daily words, and stories in context; repeat often in home routines.",
-      facts: ["Short, contextual practice improves retention for beginners."],
-      source: "Learning science",
+
+    Resources: {
+      title: "Auslan & Deaf Resources", // 🆕 clearer tab name
+      desc: "Explore Auslan and Deaf community resources for learning, support, and connection.",
+      facts: [
+        {
+          name: "Aussie Deaf Kids Auslan Resources",
+          url: "https://www.aussiedeafkids.org.au/about-communication/australian-sign-language/auslan-resources/",
+          description: "Provides a range of links and guides to Auslan resources for families of deaf and hard of hearing children. Helpful for parents learning to communicate in Auslan with their kids.",
+          source: "Aussie Deaf Kids (non-profit supporting families)",
+        },
+        {
+          name: "Auslan Resources",
+          url: "https://www.auslanresources.com.au/",
+          description: "Offers Auslan learning materials, games, posters, and teaching aids. Useful for both beginners and educators.",
+          source: "Auslan Resources (educational provider)",
+        },
+        {
+          name: "Deaf Australia",
+          url: "https://deafaustralia.org.au/",
+          description: "National peak organisation representing Deaf people in Australia. Provides advocacy, resources, and information about Deaf culture and Auslan.",
+          source: "Deaf Australia (advocacy body)",
+        },
+        {
+          name: "Deaf Connect Auslan Resource Library",
+          url: "https://deafconnect.org.au/auslan-resource-library",
+          description: "A library of Auslan resources including videos, guides, and support for learners at all levels.",
+          source: "Deaf Connect (largest provider of Deaf services in Australia)",
+        },
+        {
+          name: "Auslan Hub",
+          url: "https://auslanhub.com.au/",
+          description: "Central hub with videos, resources, and materials to support Auslan learners and teachers. Great for structured learning and practice.",
+          source: "Auslan Hub (educational initiative)",
+        },
+      ],
+      source: "Curated Auslan & Deaf Community Resources",
     },
   };
 
-  const current = sections[tab];
+  const current = sections[tab]; // current tab data
 
   return (
     <div style={page}>
+      {/* Back button (top right) */}
       <div style={back} onClick={() => nav("/")}></div>
 
       <h1 style={h1}>Why Auslan at Home Matters</h1>
@@ -104,9 +141,12 @@ export default function Insights() {
       {/* Main content panel */}
       <div style={panelWrap}>
         <div style={card}>
+          {/* Card header */}
           <div style={head}><h2 style={{ margin: 0, fontSize: 24 }}>{current.title}</h2></div>
+
+          {/* Card body */}
           <div style={body}>
-            {/* NEW: rich multi-paragraph rendering if `content` exists */}
+            {/* If section has "content" (array of paragraphs) */}
             {Array.isArray(current.content) && current.content.length > 0 ? (
               <div style={{ display: "grid", gap: 14 }}>
                 {current.content.map((para, i) => (
@@ -115,14 +155,48 @@ export default function Insights() {
               </div>
             ) : (
               <>
-                {/* fallback to legacy desc + facts layout */}
+                {/* Otherwise, fallback to desc + facts */}
                 {current.desc && <p style={{ marginTop: 0 }}>{current.desc}</p>}
+
+                {/* 🔄 Updated facts rendering: supports both strings and objects */}
                 {Array.isArray(current.facts) && current.facts.length > 0 && (
-                  <ul style={{ margin: "0 0 12px 24px" }}>
-                    {current.facts.map((f) => (
-                      <li key={f}>{f}</li>
-                    ))}
-                  </ul>
+                  <div style={{ display: "grid", gap: 20 }}>
+                    {current.facts.map((f, i) =>
+                      typeof f === "string" ? (
+                        <div key={i} style={{
+                          background: "rgba(0,0,0,.04)",
+                          padding: "12px 16px",
+                          borderRadius: 12,
+                          fontSize: 16,
+                        }}>
+                          {f}
+                        </div>
+                      ) : (
+                        <div key={i} style={{
+                          background: "rgba(255,255,255,.9)",
+                          padding: "18px 20px",
+                          borderRadius: 16,
+                          boxShadow: "0 4px 12px rgba(0,0,0,.12)",
+                          border: "1px solid rgba(0,0,0,.08)",
+                        }}>
+                          <a
+                            href={f.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ fontWeight: 700, fontSize: 18, color: "#0077cc", textDecoration: "none" }}
+                          >
+                            {f.name}
+                          </a>
+                          <p style={{ margin: "8px 0 6px 0", fontSize: 15, lineHeight: 1.5, color: "#333" }}>
+                            {f.description}
+                          </p>
+                          <p style={{ margin: 0, fontSize: 13, color: "#666" }}>
+                            Source: {f.source}
+                          </p>
+                        </div>
+                      )
+                    )}
+                  </div>
                 )}
               </>
             )}
@@ -152,6 +226,7 @@ export default function Insights() {
             )}
           </div>
 
+          {/* Footer source badge */}
           <div style={meta}>
             {current.source && <span style={badge}>Source: {current.source}</span>}
           </div>
