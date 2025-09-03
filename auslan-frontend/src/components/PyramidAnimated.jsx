@@ -16,7 +16,7 @@ export default function PyramidAnimated({ height = 520 }) {
       .then(json => {
         setRows(json.rows || []);
         setValueCol(json.value_column);
-        // 更快的延遲
+        
         setTimeout(() => setAnimateNow(true), 300);
       })
       .catch(console.error);
@@ -41,15 +41,15 @@ export default function PyramidAnimated({ height = 520 }) {
 
   const zeros = useMemo(() => new Array(yLabels.length).fill(0), [yLabels.length]);
 
-  // 彩虹色彩 - 更鮮豔適合小孩
+  
   const rainbowColors = [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
     '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'
   ];
 
-  // 可愛的動畫寬度變化
+  
   const baseBarWidth = 0.8;
-  const hoverBarWidth = 1.2; // 更明顯的放大效果
+  const hoverBarWidth = 1.2; 
 
   const maleWidths = yLabels.map((_, i) => {
     const isHovered = hovered && hovered.trace === 0 && hovered.idx === i;
@@ -63,20 +63,20 @@ export default function PyramidAnimated({ height = 520 }) {
     return (isHovered ? hoverBarWidth : baseBarWidth) * bounceScale;
   });
 
-  // 彩虹漸變顏色
+ 
   const maleColors = yLabels.map((_, i) => {
     const colorIndex = i % rainbowColors.length;
     const baseColor = rainbowColors[colorIndex];
     const isHovered = hovered && hovered.trace === 0 && hovered.idx === i;
     
     if (isHovered) {
-      return `${baseColor}FF`; // 完全不透明
+      return `${baseColor}FF`; 
     }
-    return `${baseColor}CC`; // 稍微透明
+    return `${baseColor}CC`; 
   });
 
   const femaleColors = yLabels.map((_, i) => {
-    const colorIndex = (i + 5) % rainbowColors.length; // 錯開顏色
+    const colorIndex = (i + 5) % rainbowColors.length; 
     const baseColor = rainbowColors[colorIndex];
     const isHovered = hovered && hovered.trace === 1 && hovered.idx === i;
     
@@ -86,10 +86,10 @@ export default function PyramidAnimated({ height = 520 }) {
     return `${baseColor}CC`;
   });
 
-  // 可愛的邊框效果
+
   const maleBorderColors = yLabels.map((_, i) => {
     const isHovered = hovered && hovered.trace === 0 && hovered.idx === i;
-    return isHovered ? "#FFD700" : "rgba(255, 255, 255, 0.8)"; // 金色邊框當hover
+    return isHovered ? "#FFD700" : "rgba(255, 255, 255, 0.8)"; 
   });
 
   const femaleBorderColors = yLabels.map((_, i) => {
@@ -104,7 +104,7 @@ export default function PyramidAnimated({ height = 520 }) {
     hovered && hovered.trace === 1 && hovered.idx === i ? 4 : 2
   );
 
-  // 彈跳效果
+ 
   const triggerBounce = () => {
     setBounceEffect(true);
     setTimeout(() => setBounceEffect(false), 600);
@@ -138,7 +138,7 @@ export default function PyramidAnimated({ height = 520 }) {
         },
         borderwidth: 2
       },
-      // 關鍵：移除所有動畫效果讓hover即時響應
+      
       animation: false
     },
     {
@@ -168,21 +168,21 @@ export default function PyramidAnimated({ height = 520 }) {
         },
         borderwidth: 2
       },
-      // 關鍵：移除所有動畫效果讓hover即時響應
+   
       animation: false
     }
   ]), [yLabels, maleX, femaleX, zeros, animateNow, maleAbs, femaleAbs, maleWidths, femaleWidths, maleColors, femaleColors, maleBorderColors, femaleBorderColors, maleBorderWidths, femaleBorderWidths, hovered]);
 
   const maxSide = useMemo(() => {
     const m = Math.max(...maleX.map(Math.abs), ...femaleX);
-    return Math.ceil((m || 1000) * 1.2); // 稍微多留點空間
+    return Math.ceil((m || 1000) * 1.2); 
   }, [maleX, femaleX]);
 
   const layout = {
     height,
     barmode: "overlay",
-    bargap: 0.1, // 更緊密的間距
-    paper_bgcolor: "rgba(240, 248, 255, 0.3)", // 淡藍色背景
+    bargap: 0.1, 
+    paper_bgcolor: "rgba(240, 248, 255, 0.3)", 
     plot_bgcolor: "rgba(255, 255, 255, 0.8)",
     margin: { l: 150, r: 80, t: 60, b: 80 },
     
