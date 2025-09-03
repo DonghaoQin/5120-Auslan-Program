@@ -54,15 +54,20 @@ export default function Insights() {
   };
   const head = { padding: "24px 28px", borderBottom: "1px solid rgba(0,0,0,.1)" };
   const body = { padding: 30, fontSize: 18, lineHeight: 1.8 };
-  const meta = { display: "flex", gap: 12, padding: "0 28px 28px" };
+  const meta = { display: "flex", gap: 12, padding: "0 28px 28px", flexWrap: "wrap" };
   const badge = { background: "rgba(0,0,0,.06)", padding: "6px 12px", borderRadius: 999, fontSize: 14 };
 
+  // NEW: allow sections to use either {desc + facts} OR a richer {content: [para,...]}
   const sections = {
     Challenges: {
       title: "Challenges",
-      desc: "DHH children face homeschool communication gaps. Parents new to Auslan don't know where to start.",
-      facts: ["39% of Deaf students report mental health issues vs 14% (study highlights)."],
-      source: "Deaf Australia / Govt reports",
+      content: [
+        "In Australia, studies and agencies commonly note that around 90–95% of Deaf and hard-of-hearing children are born to hearing parents. Without a ready-made sign-language environment and clear entry pathways, parents often struggle to quickly establish a sustainable sign-language communication environment for their children. At the same time, official data show that the majority of students with disability (about 89%) attend mainstream schools, which means many DHH students may be ‘a minority within a minority’ in their classes; both home and school often lack stable, synchronised Auslan support, gradually creating a dual home–school communication gap.",
+        "This gap is further magnified in day-to-day school life. National surveys of students and parents indicate that about 72% of students with disability have been excluded from school activities or events (e.g., sports days, excursions, assemblies, or clubs). Uneven inclusion and support systems directly erode DHH students’ sense of participation and belonging, while adding extra pressure on their social and emotional development outside the classroom.",
+        "On the supply side, Auslan-certified interpreters have long been in short supply: only a few hundred certified interpreters are registered nationally, serving people who use Auslan at home (approximately 16,000 according to the 2021 Census) as well as growing demand across public settings. Shortages are particularly acute in regional and remote areas, directly affecting the accessibility and continuity of key communication points such as classroom instruction, parent–teacher meetings, and medical or government services. As a result, even schools and families that wish to use sign language often struggle to secure stable support because ‘no interpreter is available’ or gaps arise at short notice.",
+        "At the policy level, progress is underway: NSW has released the Auslan K–10 syllabus, with implementation set for 2026 and encouragement for familiarisation and preparation in 2024–2025. This provides a clear timetable for the systematic introduction of Auslan, but roll-out speeds differ across states, and many jurisdictions still need time to fill gaps in curriculum resources, teacher training, and in-school supports. Until the new curriculum is fully implemented, imbalances in home–school resources and professional services will likely persist, making it difficult to close the above communication and service gaps in the short term.",
+      ],
+      source: "National surveys; 2021 Census; NSW Education Department",
     },
     "Population Analysis": {
       title: "Population Analysis",
@@ -101,10 +106,26 @@ export default function Insights() {
         <div style={card}>
           <div style={head}><h2 style={{ margin: 0, fontSize: 24 }}>{current.title}</h2></div>
           <div style={body}>
-            <p style={{ marginTop: 0 }}>{current.desc}</p>
-            <ul style={{ margin: "0 0 12px 24px" }}>
-              {current.facts.map(f => <li key={f}>{f}</li>)}
-            </ul>
+            {/* NEW: rich multi-paragraph rendering if `content` exists */}
+            {Array.isArray(current.content) && current.content.length > 0 ? (
+              <div style={{ display: "grid", gap: 14 }}>
+                {current.content.map((para, i) => (
+                  <p key={i} style={{ margin: 0 }}>{para}</p>
+                ))}
+              </div>
+            ) : (
+              <>
+                {/* fallback to legacy desc + facts layout */}
+                {current.desc && <p style={{ marginTop: 0 }}>{current.desc}</p>}
+                {Array.isArray(current.facts) && current.facts.length > 0 && (
+                  <ul style={{ margin: "0 0 12px 24px" }}>
+                    {current.facts.map((f) => (
+                      <li key={f}>{f}</li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            )}
 
             {/* Visualizations only for "Population Analysis" tab */}
             {tab === "Population Analysis" && (
@@ -132,7 +153,7 @@ export default function Insights() {
           </div>
 
           <div style={meta}>
-            <span style={badge}>Source: {current.source}</span>
+            {current.source && <span style={badge}>Source: {current.source}</span>}
           </div>
         </div>
       </div>

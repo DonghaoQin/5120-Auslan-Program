@@ -1,27 +1,50 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { letters, numbers } from "../data/letters.js";
 import bgImage from "../assets/homebackground.jpg";
 
+// ★ 统一的本地存储键
+const STORAGE_KEY = "LN_LEARNED_V1";
+
+// ★ 惰性初始化：渲染前从 localStorage 取值，避免首次渲染把“空集合”写回覆盖
 export default function LettersNumbers() {
   const nav = useNavigate();
 
-  // --- Selection for preview + Learned set for progress ---
   const [selected, setSelected] = useState(null);
-  const [learned, setLearned] = useState(new Set());
+  const [learned, setLearned] = useState(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return new Set(Array.isArray(arr) ? arr : []);
+    } catch {
+      return new Set();
+    }
+  });
 
-  // All items for progress calc
+  // ★ 仅负责写回；读在上面的惰性初始化里完成
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(learned)));
+    } catch (e) {
+      console.warn("Failed to persist learned set:", e);
+    }
+  }, [learned]);
+
   const all = [...letters, ...numbers];
 
-  // Click = preview + toggle learned
   const toggle = (val) => {
     setSelected(val);
-    const n = new Set(learned);
-    n.has(val) ? n.delete(val) : n.add(val);
-    setLearned(n);
+    setLearned(prev => {
+      const n = new Set(prev);
+      n.has(val) ? n.delete(val) : n.add(val);
+      return n;
+    });
   };
 
-  // --- Styles ---
+// ……下面保持你原有 UI 代码不变即可（来自你的文件）……
+
+
+  // --- styles ---
   const back = {
     position: "absolute", top: 12, right: 20, fontSize: "2rem",
     color: "white", background: "rgba(0,0,0,.3)", borderRadius: "50%",
@@ -39,7 +62,6 @@ export default function LettersNumbers() {
     color: "white",
   };
 
-  // Progress (same pattern as BasicWords)
   const h1 = { textAlign: "center", margin: "0 0 8px 0", fontSize: "2.1rem", color: "black" };
   const sub = { textAlign: "center", color: "#0e0d0dff", margin: "0 0 18px 0" };
   const progress = {
@@ -75,8 +97,6 @@ export default function LettersNumbers() {
   const gridLetters = { display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 10, marginBottom: 20 };
   const gridNumbers = { display: "grid", gridTemplateColumns: "repeat(10, 1fr)", gap: 8 };
 
-  // on = learned? highlight chip
-  // current = previewed item? add subtle outline
   const card = (on, current) => ({
     background: on ? "linear-gradient(135deg,#70f0c2,#7bc4ff)" : "rgba(255,255,255,.9)",
     color: on ? "#000" : "#333",
@@ -116,8 +136,6 @@ export default function LettersNumbers() {
     boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
   };
 
-  // Placeholder mapping for images
-  // TODO: Replace with the actual Auslan sign image/video sources
   const imgMap = {
     A: "/assets/signs/A.PNG", B: "/assets/signs/B.PNG", C: "/assets/signs/C.PNG",
     D: "/assets/signs/D.PNG", E: "/assets/signs/E.PNG", F: "/assets/signs/F.PNG",
@@ -137,14 +155,12 @@ export default function LettersNumbers() {
     <div style={page}>
       <div style={back} onClick={() => nav("/")}>←</div>
 
-      {/* Progress header */}
       <h1 style={h1}>Letters & Numbers</h1>
-      <p style={sub}>Tap to mark learned. </p>
+      <p style={sub}>Tap to mark learned.</p>
       <div style={progress}><div style={fill} /></div>
       <div style={label}>{learned.size}/{all.length} learned</div>
 
       <div style={panelWrap}>
-        {/* Left: Letters & Numbers */}
         <div>
           <div style={panel}>
             <h2 style={title}>Letters (A–Z)</h2>
@@ -181,7 +197,6 @@ export default function LettersNumbers() {
           </div>
         </div>
 
-        {/* Right: Image Display */}
         <div style={panel}>
           <h2 style={title}>Auslan Sign</h2>
           <div style={imageBox}>
