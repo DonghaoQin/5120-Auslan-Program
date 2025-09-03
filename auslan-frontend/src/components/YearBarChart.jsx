@@ -9,12 +9,13 @@ export default function YearBarChart() {
   const [animatedData, setAnimatedData] = useState([]);
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const chartRef = useRef();
+  const animationRef = useRef(null); // Store current animation values
 
-  // Intersection Observer to detect scroll-into-view
+  // Detect when chart scrolls into view
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !shouldAnimate) {
           setShouldAnimate(true);
         }
       },
@@ -23,9 +24,9 @@ export default function YearBarChart() {
 
     if (chartRef.current) observer.observe(chartRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [shouldAnimate]);
 
-  // Fetch data once only
+  // Fetch population data from backend API
   useEffect(() => {
     fetch(`${API}/year/population-by-year`)
       .then((res) => res.json())
@@ -37,50 +38,84 @@ export default function YearBarChart() {
       .catch(console.error);
   }, []);
 
-  // Animate when allowed
+  // Initialize animated data when data is loaded
   useEffect(() => {
-    if (!shouldAnimate || !data.length) return;
+    if (data.length > 0) {
+      const initialData = new Array(data.length).fill(0);
+      setAnimatedData(initialData);
+      // Store the current animation values in a ref
+      animationRef.current = [...initialData];
+    }
+  }, [data]);
 
-    let i = 0;
-    const fullData = data;
-    const animArray = new Array(fullData.length).fill(0);
+  // Fixed animation logic using refs to avoid state batching issues
+  useEffect(() => {
+    if (!shouldAnimate || !data.length || !animationRef.current) return;
 
-    const animateBar = () => {
-      if (i >= fullData.length) return;
+    let currentBarIndex = 0;
+    let animationId;
 
-      let frame = 0;
-      const target = fullData[i].population;
-      const step = Math.ceil(target / 100); // slower growth
+    const animateNextBar = () => {
+      if (currentBarIndex >= data.length) return;
 
-      const grow = () => {
-        if (frame < target) {
-          frame += step;
-          animArray[i] = Math.min(frame, target);
-          setAnimatedData([...animArray]);
-          requestAnimationFrame(grow);
+      const target = data[currentBarIndex].population;
+      const startTime = performance.now();
+      const duration = 1200; // Animation duration in milliseconds
+
+      const animateBar = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Smooth easing function
+        const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+        const currentValue = Math.floor(target * easeOutCubic);
+
+        // Update the ref directly to avoid React state batching
+        animationRef.current[currentBarIndex] = currentValue;
+        
+        // Update React state with a copy of the ref
+        setAnimatedData([...animationRef.current]);
+
+        if (progress < 1) {
+          animationId = requestAnimationFrame(animateBar);
         } else {
-          i++;
-          setTimeout(animateBar, 400); // longer pause before next bar
+          // Ensure final value is exact
+          animationRef.current[currentBarIndex] = target;
+          setAnimatedData([...animationRef.current]);
+          
+          // Move to next bar after a short delay
+          currentBarIndex++;
+          setTimeout(animateNextBar, 300);
         }
       };
 
-      grow();
+      animationId = requestAnimationFrame(animateBar);
     };
 
-    animateBar();
+    // Start the animation sequence
+    animateNextBar();
+
+    // Cleanup function
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
   }, [shouldAnimate, data]);
 
+  // Extract years and max value for fixed Y-axis
   const { years, maxPopulation } = useMemo(() => {
     const y = data.map((d) => d.year);
     const max = Math.max(...data.map((d) => d.population || 0));
-    return { years: y, maxPopulation: Math.ceil(max * 1.2) };
+    return { years: y, maxPopulation: Math.ceil(max * 1.1) };
   }, [data]);
 
+  // Chart layout options
   const layout = {
     title: {
       text: "Auslan Population by Year",
       font: {
-        size: 20,
+        size: 22,
         color: "#2D3436",
         family: "Arial, sans-serif",
       },
@@ -89,52 +124,114 @@ export default function YearBarChart() {
     xaxis: {
       title: "Year",
       tickfont: { size: 14 },
+      titlefont: { size: 16 },
+      showgrid: true,
+      gridcolor: "rgba(0,0,0,0.1)",
     },
     yaxis: {
       title: "Population",
       range: [0, maxPopulation],
       tickfont: { size: 14 },
+      titlefont: { size: 16 },
+      showgrid: true,
+      gridcolor: "rgba(0,0,0,0.1)",
     },
-    bargap: 0.3,
-    plot_bgcolor: "rgba(255,255,255,0.85)",
-    paper_bgcolor: "rgba(240, 248, 255, 0.3)",
-    margin: { l: 60, r: 30, t: 60, b: 50 },
+    bargap: 0.4,
+    plot_bgcolor: "rgba(255,255,255,0.9)",
+    paper_bgcolor: "rgba(248, 250, 252, 0.8)",
+    margin: { l: 80, r: 40, t: 80, b: 60 },
+    showlegend: false,
   };
 
+  // Dynamic bar colors based on animation progress
+  const getBarColor = (value, index) => {
+    if (!data[index]) return "#E0E7FF";
+    
+    const progress = data[index].population > 0 ? value / data[index].population : 0;
+    const hue = 180 + (progress * 40); // Color shifts from cyan to teal
+    const saturation = 60 + (progress * 20);
+    const lightness = 70 - (progress * 20);
+    
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  };
+
+  // Bar chart data
   const chartData = [
     {
       type: "bar",
       x: years,
       y: animatedData,
       marker: {
-        color: "#4ECDC4",
+        color: animatedData.map((value, index) => getBarColor(value, index)),
         line: {
-          width: 2,
-          color: "#2C3E50",
+          width: 1.5,
+          color: "#1E40AF",
         },
       },
-      hovertemplate: "Year: %{x}<br>Population: %{y:,}<extra></extra>",
+      hovertemplate: "<b>Year %{x}</b><br>Population: %{y:,}<extra></extra>",
+      text: animatedData.map((value, index) => {
+        // Only show text if animation is complete or near complete
+        const isComplete = data[index] ? value >= data[index].population * 0.95 : false;
+        return isComplete && value > 0 ? value.toLocaleString() : '';
+      }),
+      textposition: 'outside',
+      textfont: {
+        size: 11,
+        color: '#1F2937',
+        family: 'Arial, sans-serif'
+      }
     },
   ];
 
+  // Plotly config options
   const config = {
     responsive: true,
     displayModeBar: false,
     staticPlot: false,
     scrollZoom: false,
+    doubleClick: 'reset',
   };
 
-  if (!years.length || !animatedData.length) return <div ref={chartRef} style={{ height: 500 }}></div>;
-
   return (
-    <div ref={chartRef} className="relative w-full" style={{ maxWidth: 800, margin: "0 auto" }}>
-      <Plot
-        data={chartData}
-        layout={layout}
-        config={config}
-        useResizeHandler
-        style={{ width: "100%", height: 500 }}
-      />
+    <div 
+      ref={chartRef} 
+      className="relative w-full" 
+      style={{ 
+        maxWidth: 900, 
+        margin: "20px auto",
+        padding: "10px"
+      }}
+    >
+      {!data.length ? (
+        <div style={{ 
+          height: 500, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          fontSize: '16px',
+          color: '#6B7280',
+          backgroundColor: 'rgba(248, 250, 252, 0.8)',
+          borderRadius: '8px',
+          border: '1px solid rgba(209, 213, 219, 0.3)'
+        }}>
+          Loading population data...
+        </div>
+      ) : (
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          padding: '10px'
+        }}>
+          <Plot
+            data={chartData}
+            layout={layout}
+            config={config}
+            useResizeHandler
+            style={{ width: "100%", height: 520 }}
+          />
+        </div>
+      )}
     </div>
   );
 }
