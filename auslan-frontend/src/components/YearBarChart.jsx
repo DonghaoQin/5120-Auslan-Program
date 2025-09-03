@@ -101,7 +101,7 @@ export default function YearBarChart() {
       y: animatedData,
       marker: {
         color: years.map((_, i) => yearColors[i % yearColors.length]),
-        line: { color: "#1E40AF", width: 1.5 },
+        line: { color: "#aeb1b5ff", width: 1.5 },
       },
       hovertemplate: "<b>Year %{x}</b><br>Population: %{y:,}<extra></extra>",
       text: animatedData.map((val, i) => {
