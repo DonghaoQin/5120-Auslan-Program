@@ -75,7 +75,7 @@ export default function Insights() {
       desc: "",
       // TODO: Replace with backend data
       facts: [],
-      source: "Education news",
+      source: "https://www.abs.gov.au/",
     },
     Solutions: {
       title: "Solutions",
