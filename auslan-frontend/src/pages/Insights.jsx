@@ -120,23 +120,29 @@ export default function Insights() {
               </ul>
               {tab === "Trends" && (
                 <div style={{ marginTop: 12 }}>
+                  {/* Age Pyramid */}
                   <div style={{ fontWeight: 600, marginBottom: 8 }}>
                     Auslan Community Age Distribution (2021)
                   </div>
-
-                  {/* Your existing violin/pyramid chart */}
                   <PyramidAnimated height={520} />
 
-                  {/* A little spacing */}
                   <div style={{ height: 24 }} />
 
-                  {/* New: Australia state heat map (2021) */}
+                  {/* State Heatmap */}
                   <div style={{ fontWeight: 600, marginBottom: 8 }}>
                     Auslan population by state (2021)
                   </div>
                   <AusStateMap />
 
-                  {/* If you still want to list facts, keep a single <ul> below */}
+                  <div style={{ height: 24 }} />
+
+                  {/* NEW: Animated Bar Chart by Year */}
+                  <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                    Auslan population growth over the years
+                  </div>
+                  <YearBarChart /> {/*  Add this line */}
+
+                  {/* Keep existing facts */}
                   {current.facts.length > 0 && (
                     <>
                       <div style={{ height: 16 }} />
