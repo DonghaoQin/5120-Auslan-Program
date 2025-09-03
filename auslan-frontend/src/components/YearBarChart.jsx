@@ -70,9 +70,10 @@ export default function YearBarChart() {
     animateBar();
   }, [shouldAnimate, data]);
 
-  const { years } = useMemo(() => {
+  const { years, maxPopulation } = useMemo(() => {
     const y = data.map((d) => d.year);
-    return { years: y };
+    const max = Math.max(...data.map((d) => d.population || 0));
+    return { years: y, maxPopulation: Math.ceil(max * 1.2) };
   }, [data]);
 
   const layout = {
@@ -91,7 +92,7 @@ export default function YearBarChart() {
     },
     yaxis: {
       title: "Population",
-      rangemode: "tozero",
+      range: [0, maxPopulation],
       tickfont: { size: 14 },
     },
     bargap: 0.3,
