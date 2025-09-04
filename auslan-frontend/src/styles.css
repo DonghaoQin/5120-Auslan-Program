@@ -51,3 +51,8 @@ a { color: var(--brand); text-decoration: none; }
   /* https://au.pinterest.com/search/pins/?q=catton%20monster&rs=typed */
   /* https://au.pinterest.com/pin/675821487826730689/ */
   /* https://au.pinterest.com/pin/1063834743235919143/ */
+
+  /* 临时隐藏返回按钮 */
+.back {
+  display: none !important;
+}

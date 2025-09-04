@@ -10,12 +10,12 @@ export default function Insights() {
   const [tab, setTab] = useState("Challenges"); // default tab
 
   // Styles for various elements (inline styles used for quick theming)
-  const back = {
-    position: "absolute", top: 12, right: 20, fontSize: "2rem",
-    color: "white", background: "rgba(0,0,0,.3)", borderRadius: "50%",
-    width: 40, height: 40, display: "flex", justifyContent: "center",
-    alignItems: "center", cursor: "pointer", zIndex: 10,
-  };
+  // const back = {
+  //   position: "absolute", top: 12, right: 20, fontSize: "2rem",
+  //   color: "white", background: "rgba(0,0,0,.3)", borderRadius: "50%",
+  //   width: 40, height: 40, display: "flex", justifyContent: "center",
+  //   alignItems: "center", cursor: "pointer", zIndex: 10,
+  // };
 
   const page = {
     minHeight: "100vh",
@@ -124,7 +124,7 @@ export default function Insights() {
   return (
     <div style={page}>
       {/* Back button (top right) */}
-      <div style={back} onClick={() => nav("/")}></div>
+      {/* <div style={back} onClick={() => nav("/")}></div> */}
 
       <h1 style={h1}>Why Auslan at Home Matters</h1>
       <p style={p1}>Clear, parent-friendly notes to motivate and guide your first steps.</p>

@@ -14,12 +14,12 @@ export default function BasicWords() {
     setLearned(n);
   };
 
-  const back = {
-    position: "absolute", top: 12, right: 20, fontSize: "2rem",
-    color: "white", background: "rgba(0,0,0,.3)", borderRadius: "50%",
-    width: 40, height: 40, display: "flex", justifyContent: "center",
-    alignItems: "center", cursor: "pointer", zIndex: 10,
-  };
+  // const back = {
+  //   position: "absolute", top: 12, right: 20, fontSize: "2rem",
+  //   color: "white", background: "rgba(0,0,0,.3)", borderRadius: "50%",
+  //   width: 40, height: 40, display: "flex", justifyContent: "center",
+  //   alignItems: "center", cursor: "pointer", zIndex: 10,
+  // };
 
   const page = {
     minHeight: "100vh",
@@ -64,7 +64,7 @@ export default function BasicWords() {
 
   return (
     <div style={page}>
-      <div style={back} onClick={() => nav("/")}>←</div>
+      {/* <div style={back} onClick={() => nav("/")}>←</div> */}
 
       <h1 style={h1}>Basic Words</h1>
       <p style={sub}>Tap to mark learned.</p>
