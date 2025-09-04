@@ -103,7 +103,7 @@ export default function MiniQuiz() {
 
   const media = {
     height: 160, display: "grid", placeItems: "center",
-    background: "#0d1426", borderRadius: 12, color: "white", marginBottom: 12,
+    background: "#ffffffff", borderRadius: 12, color: "white", marginBottom: 12,
   };
 
   const grid = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 };
@@ -147,18 +147,33 @@ export default function MiniQuiz() {
         <div style={panel}>
           <p style={{ marginTop: 0 }}>Question {i + 1} / {questions.length}</p>
 
-          <div style={media}>
-            {q && (
-              <img
-                src={
-                  imgMap[String(q.mediaLabel).toUpperCase()] ||
-                  `/assets/signs/${String(q.mediaLabel).toUpperCase()}.PNG`
-                }
-                alt={`Sign for ${q.mediaLabel}`}
-                style={{ maxHeight: 150, maxWidth: "100%" }}
-              />
-            )}
-          </div>
+          <div style={{ ...media, position: "relative" }}>
+  {q && (
+    <>
+      <img
+        src={
+          imgMap[String(q.mediaLabel).toUpperCase()] ||
+          `/assets/signs/${String(q.mediaLabel).toUpperCase()}.PNG`
+        }
+        alt={`Sign for ${q.mediaLabel}`}
+        style={{ maxHeight: 150, maxWidth: "100%" }}
+      />
+      {/* 白色遮罩：覆盖左上角的字母 */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "350px",   // 遮罩宽度，可以调整
+          height: "50px",  // 遮罩高度，可以调整
+          backgroundColor: "white"
+        }}
+      />
+    </>
+  )}
+</div>
+
+
 
           <div style={grid}>
             {q?.options?.map((opt) => (
