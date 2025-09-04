@@ -5,7 +5,6 @@ import bgImage from "../assets/homebackground.jpg";
 
 const STORAGE_KEY = "LN_LEARNED_V1";
 
-
 const imgMap = {
   A: "/assets/signs/A.PNG", B: "/assets/signs/B.PNG", C: "/assets/signs/C.PNG",
   D: "/assets/signs/D.PNG", E: "/assets/signs/E.PNG", F: "/assets/signs/F.PNG",
@@ -32,7 +31,6 @@ const shuffle = (arr) => sample(arr, arr.length);
 export default function MiniQuiz() {
   const nav = useNavigate();
 
-  
   const [learned] = useState(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -43,12 +41,10 @@ export default function MiniQuiz() {
     }
   });
 
-  
   const [version, setVersion] = useState(0);
 
   const poolAll = useMemo(() => [...letters, ...numbers], []);
 
- 
   const questions = useMemo(() => {
     const learnedList = poolAll.filter(x => learned.has(x));
     if (learnedList.length === 0) return [];
@@ -73,12 +69,7 @@ export default function MiniQuiz() {
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
 
-  const back = {
-    position: "absolute", top: 12, right: 20, fontSize: "2rem",
-    color: "white", background: "rgba(0,0,0,.3)", borderRadius: "50%",
-    width: 40, height: 40, display: "flex", justifyContent: "center",
-    alignItems: "center", cursor: "pointer", zIndex: 10,
-  };
+  // ❌ 已删除 back 按钮样式对象
 
   const page = {
     minHeight: "100vh",
@@ -128,12 +119,12 @@ export default function MiniQuiz() {
     setI(0);
     setScore(0);
     setDone(false);
-    setVersion((v) => v + 1); 
+    setVersion((v) => v + 1);
   };
 
   return (
     <div style={page}>
-      <div style={back} onClick={() => nav("/")}>←</div>
+      {/* ❌ 已删除返回按钮 */}
 
       <h1 style={h1}>Mini Quiz</h1>
       <p style={sub}>
@@ -143,37 +134,34 @@ export default function MiniQuiz() {
       </p>
 
       {hasQuestions && !done ? (
-      
         <div style={panel}>
           <p style={{ marginTop: 0 }}>Question {i + 1} / {questions.length}</p>
 
           <div style={{ ...media, position: "relative" }}>
-  {q && (
-    <>
-      <img
-        src={
-          imgMap[String(q.mediaLabel).toUpperCase()] ||
-          `/assets/signs/${String(q.mediaLabel).toUpperCase()}.PNG`
-        }
-        alt={`Sign for ${q.mediaLabel}`}
-        style={{ maxHeight: 150, maxWidth: "100%" }}
-      />
-      {/* 白色遮罩：覆盖左上角的字母 */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "350px",   // 遮罩宽度，可以调整
-          height: "50px",  // 遮罩高度，可以调整
-          backgroundColor: "white"
-        }}
-      />
-    </>
-  )}
-</div>
-
-
+            {q && (
+              <>
+                <img
+                  src={
+                    imgMap[String(q.mediaLabel).toUpperCase()] ||
+                    `/assets/signs/${String(q.mediaLabel).toUpperCase()}.PNG`
+                  }
+                  alt={`Sign for ${q.mediaLabel}`}
+                  style={{ maxHeight: 150, maxWidth: "100%" }}
+                />
+                {/* 白色遮罩：覆盖左上角的字母 */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "350px",
+                    height: "50px",
+                    backgroundColor: "white"
+                  }}
+                />
+              </>
+            )}
+          </div>
 
           <div style={grid}>
             {q?.options?.map((opt) => (
@@ -182,13 +170,11 @@ export default function MiniQuiz() {
           </div>
         </div>
       ) : hasQuestions ? (
-       
         <div style={panel}>
           <h2 style={{ marginTop: 0 }}>Your Score: {score} / {questions.length}</h2>
           <button style={btn} onClick={restart}>Try Again</button>
         </div>
       ) : (
-       
         <div style={panel}>
           <button style={btn} onClick={() => nav("/learn/letters-numbers")}>
             Go to Letters & Numbers
