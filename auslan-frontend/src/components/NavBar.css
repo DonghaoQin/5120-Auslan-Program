@@ -1,0 +1,76 @@
+/* 整个导航栏 */
+.navbar {
+  position: fixed;          /* 固定悬浮 */
+  top: 20px;                /* 距离页面顶部 20px */
+  left: 50%;                /* 水平居中 */
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  width: 55%;               /* 宽度占页面 55% */
+  padding: 10px 20px;
+  background-color: rgba(98, 96, 99, 0.8); /* 半透明黑色 */
+  border-radius: 9999px;    /* 胶囊效果 */
+  box-shadow: 0 2px 6px rgba(219, 160, 160, 0.2);
+  backdrop-filter: blur(6px); /* 磨砂玻璃效果（可选） */
+  z-index: 1000;            /* 保证在最上层 */
+}
+
+/* 左侧品牌名 */
+.brand {
+  font-size: 18px;
+  font-weight: bold;
+  color: rgb(235, 119, 11);
+  text-decoration: none;
+}
+
+/* 右侧按钮容器 */
+.nav-links {
+  display: flex;
+  gap: 10px;
+}
+
+/* 单个按钮 */
+.nav-button {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background-color: white;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* 悬停效果 */
+.nav-button:hover {
+  background-color: #4caf50;
+  color: white;
+}
+
+/* 当前路由高亮 */
+.nav-button.active {
+  background-color: #4caf50;
+  color: white;
+}
+
+/* ===== Scroll Down 箭头动画 ===== */
+.scroll-down {
+  position: absolute;
+  bottom: 30px;       /* 距离底部 */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 3rem;
+  color: white;
+  animation: bounce 1.5s infinite;
+}
+
+/* 上下抖动关键帧 */
+@keyframes bounce {
+  0%, 100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -12px);
+  }
+}
