@@ -9,7 +9,7 @@
   align-items: center;
   width: 55%;               /* 宽度占页面 55% */
   padding: 10px 20px;
-  background-color: rgba(98, 96, 99, 0.8); /* 半透明黑色 */
+  background-color: rgba(13, 13, 14, 0.8); /* 半透明黑色 */
   border-radius: 9999px;    /* 胶囊效果 */
   box-shadow: 0 2px 6px rgba(219, 160, 160, 0.2);
   backdrop-filter: blur(6px); /* 磨砂玻璃效果（可选） */
@@ -20,7 +20,7 @@
 .brand {
   font-size: 18px;
   font-weight: bold;
-  color: rgb(235, 119, 11);
+  color: rgb(255, 126, 41);
   text-decoration: none;
 }
 
@@ -73,4 +73,18 @@
   50% {
     transform: translate(-50%, -12px);
   }
+}
+
+
+/* 让品牌颜色覆盖所有链接状态，并让内部元素继承 */
+.navbar .brand,
+.navbar .brand:link,
+.navbar .brand:visited,
+.navbar .brand:hover,
+.navbar .brand:active {
+  color: rgb(255, 131, 16) !important; /* 如仍被覆写可暂用 !important */
+}
+
+.navbar .brand * {
+  color: inherit; /* 子元素跟随父元素颜色 */
 }
