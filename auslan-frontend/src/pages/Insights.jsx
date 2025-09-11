@@ -16,9 +16,10 @@ export default function Insights() {
     backgroundSize: "cover",
     backgroundPosition: "center",
     padding: "0 20px 40px",
-    paddingTop: "env(safe-area-inset-top, 0px)",
+    paddingTop: "120px",   // ✅ 整体下移，避免被导航栏遮挡
     fontFamily: "Inter, system-ui, sans-serif",
   };
+
 
   const tabsBar = {
     maxWidth: 1100,
@@ -41,6 +42,7 @@ export default function Insights() {
     height: "clamp(480px, 72vh, 860px)",
     display: "flex",
     flexDirection: "column",
+    
   };
   const head = {
     padding: "24px 28px",
