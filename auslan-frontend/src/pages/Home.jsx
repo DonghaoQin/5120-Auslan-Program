@@ -1,14 +1,13 @@
 // src/pages/Home.jsx
 import { useNavigate } from "react-router-dom";
-import { useMemo, useEffect } from "react";
+import { useEffect } from "react";
 
-import RibbonWave from "../components/RibbonWave";
-import heroImg from "../assets/Homehero.png";
 import heroBg from "../assets/homebackground.jpg";
 import homemovie from "../assets/homemovie.mp4";
 import HomeLeft from "../assets/Homeleftcard.png";
 import HomeMiddle from "../assets/Homemiddlecard.png";
 import HomeRight from "../assets/Homerightcard.png";
+import lettersHero from "../assets/lettershero.png";
 
 
 export default function Home() {
@@ -77,146 +76,113 @@ export default function Home() {
     boxShadow: "0 10px 26px rgba(99,91,255,0.35)",
   };
 
-  // 功能卡片样式
-  const cardStyles = {
-    letters: baseCard(),
-    words: baseCard(),
-    quiz: baseCard(),
-    story: baseCard(),
-  };
-  function baseCard() {
-    return {
-      minWidth: 280,
-      padding: 18,
-      borderRadius: 16,
-      background: "#ffffff",
-      boxShadow: "0 12px 30px rgba(0,0,0,0.15)",
-      cursor: "pointer",
-      transition: "transform .25s ease, box-shadow .25s ease",
-    };
-  }
-  const emoji = { fontSize: 28, marginBottom: 10, display: "block" };
-  const title = { fontSize: "1.25rem", fontWeight: 700, marginBottom: 6 };
-  const subtitle = { fontSize: "0.95rem", opacity: 0.9 };
-  const sectionWrap = (bg) => ({
-    minHeight: "60vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "48px 24px",
-    background: bg,
-    position: "relative",
-    overflow: "hidden",
-  });
-
-  // 四个入口
-  const sections = useMemo(
-    () => [
-      {
-        key: "letters",
-        label: "Letters & Numbers",
-        sub: "A–Z and 0–9 with practice.",
-        route: "/learn/letters-numbers",
-        emoji: "✏️",
-        bg: "linear-gradient(180deg,#f0fff7 0%, #e8fff3 100%)",
-      },
-      {
-        key: "words",
-        label: "Basic Words",
-        sub: "Home / School / Play — 50+ words.",
-        route: "/learn/words",
-        emoji: "👩‍🏫",
-        bg: "linear-gradient(180deg,#fff9ec 0%, #fff3d6 100%)",
-      },
-      {
-        key: "quiz",
-        label: "Mini Quiz",
-        sub: "Quick 5-question check.",
-        route: "/quiz",
-        emoji: "👩‍💻",
-        bg: "linear-gradient(180deg,#faf5ff 0%, #f3e8ff 100%)",
-      },
-      {
-        key: "story",
-        label: "Storybook",
-        sub: "Learn words in real-life context.",
-        route: "/storybook",
-        emoji: "📖",
-        bg: "linear-gradient(180deg,#f0f7ff 0%, #e6f1ff 100%)",
-      },
-    ],
-    []
-  );
-
   /* ---------- Scroll 动画：两幕在一个 pin 区 ---------- */
-  // 放在 Home.jsx 组件内，完整替换你现在的 useEffect
-useEffect(() => {
-  const gsapRef = window.gsap;
-  const ST = window.ScrollTrigger;
-  if (!gsapRef || !ST) return;
+  useEffect(() => {
+    const gsapRef = window.gsap;
+    const ST = window.ScrollTrigger;
+    if (!gsapRef || !ST) return;
 
-  gsapRef.registerPlugin(ST);
-  ST.normalizeScroll(true); // 减少设备“飞滑”动量
+    gsapRef.registerPlugin(ST);
+    ST.normalizeScroll(true);
 
-  // 初始：幕1文案左上，幕2文案居中隐藏
-  gsapRef.set(".sh-copy1", { left: "6%", top: "10%", xPercent: 0, y: 0, opacity: 1 });
-  gsapRef.set(".sh-copy2", { left: "50%", top: "10%", xPercent: -50, opacity: 0 });
+    // 初始：幕1文案左上，幕2文案居中隐藏
+    gsapRef.set(".sh-copy1", { left: "6%", top: "10%", xPercent: 0, y: 0, opacity: 1 });
+    gsapRef.set(".sh-copy2", { left: "50%", top: "10%", xPercent: -50, opacity: 0 });
 
-  const tl = gsapRef.timeline({
-    scrollTrigger: {
-      trigger: ".scroll-hero",
-      start: "top top",
-      end: "+=200%",
-      scrub: 0.6,                 // 跟随但带平滑，防“快进”
-      pin: ".scroll-hero__pin",
-      anticipatePin: 1,
-      fastScrollEnd: true,        // 快速滚动松手时更自然
-      invalidateOnRefresh: true,
-      snap: {                     // 松手后自动补动到最近阶段
-        snapTo: "labelsDirectional",
-        duration: { min: 0.25, max: 0.6 },
+     // 让文字从底部浮现
+    // 文字
+    gsapRef.fromTo(
+      ".letters-section-text",
+      { y: 80, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1.5,          // 动画更慢
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".letters-section-text",
+          start: "top 60%",     // 元素到视口中下方才触发
+          end: "bottom 60%",    // 动画区间更平滑
+          toggleActions: "play none none reverse",
+        },
+      }
+    );
+
+    // 图片
+    gsapRef.fromTo(
+      ".letters-section-img",
+      { y: 120, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1.8,          // 动画更慢
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".letters-section-img",
+          start: "top 15%",     // 更靠近视口才触发
+          end: "bottom 65%",
+          toggleActions: "play none none reverse",
+        },
+      }
+    );
+
+
+
+
+    const tl = gsapRef.timeline({
+      scrollTrigger: {
+        trigger: ".scroll-hero",
+        start: "top top",
+        end: "+=200%",
+        scrub: 0.6,
+        pin: ".scroll-hero__pin",
+        anticipatePin: 1,
+        fastScrollEnd: true,
+        invalidateOnRefresh: true,
+        snap: {
+          snapTo: "labelsDirectional",
+          duration: { min: 0.25, max: 0.6 },
+          ease: "power2.out",
+        },
+      },
+    });
+
+    tl.addLabel("stage0", 0);
+
+    // 人物抬升 & 微放大
+    tl.to(".sh-photo", { yPercent: -10, scale: 1.15, duration: 1 }, 0).addLabel("stage1");
+
+    // 白框扩张为整屏
+    tl.to(
+      ".sh-frame",
+      {
+        width: "100vw",
+        height: "100vh",
+        borderRadius: 0,
+        left: 0,
+        top: 0,
+        xPercent: 0,
+        yPercent: 0,
+        transform: "none",
+        duration: 0.6,
         ease: "power2.out",
       },
-    },
-  });
+      0.1
+    ).addLabel("stage2");
 
-  tl.addLabel("stage0", 0);
+    // 两侧卡片出现
+    tl.to(".sh-side", { opacity: 1, y: 0, duration: 0.8, stagger: 0.1 }, 0.35).addLabel("stage3");
 
-  // 人物抬升 & 微放大
-  tl.to(".sh-photo", { yPercent: -10, scale: 1.15, duration: 1 }, 0)
-    .addLabel("stage1");
+    // 文案切换
+    tl.to(".sh-copy1", { opacity: 0, duration: 0.5 }, 0.45)
+      .to(".sh-copy2", { opacity: 1, duration: 0.8 }, 0.75)
+      .addLabel("stage4");
 
-  // 白框扩张为整屏（更快更有冲劲）
-  tl.to(".sh-frame", {
-    width: "100vw",
-    height: "100vh",
-    borderRadius: 0,
-    left: 0,
-    top: 0,
-    xPercent: 0,
-    yPercent: 0,
-    transform: "none",
-    duration: 0.6,
-    ease: "power2.out",
-  }, 0.1)
-    .addLabel("stage2");
-
-  // 两侧卡片出现
-  tl.to(".sh-side", { opacity: 1, y: 0, duration: 0.8, stagger: 0.1 }, 0.35)
-    .addLabel("stage3");
-
-  // 文案切换
-  tl.to(".sh-copy1", { opacity: 0, duration: 0.5 }, 0.45)
-    .to(".sh-copy2", { opacity: 1, duration: 0.8 }, 0.75)
-    .addLabel("stage4");
-
-  return () => {
-    tl.scrollTrigger && tl.scrollTrigger.kill();
-    tl.kill();
-  };
-}, []);
-
-
+    return () => {
+      tl.scrollTrigger && tl.scrollTrigger.kill();
+      tl.kill();
+    };
+  }, []);
 
   return (
     <div style={pageStyle}>
@@ -251,7 +217,7 @@ useEffect(() => {
         <div className="scroll-down">⮟</div>
       </section>
 
-      {/* 2) （移动后的）同一场景两幕：紧跟视频下方 */}
+      {/* 2) 同一场景两幕：紧跟视频下方 */}
       <section
         className="scroll-hero"
         style={{
@@ -259,18 +225,17 @@ useEffect(() => {
           minHeight: "200vh",
         }}
       >
-          <div
-            className="scroll-hero__pin"
-            style={{ position: "relative", height: "100vh", overflow: "hidden" }}
-          >
+        <div
+          className="scroll-hero__pin"
+          style={{ position: "relative", height: "100vh", overflow: "hidden" }}
+        >
           {/* 幕一：整屏棕色背景 */}
           <div
             className="sh-bg"
             style={{
               position: "absolute",
               inset: 0,
-              background:
-                "linear-gradient(180deg,#8B5E3C 0%, #A47148 100%)",
+              background: "linear-gradient(180deg,#8B5E3C 0%, #A47148 100%)",
               zIndex: 0,
             }}
           />
@@ -335,136 +300,132 @@ useEffect(() => {
           />
 
           {/* 幕二：左侧卡片 */}
-            <div
-              className="sh-side sh-left"
-              style={{
-                position: "absolute",
-                left: "6%",
-                top: "60%",
-                transform: "translateY(40px)",
-                width: 280, // 方块大小
-                height: 360,
-                padding: 16,
-                opacity: 0,
-                background: "#fff",
-                borderRadius: 16,
-                boxShadow: "0 18px 50px rgba(0,0,0,.15)",
-                zIndex: 3,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-end",
-                alignItems: "center",
-                textAlign: "center",
-                backgroundImage: `url(${HomeLeft})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
-              {/* 白底黑字信息框 */}
-              <div
-                style={{
-                  background: "rgba(255,255,255,0.85)",
-                  padding: "10px 12px",
-                  borderRadius: 12,
-                  width: "90%",
-                }}
-              >
-                <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>
-                  Trends
-                </h3>
-                <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
-                  Key issues faced by DHH students
-                </p>
-              </div>
-            </div>
-
-            {/* 幕二：中间卡片 */}
+          <div
+            className="sh-side sh-left"
+            style={{
+              position: "absolute",
+              left: "6%",
+              top: "60%",
+              transform: "translateY(40px)",
+              width: 280,
+              height: 360,
+              padding: 16,
+              opacity: 0,
+              background: "#fff",
+              borderRadius: 16,
+              boxShadow: "0 18px 50px rgba(0,0,0,.15)",
+              zIndex: 3,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              textAlign: "center",
+              backgroundImage: `url(${HomeLeft})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
             <div
               style={{
-                position: "absolute",
-                left: "50%",
-                top: "65%",
-                transform: "translate(-50%, -50%)",
-                width: 360,
-                height: 400,
-                padding: 16,
-                background: "#fff",
-                borderRadius: 16,
-                boxShadow: "0 18px 50px rgba(0,0,0,.15)",
-                zIndex: 3,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-end",
-                alignItems: "center",
-                textAlign: "center",
-                backgroundImage: `url(${HomeMiddle})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                boxShadow: "0 0 0 4px #fff",
+                background: "rgba(255,255,255,0.85)",
+                padding: "10px 12px",
+                borderRadius: 12,
+                width: "90%",
               }}
             >
-              {/* 白底黑字信息框 */}
-              <div
-                style={{
-                  background: "rgba(255,255,255,0.85)",
-                  padding: "10px 12px",
-                  borderRadius: 12,
-                  width: "90%",
-                }}
-              >
-                <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>
-                  Challenges
-                </h3>
-                <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
-                  Key issues faced by DHH students
-                </p>
-              </div>
+              <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>
+                Trends
+              </h3>
+              <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
+                Key issues faced by DHH students
+              </p>
             </div>
+          </div>
 
-            {/* 幕二：右侧卡片 */}
+          {/* 幕二：中间卡片 */}
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "65%",
+              transform: "translate(-50%, -50%)",
+              width: 360,
+              height: 400,
+              padding: 16,
+              background: "#fff",
+              borderRadius: 16,
+              boxShadow: "0 18px 50px rgba(0,0,0,.15)",
+              zIndex: 3,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              textAlign: "center",
+              backgroundImage: `url(${HomeMiddle})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              boxShadow: "0 0 0 4px #fff",
+            }}
+          >
             <div
-              className="sh-side sh-right"
               style={{
-                position: "absolute",
-                right: "6%",
-                top: "60%",
-                transform: "translateY(40px)",
-                width: 280,
-                height: 360,
-                padding: 16,
-                opacity: 0,
-                background: "#fff",
-                borderRadius: 16,
-                boxShadow: "0 18px 50px rgba(0,0,0,.15)",
-                zIndex: 3,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-end",
-                alignItems: "center",
-                textAlign: "center",
-                backgroundImage: `url(${HomeRight})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                background: "rgba(255,255,255,0.85)",
+                padding: "10px 12px",
+                borderRadius: 12,
+                width: "90%",
               }}
             >
-              {/* 白底黑字信息框 */}
-              <div
-                style={{
-                  background: "rgba(255,255,255,0.85)",
-                  padding: "10px 12px",
-                  borderRadius: 12,
-                  width: "90%",
-                }}
-              >
-                <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>
-                  Resources
-                </h3>
-                <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
-                  Key issues faced by DHH students
-                </p>
-              </div>
+              <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>
+                Challenges
+              </h3>
+              <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
+                Key issues faced by DHH students
+              </p>
             </div>
+          </div>
 
+          {/* 幕二：右侧卡片 */}
+          <div
+            className="sh-side sh-right"
+            style={{
+              position: "absolute",
+              right: "6%",
+              top: "60%",
+              transform: "translateY(40px)",
+              width: 280,
+              height: 360,
+              padding: 16,
+              opacity: 0,
+              background: "#fff",
+              borderRadius: 16,
+              boxShadow: "0 18px 50px rgba(0,0,0,.15)",
+              zIndex: 3,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              textAlign: "center",
+              backgroundImage: `url(${HomeRight})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div
+              style={{
+                background: "rgba(255,255,255,0.85)",
+                padding: "10px 12px",
+                borderRadius: 12,
+                width: "90%",
+              }}
+            >
+              <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>
+                Resources
+              </h3>
+              <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
+                Key issues faced by DHH students
+              </p>
+            </div>
+          </div>
 
           {/* 幕二：文案 */}
           <div
@@ -511,152 +472,49 @@ useEffect(() => {
         </div>
       </section>
 
-      {/* 3) 四个功能入口（每个独立区块，便于单独设计） */}
 
-          <section
-            style={{
-              minHeight: "100vh",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "48px 24px",
-              background: "linear-gradient(180deg,#f0fff7 0%, #e8fff3 100%)", // 纯色渐变
-            }}
-          >
-            <div
-              style={{
-                minWidth: 320,
-                maxWidth: 600,
-                padding: 32,
-                borderRadius: 24,
-                background: "#fff",
-                boxShadow: "0 18px 40px rgba(0,0,0,0.22)",
-                textAlign: "center",
-                cursor: "pointer",
-              }}
-              onClick={() => nav("/learn/letters-numbers")}
-            >
-              <span style={{ fontSize: 40, marginBottom: 12 }}>✏️</span>
-              <div style={{ fontSize: "1.8rem", fontWeight: 800, marginBottom: 12 }}>
-                Letters & Numbers
-              </div>
-              <div style={{ fontSize: "1.1rem", opacity: 0.9 }}>
-                A–Z and 0–9 with practice.
-              </div>
-            </div>
-          </section>
+            {/* 3) 页面最下方 LettersNumbers 区块 */}
+      <section
+          style={{
+            minHeight: "100vh",     // 整个区块至少一屏高
+            padding: "80px 20px",
+            textAlign: "center",
+            backgroundColor: "#e6f7f7",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center", // 居中内容
+          }}
+        >
 
-       
-          <section
-            style={{
-              minHeight: "100vh",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "48px 24px",
-              background: "linear-gradient(180deg,#fff9ec 0%, #fff3d6 100%)",
-            }}
-          >
-            <div
-              style={{
-                minWidth: 320,
-                maxWidth: 600,
-                padding: 32,
-                borderRadius: 24,
-                background: "#fff",
-                boxShadow: "0 18px 40px rgba(0,0,0,0.22)",
-                textAlign: "center",
-                cursor: "pointer",
-              }}
-              onClick={() => nav("/learn/words")}
-            >
-              <span style={{ fontSize: 40, marginBottom: 12 }}>👩‍🏫</span>
-              <div style={{ fontSize: "1.8rem", fontWeight: 800, marginBottom: 12 }}>
-                Basic Words
-              </div>
-              <div style={{ fontSize: "1.1rem", opacity: 0.9 }}>
-                Home / School / Play — 50+ words.
-              </div>
-            </div>
-          </section>
+        <div className="letters-section-text">
+          <h1>Letters & Numbers</h1>
+          <p>
+            Explore Auslan letters and numbers in an interactive way.  
+            Tailor-made for your learning journey.
+          </p>
+          <button onClick={() => nav("/learn/letters-numbers")}>
+            Discover now →
+          </button>
+        </div>
 
-         
-          <section
-            style={{
-              minHeight: "100vh",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "48px 24px",
-              background: "linear-gradient(180deg,#faf5ff 0%, #f3e8ff 100%)",
-            }}
-          >
-            <div
-              style={{
-                minWidth: 320,
-                maxWidth: 600,
-                padding: 32,
-                borderRadius: 24,
-                background: "#fff",
-                boxShadow: "0 18px 40px rgba(0,0,0,0.22)",
-                textAlign: "center",
-                cursor: "pointer",
-              }}
-              onClick={() => nav("/quiz")}
-            >
-              <span style={{ fontSize: 40, marginBottom: 12 }}>👩‍💻</span>
-              <div style={{ fontSize: "1.8rem", fontWeight: 800, marginBottom: 12 }}>
-                Mini Quiz
-              </div>
-              <div style={{ fontSize: "1.1rem", opacity: 0.9 }}>
-                Quick 5-question check.
-              </div>
-            </div>
-          </section>
+        <img
+          src={lettersHero}
+          alt="Letters and Numbers"
+          className="letters-section-img"
+          style={{
+            width: "80%",
+            maxWidth: "900px",
+            height: "auto",
+            display: "block",
+            margin: "50px auto 0 auto",
+            borderRadius: 16,
+          }}
+        />
+      </section>
 
-      
-          <section
-            style={{
-              minHeight: "100vh",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "48px 24px",
-              background: "linear-gradient(180deg,#f0f7ff 0%, #e6f1ff 100%)",
-            }}
-          >
-            <div
-              style={{
-                minWidth: 320,
-                maxWidth: 600,
-                padding: 32,
-                borderRadius: 24,
-                background: "#fff",
-                boxShadow: "0 18px 40px rgba(0,0,0,0.22)",
-                textAlign: "center",
-                cursor: "pointer",
-              }}
-              onClick={() => nav("/storybook")}
-            >
-              <span style={{ fontSize: 40, marginBottom: 12 }}>📖</span>
-              <div style={{ fontSize: "1.8rem", fontWeight: 800, marginBottom: 12 }}>
-                Storybook
-              </div>
-              <div style={{ fontSize: "1.1rem", opacity: 0.9 }}>
-                Learn words in real-life context.
-              </div>
-            </div>
-          </section>
 
-        );
-      })}
+
+
     </div>
   );
 }
-
-
-

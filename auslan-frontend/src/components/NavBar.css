@@ -44,13 +44,14 @@
 
 /* 悬停效果 */
 .nav-button:hover {
-  background-color: #4caf50;
+  background-color: #ff8018;
+  
   color: white;
 }
 
 /* 当前路由高亮 */
 .nav-button.active {
-  background-color: #4caf50;
+  background-color: #ff8018;
   color: white;
 }
 
