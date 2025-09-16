@@ -7,7 +7,8 @@ import homemovie from "../assets/homemovie.mp4";
 import HomeLeft from "../assets/Homeleftcard.png";
 import HomeMiddle from "../assets/Homemiddlecard.png";
 import HomeRight from "../assets/Homerightcard.png";
-import lettersHero from "../assets/lettershero.png";
+
+
 
 
 export default function Home() {
@@ -127,7 +128,7 @@ export default function Home() {
     );
 
 
-
+    
 
     const tl = gsapRef.timeline({
       scrollTrigger: {
@@ -183,6 +184,35 @@ export default function Home() {
       tl.kill();
     };
   }, []);
+
+
+
+  // ✅ 卡片公共样式 & hover 工具（放在组件里、但不在 useEffect 里面）
+  const cardStyle = (c1, c2) => ({
+    cursor: "pointer",
+    border: "none",
+    borderRadius: 18,
+    padding: "28px 24px",
+    textAlign: "left",
+    background: `linear-gradient(135deg, ${c1}, ${c2})`,
+    boxShadow: "0 18px 40px rgba(0,0,0,.08)",
+    transition: "transform .2s ease, box-shadow .2s ease",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+  });
+
+  const titleStyle = { fontSize: 22, fontWeight: 800, marginBottom: 6 };
+
+  const hoverOn = (e) => {
+    e.currentTarget.style.transform = "translateY(-4px)";
+    e.currentTarget.style.boxShadow = "0 26px 60px rgba(0,0,0,.12)";
+  };
+  const hoverOff = (e) => {
+    e.currentTarget.style.transform = "translateY(0)";
+    e.currentTarget.style.boxShadow = "0 18px 40px rgba(0,0,0,.08)";
+  };
+
 
   return (
     <div style={pageStyle}>
@@ -473,44 +503,189 @@ export default function Home() {
       </section>
 
 
-            {/* 3) 页面最下方 LettersNumbers 区块 */}
-      <section
+       {/* 3) 页面最下方 4个按钮（两行两列） */}
+        <section
+          id="activities"
           style={{
-            minHeight: "100vh",     // 整个区块至少一屏高
-            padding: "80px 20px",
+            minHeight: "100vh",
+            padding: "80px 20px 40px",
             textAlign: "center",
-            backgroundColor: "#e6f7f7",
+            background:
+              "radial-gradient(1200px 600px at 50% 0%, rgba(255,255,255,0.9), #e6f7f7)",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "center", // 居中内容
+            justifyContent: "center",
           }}
         >
-
-        <div className="letters-section-text">
-          <h1>Letters & Numbers</h1>
-          <p>
-            Explore Auslan letters and numbers in an interactive way.  
-            Tailor-made for your learning journey.
+          <h2 style={{ fontSize: "clamp(2rem,4vw,2.6rem)", marginBottom: 12 }}>
+            Choose Your Activity
+          </h2>
+          <p style={{ opacity: 0.8, margin: "0 0 24px" }}>
+            Pick one to continue learning Auslan.
           </p>
-          <button onClick={() => nav("/learn/letters-numbers")}>
-            Discover now →
-          </button>
-        </div>
 
-        <img
-          src={lettersHero}
-          alt="Letters and Numbers"
-          className="letters-section-img"
-          style={{
-            width: "80%",
-            maxWidth: "900px",
-            height: "auto",
-            display: "block",
-            margin: "50px auto 0 auto",
-            borderRadius: 16,
-          }}
-        />
-      </section>
+          {/* 用 ref 收集四个卡片，方便“Pick for me”高亮 */}
+          {(() => {
+            const refs = (window._activityRefs ||= { current: [] });
+
+            // 小工具：随机选中 + 平滑滚动 + 2秒高亮
+            // 让四个按钮按顺序滚动，高亮从快到慢，最后停在随机项
+            window.pickActivityForMe = () => {
+              const refs = (window._activityRefs ||= { current: [] }).current.filter(Boolean);
+              if (!refs.length) return;
+
+              // —— 可调参数 —— //
+              const duration = 1800;           // 总时长：1.8s（越大越慢）
+              const minCycles = 2;             // 至少转 2 圈
+              const extraCycles = 2;           // 最多再多 0~2 圈
+              // ———————————— //
+
+              const targetOffset = Math.floor(Math.random() * refs.length); // 最终指向偏移
+              const totalSteps = (minCycles + Math.floor(Math.random() * (extraCycles + 1))) * refs.length + targetOffset;
+
+              const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);  // 由快到慢
+              const oldShadow = new WeakMap();
+
+              let lastStep = -1;
+              const t0 = performance.now();
+
+              function unhighlight(el) {
+                if (!el) return;
+                el.style.transform = "translateY(0)";
+                el.style.boxShadow = oldShadow.get(el) ?? "";
+                el.style.outline = "";
+              }
+              function highlight(el, strong = false) {
+                if (!oldShadow.has(el)) oldShadow.set(el, el.style.boxShadow);
+                el.style.transform = "translateY(-4px)";
+                el.style.boxShadow = strong
+                  ? "0 0 0 8px rgba(80,160,255,.35), 0 26px 60px rgba(0,0,0,.16)"
+                  : "0 0 0 6px rgba(80,160,255,.25), 0 22px 60px rgba(0,0,0,.16)";
+                el.style.outline = "3px solid rgba(0,0,0,.10)";
+              }
+
+              function frame(now) {
+                const t = Math.min(1, (now - t0) / duration);
+                const step = Math.floor(easeOutCubic(t) * totalSteps);
+
+                if (step !== lastStep) {
+                  // 取消上一个
+                  if (lastStep >= 0) unhighlight(refs[lastStep % refs.length]);
+
+                  // 高亮当前
+                  const el = refs[step % refs.length];
+                  
+                  highlight(el);
+                  lastStep = step;
+                }
+
+                if (t < 1) {
+                  requestAnimationFrame(frame);
+                } else {
+                  // 最终落点再加强高亮 2 秒
+                  const selected = refs[lastStep % refs.length];
+                  highlight(selected, true);
+                  setTimeout(() => {
+                    refs.forEach((el) => el !== selected && unhighlight(el));
+                  }, 2000);
+                }
+              }
+
+              requestAnimationFrame(frame);
+            };
+
+
+            return (
+              <>
+                {/* 固定 2x2 网格（窄屏自动一列） */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(2, minmax(280px, 1fr))",
+                    gridAutoRows: "1fr",
+                    gap: 24,
+                    maxWidth: 1100,
+                    margin: "0 auto",
+                  }}
+                >
+                  {/* Letters & Numbers */}
+                  <button
+                    ref={(el) => (refs.current[0] = el)}
+                    onClick={() => nav("/learn/letters-numbers")}
+                    style={cardStyle("#b9f6ca", "#8fe3c0")}
+                    onMouseEnter={(e) => hoverOn(e)}
+                    onMouseLeave={(e) => hoverOff(e)}
+                  >
+                    <div style={{ fontSize: 42, marginBottom: 8 }}>✏️</div>
+                    <div style={titleStyle}>Letters & Numbers</div>
+                    <div>A–Z and 0–9 with practice.</div>
+                  </button>
+
+                  {/* Basic Words */}
+                  <button
+                    ref={(el) => (refs.current[1] = el)}
+                    onClick={() => nav("/basic-words")}
+                    style={cardStyle("#fff3b0", "#ffe08a")}
+                    onMouseEnter={(e) => hoverOn(e)}
+                    onMouseLeave={(e) => hoverOff(e)}
+                  >
+                    <div style={{ fontSize: 42, marginBottom: 8 }}>📚</div>
+                    <div style={titleStyle}>Basic Words</div>
+                    <div>Home / School / Play — 50+ words.</div>
+                  </button>
+
+                  {/* Mini Quiz */}
+                  <button
+                    ref={(el) => (refs.current[2] = el)}
+                    onClick={() => nav("/mini-quiz")}
+                    style={cardStyle("#e7d1ff", "#d5b8ff")}
+                    onMouseEnter={(e) => hoverOn(e)}
+                    onMouseLeave={(e) => hoverOff(e)}
+                  >
+                    <div style={{ fontSize: 42, marginBottom: 8 }}>🧠</div>
+                    <div style={titleStyle}>Mini Quiz</div>
+                    <div>Quick 5-question check.</div>
+                  </button>
+
+                  {/* Story Book（第4个） */}
+                  <button
+                    ref={(el) => (refs.current[3] = el)}
+                    onClick={() => nav("/story-book")} // 若路由是 /storybook 改这里
+                    style={cardStyle("#b9d7ff", "#9bc6ff")}
+                    onMouseEnter={(e) => hoverOn(e)}
+                    onMouseLeave={(e) => hoverOff(e)}
+                  >
+                    <div style={{ fontSize: 42, marginBottom: 8 }}>📖</div>
+                    <div style={titleStyle}>Story Book</div>
+                    <div>Read and learn with stories.</div>
+                  </button>
+                </div>
+
+                {/* 🎲 Pick for me */}
+                <div style={{ marginTop: 28 }}>
+                  <button
+                    onClick={() => window.pickActivityForMe()}
+                    style={{
+                      borderRadius: 999,
+                      padding: "12px 18px",
+                      border: "none",
+                      fontWeight: 700,
+                      boxShadow: "0 10px 24px rgba(0,0,0,.12)",
+                      background:
+                        "linear-gradient(135deg, rgba(130,130,255,.95), rgba(170,210,255,.95))",
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+                  >
+                    <span style={{ fontSize: 18 }}>🎲 Pick an Activity for Me</span>
+                  </button>
+                </div>
+              </>
+            );
+          })()}
+        </section>
+
 
 
 

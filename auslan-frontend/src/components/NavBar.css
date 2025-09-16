@@ -7,7 +7,7 @@
   display: flex;
   justify-content: space-between; 
   align-items: center;
-  width: 55%;               /* 宽度占页面 55% */
+  width: 70%;               /* 宽度占页面 55% */
   padding: 10px 20px;
   background-color: rgba(13, 13, 14, 0.8); /* 半透明黑色 */
   border-radius: 9999px;    /* 胶囊效果 */
