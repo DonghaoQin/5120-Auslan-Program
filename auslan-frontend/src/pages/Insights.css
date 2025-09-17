@@ -1,0 +1,106 @@
+/* ------- 全局：背景纯白 ------- */
+html, body, #root {
+  background: #fff;        /* 纯白 */
+}
+
+html { scroll-behavior: smooth; }
+
+/* ------- 页面容器 ------- */
+.insights-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 20px 60px;   /* ⭐ 整体下移，避免被顶部 tab 遮挡 */
+  font-family: "Inter", system-ui, sans-serif;
+  color: #222;
+  line-height: 1.8;
+  background: #fff;           /* 纯白，没有卡片感 */
+  gap: 24px;
+}
+
+/* ------- 左侧目录：位置更“居中一点” ------- */
+.insights-nav {
+  flex: 0 0 240px;
+  /* 让目录本身更靠下： */
+  position: sticky;
+  top: 160px;                 /* ⭐ 比之前更低一点，看起来更居中 */
+  align-self: flex-start;
+  margin-top: 12px;           /* 细调 */
+}
+
+/* ========== 目录标题：左边橙色竖条 ========== */
+.insights-nav h3 {
+  position: relative;
+  padding-left: 12px;
+}
+.insights-nav h3::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #ff7a00; /* 橙色 */
+  border-radius: 2px;
+}
+
+/* ========== 目录链接：默认灰色，无下划线 ========== */
+.insights-nav a {
+  display: block;
+  position: relative;
+  padding: 6px 0 6px 12px; /* 给竖条留空间 */
+  color: #666;             /* 默认灰色 */
+  text-decoration: none;   /* 去掉下划线 */
+  transition: color .2s ease;
+}
+
+/* 悬停：黑色字体 + 左边灰色竖条 */
+.insights-nav a:hover {
+  color: #111;
+}
+.insights-nav a:hover::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #aaa; /* 灰色 */
+  border-radius: 2px;
+}
+
+/* （可选）点击后保持激活态：黑色字体 + 灰色竖条 */
+.insights-nav a.active {
+  color: #111;
+  font-weight: 600;
+}
+.insights-nav a.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #aaa;
+  border-radius: 2px;
+}
+/* 去掉目录项前面的圆点，并清掉左缩进 */
+.insights-nav ul {
+  list-style: none;
+  padding-left: 0;   /* 关键：去掉默认缩进 */
+  margin-left: 0;
+}
+.insights-nav li {
+  list-style: none;
+  margin-left: 0;
+}
+/* 兼容性兜底：防止 ::marker 仍然显示 */
+.insights-nav li::marker {
+  content: "";
+}
+
+/* 保持副标题与 “Insights” 文本对齐（两者同样的左内边距） */
+.insights-nav h3 { padding-left: 12px; }   /* 这行你之前已有，用来留出橙色竖条 */
+.insights-nav a  { padding-left: 12px; }   /* 与标题一致，文本左边缘对齐 */

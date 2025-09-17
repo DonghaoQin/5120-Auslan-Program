@@ -5,6 +5,7 @@ import Insights from "./pages/Insights.jsx";
 import LettersNumbers from "./pages/LettersNumbers.jsx";
 import BasicWords from "./pages/BasicWords.jsx";
 import MiniQuiz from "./pages/MiniQuiz.jsx";
+import StoryBook from "./pages/StoryBook.jsx";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/learn/letters-numbers" element={<LettersNumbers />} />
           <Route path="/learn/words" element={<BasicWords />} />
           <Route path="/quiz" element={<MiniQuiz />} />
+          <Route path="/story-book" element={<StoryBook />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

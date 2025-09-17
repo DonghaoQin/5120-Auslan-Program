@@ -1,24 +1,34 @@
-import { NavLink, Link } from "react-router-dom";
-
-const linkStyle = ({ isActive }) => "nav-link" + (isActive ? " active" : "");
+import { Link, NavLink } from "react-router-dom";
+import "./NavBar.css"; // 引入自定义样式
 
 export default function NavBar() {
   return (
-    <nav className="nav">
-      
-      <Link to="/" className="brand">Auslan Learning Hub</Link>
+    <nav className="navbar">
+      {/* 左侧：项目名 */}
+      <Link to="/" className="brand">
+        Auslan Learning Hub
+      </Link>
 
-      
-      <div className="links">
-        <NavLink to="/" end className={linkStyle}>Home</NavLink>
-        <NavLink to="/insights" className={linkStyle}>Insights</NavLink>
-        <NavLink to="/learn/letters-numbers" className={linkStyle}>
+      {/* 右侧：按钮 */}
+      <div className="nav-links">
+        <NavLink to="/home" className="nav-button">
+          Home
+        </NavLink>
+        <NavLink to="/insights" className="nav-button">
+          Insights
+        </NavLink>
+        <NavLink to="/learn/letters-numbers" className="nav-button">
           Letters & Numbers
         </NavLink>
-        {/* Basic Words 未完成，暂时隐藏
-        <NavLink to="/learn/words" className={linkStyle}>Basic Words</NavLink>
-        */}
-        <NavLink to="/quiz" className={linkStyle}>Mini Quiz</NavLink>
+        <NavLink to="/learn/words" className="nav-button">
+          Basic Words
+        </NavLink>
+        <NavLink to="/quiz" className="nav-button">
+          Mini Quiz
+        </NavLink>
+        <NavLink to="/story-book" className="nav-button">
+          Story Book
+        </NavLink>
       </div>
     </nav>
   );
