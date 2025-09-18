@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import DOMPurify from "dompurify";
 
 const STORAGE_KEY = "LN_LEARNED_V2";
 
@@ -85,13 +86,14 @@ export default function BasicWords() {
     return [...words].sort((a, b) => a.title.localeCompare(b.title));
   }, [words]);
 
-  // Filter by first letter only
+  // Sanitize search input before filtering
+  const sanitizedSearch = useMemo(() => DOMPurify.sanitize(search), [search]);
   const filtered = useMemo(
     () =>
-      search
-        ? all.filter((x) => x.title[0]?.toLowerCase() === search[0]?.toLowerCase())
+      sanitizedSearch
+        ? all.filter((x) => x.title.toLowerCase().startsWith(sanitizedSearch.toLowerCase()))
         : all,
-    [all, search]
+    [all, sanitizedSearch]
   );
 
   // —— 样式 —— //
@@ -321,8 +323,8 @@ export default function BasicWords() {
           ))}
 
           {!loading && filtered.length === 0 && (
-            <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#6B7280" }}>
-              No results.
+            <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#ef4444", fontWeight: 600 }}>
+              No matching word found.
             </div>
           )}
         </div>
