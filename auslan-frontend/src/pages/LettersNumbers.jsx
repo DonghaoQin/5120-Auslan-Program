@@ -1,140 +1,39 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
 import { letters, numbers } from "../data/letters.js";
-import bgImage from "../assets/homebackground.jpg";
 
-// ★ 统一的本地存储键
-const STORAGE_KEY = "LN_LEARNED_V1";
+const STORAGE_KEY = "LN_LEARNED_V2";
 
-// ★ 惰性初始化：渲染前从 localStorage 取值，避免首次渲染把“空集合”写回覆盖
+// 顶部避让 & 搜索区高度（用于与左侧首排卡片齐平）
+const TOP_GAP = 96;
+const SEARCH_BLOCK_H = 128;
+
+// 布局尺寸
+const MAX_W = 1200;  // 容器最大宽度
+const RIGHT_W = 440; // 右侧固定栏宽度
+const GAP = 24;      // 左右列间距
+
 export default function LettersNumbers() {
-  const nav = useNavigate();
-
-  const [selected, setSelected] = useState(null);
+  const [current, setCurrent] = useState(null);   // 正在展示的 item
+  const [pending, setPending] = useState(null);   // 等待切换的 item
+  const [open, setOpen] = useState(false);        // 右栏是否展开（决定整块上下滑）
   const [learned, setLearned] = useState(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       const arr = raw ? JSON.parse(raw) : [];
       return new Set(Array.isArray(arr) ? arr : []);
-    } catch {
-      return new Set();
-    }
+    } catch { return new Set(); }
   });
+  const [search, setSearch] = useState("");
 
-  // ★ 仅负责写回；读在上面的惰性初始化里完成
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(learned)));
-    } catch (e) {
-      console.warn("Failed to persist learned set:", e);
-    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(learned)));
   }, [learned]);
 
-  const all = [...letters, ...numbers];
-
-  const toggle = (val) => {
-    setSelected(val);
-    setLearned(prev => {
-      const n = new Set(prev);
-      n.has(val) ? n.delete(val) : n.add(val);
-      return n;
-    });
-  };
-
-// ……下面保持你原有 UI 代码不变即可（来自你的文件）……
-
-
-  // --- styles ---
-  // const back = {
-  //   position: "absolute", top: 12, right: 20, fontSize: "2rem",
-  //   color: "white", background: "rgba(0,0,0,.3)", borderRadius: "50%",
-  //   width: 40, height: 40, display: "flex", justifyContent: "center",
-  //   alignItems: "center", cursor: "pointer", zIndex: 10,
-  // };
-
-  const page = {
-    minHeight: "100vh",
-    backgroundImage: `url(${bgImage})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    padding: "40px 20px 60px",
-    fontFamily: "'Poppins', sans-serif",
-    color: "white",
-  };
-
-  const h1 = { textAlign: "center", margin: "0 0 8px 0", fontSize: "2.1rem", color: "black" };
-  const sub = { textAlign: "center", color: "#0e0d0dff", margin: "0 0 18px 0" };
-  const progress = {
-    maxWidth: 960, margin: "0 auto 10px auto",
-    height: 12, background: "rgba(31,29,29,.25)", borderRadius: 999, overflow: "hidden",
-  };
-  const fill = {
-    height: "100%",
-    width: `${Math.round((learned.size / all.length) * 100)}%`,
-    background: "linear-gradient(90deg,#7bc4ff,#70f0c2)",
-  };
-  const label = { textAlign: "center", color: "#292525ff", fontSize: 12, marginBottom: 18 };
-
-  const panelWrap = {
-    maxWidth: 1000,
-    margin: "0 auto",
-    display: "grid",
-    gridTemplateColumns: "1.2fr 1fr",
-    gap: 20,
-  };
-
-  const panel = {
-    background: "rgba(255,255,255,0.12)",
-    borderRadius: 20,
-    boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
-    padding: 20,
-    marginBottom: 20,
-    backdropFilter: "blur(8px)"
-  };
-
-  const title = { textAlign: "center", fontSize: "1.6rem", marginBottom: 16, color: "#11100aff" };
-
-  const gridLetters = { display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 10, marginBottom: 20 };
-  const gridNumbers = { display: "grid", gridTemplateColumns: "repeat(10, 1fr)", gap: 8 };
-
-  const card = (on, current) => ({
-    background: on ? "linear-gradient(135deg,#70f0c2,#7bc4ff)" : "rgba(255,255,255,.9)",
-    color: on ? "#000" : "#333",
-    borderRadius: 14,
-    height: 70,
-    display: "grid",
-    placeItems: "center",
-    fontWeight: 700,
-    fontSize: 22,
-    cursor: "pointer",
-    userSelect: "none",
-    transition: "transform 0.2s, box-shadow 0.2s",
-    boxShadow: current ? "0 0 0 3px rgba(112,240,194,.9), 0 6px 16px rgba(0,0,0,.2)" : "0 6px 16px rgba(0,0,0,.2)",
-    position: "relative",
-  });
-
-  const check = {
-    position: "absolute",
-    top: 6,
-    right: 8,
-    fontSize: 14,
-    fontWeight: 900,
-    background: "rgba(255,255,255,.9)",
-    borderRadius: 999,
-    padding: "2px 6px",
-    lineHeight: 1,
-    color: "#0a0a0a",
-  };
-
-  const imageBox = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: 400,
-    background: "rgba(255,255,255,0.95)",
-    borderRadius: 16,
-    boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
-  };
+  const all = useMemo(() => [...letters, ...numbers], []);
+  const filtered = useMemo(
+    () => all.filter((x) => x.toLowerCase().includes(search.toLowerCase())),
+    [all, search]
+  );
 
   const imgMap = {
     A: "/assets/signs/A.PNG", B: "/assets/signs/B.PNG", C: "/assets/signs/C.PNG",
@@ -151,67 +50,225 @@ export default function LettersNumbers() {
     6: "/assets/signs/6.PNG", 7: "/assets/signs/7.PNG", 8: "/assets/signs/8.PNG", 9: "/assets/signs/9.PNG",
   };
 
+  // —— 样式 —— //
+  const page = {
+    minHeight: "100vh",
+    background: "#F6F7FB",
+    padding: "24px",
+    paddingTop: TOP_GAP + 24,
+    fontFamily: "'Poppins', system-ui, -apple-system, sans-serif",
+    color: "#222",
+  };
+
+  const container = {
+    maxWidth: MAX_W,
+    margin: "0 auto",
+  };
+
+  // 点击左侧卡片：处理“地鼠”效果
+  const handleSelect = (item) => {
+    if (!current) {
+      // 第一次打开：直接设置内容并上滑进入
+      setCurrent(item);
+      setOpen(true);
+      return;
+    }
+    if (item === current) return; // 点了同一个，忽略
+    // 有内容时切换：先下滑关闭，等 transition 结束再换内容上滑
+    setPending(item);
+    setOpen(false);
+  };
+
+  // 面板过渡结束：如果刚刚是“下滑关闭”并且有 pending，则换内容并上滑
+  const handlePanelTransitionEnd = (e) => {
+    if (e.propertyName !== "transform") return; // 只关心 transform 动画
+    if (!open && pending) {
+      setCurrent(pending);
+      setPending(null);
+      // 下一帧再打开，确保浏览器应用了关闭状态后再触发上滑
+      requestAnimationFrame(() => setOpen(true));
+    }
+  };
+
   return (
     <div style={page}>
-      {/* <div style={back} onClick={() => nav("/")}>←</div> */}
+      <style>{`
+        .ln-card {
+          background: #fff;
+          border-radius: 16px;
+          padding: 14px 10px;
+          text-align: center;
+          cursor: pointer;
+          font-weight: 700;
+          box-shadow: 0 4px 12px rgba(0,0,0,.06);
+          border: 1px solid #EEF0F2;
+          user-select: none;
+          transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+        }
+        .ln-card:hover {
+          transform: translateY(-2px);
+          border-color: #CFD4DC;
+          box-shadow: 0 10px 22px rgba(0,0,0,.12);
+        }
+        .ln-card img {
+          height: 88px; width: auto; margin-bottom: 8px; transition: transform .15s ease;
+        }
+        .ln-card:hover img { transform: scale(1.06); }
 
-      <h1 style={h1}>Letters & Numbers</h1>
-      <p style={sub}>Tap to mark learned.</p>
-      <div style={progress}><div style={fill} /></div>
-      <div style={label}>{learned.size}/{all.length} learned</div>
+        /* 面板固定：不随页面滚动 */
+        .ln-fixed-right {
+          position: fixed;
+          top: ${TOP_GAP + SEARCH_BLOCK_H}px;         /* 与左侧首排对齐 */
+          right: calc((100vw - ${MAX_W}px) / 2);      /* 与容器右缘对齐 */
+          width: ${RIGHT_W}px;
+          height: calc(100vh - ${TOP_GAP + SEARCH_BLOCK_H}px - 0px);
+          display: flex;
+          flex-direction: column;
+          background: #fff;
+          border-radius: 18px 18px 0 0;               /* 底部直角 */
+          box-shadow: 0 10px 24px rgba(0,0,0,.12);
+          overflow: hidden;
 
-      <div style={panelWrap}>
-        <div>
-          <div style={panel}>
-            <h2 style={title}>Letters (A–Z)</h2>
-            <div style={gridLetters}>
-              {letters.map(L => (
-                <div
-                  key={L}
-                  style={card(learned.has(L), selected === L)}
-                  onClick={() => toggle(L)}
-                  title="Click to preview and mark learned"
-                >
-                  {L}
-                  {learned.has(L) && <div style={check}>✓</div>}
-                </div>
-              ))}
-            </div>
-          </div>
+          /* 关键：整块面板的上下滑动（默认隐藏在底部） */
+          transform: translateY(100%);
+          opacity: 0;
+          pointer-events: none;
+          transition: transform .45s ease-in-out, opacity .45s ease-in-out;
+          will-change: transform, opacity;
+        }
+        .ln-fixed-right.open {
+          transform: translateY(0);
+          opacity: 1;
+          pointer-events: auto;
+        }
 
-          <div style={panel}>
-            <h2 style={title}>Numbers (0–9)</h2>
-            <div style={gridNumbers}>
-              {numbers.map(N => (
-                <div
-                  key={N}
-                  style={card(learned.has(N), selected === N)}
-                  onClick={() => toggle(N)}
-                  title="Click to preview and mark learned"
-                >
-                  {N}
-                  {learned.has(N) && <div style={check}>✓</div>}
-                </div>
-              ))}
-            </div>
-          </div>
+        .ln-stage {
+          flex: 1;
+          overflow: auto;           /* 内容多时内部滚，不影响外层固定 */
+          padding: 28px;
+          display: grid;
+          place-items: center;
+          background: #fff;
+        }
+
+        /* 底部操作条：矩形、贴右栏底 */
+        .ln-detail-footer {
+          height: 180px;
+          background: #fff;
+          border-top: 1px solid #EEF0F2;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 16px;
+          padding: 18px 20px 0;
+        }
+        .ln-btn { border: none; border-radius: 10px; padding: 20px 32px; font-weight: 700; color: #fff; cursor: pointer; }
+        .ln-btn.ok { background: #f2b64fff; }
+        .ln-btn.bad { background: #ef4444ff; }
+
+        /* 左侧网格为右栏预留空间 */
+        .ln-left-grid {
+          margin-right: ${RIGHT_W + GAP}px;
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+          gap: 18px;
+          align-content: start;
+        }
+
+        @media (max-width: ${MAX_W + RIGHT_W + GAP}px) {
+          .ln-left-grid { margin-right: ${RIGHT_W + 16}px; }
+        }
+        @media (max-width: 980px) {
+          .ln-fixed-right { position: static; width: 100%; height: auto; border-radius: 16px;
+            transform:none; opacity:1; pointer-events:auto; }
+          .ln-left-grid { margin-right: 0; }
+        }
+      `}</style>
+
+      <div style={container}>
+        {/* 搜索 + 进度 */}
+        <input
+          type="text"
+          placeholder="Search your letter or number..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            display: "block", width: "90%", maxWidth: 640,
+            margin: "0 auto 16px auto", padding: "12px 16px",
+            borderRadius: 12, border: "1px solid #D1D5DB", fontSize: 16, background: "#fff",
+          }}
+        />
+        <div style={{
+          maxWidth: 960, margin: "0 auto 10px auto",
+          height: 10, background: "#E5E7EB", borderRadius: 999, overflow: "hidden",
+        }}>
+          <div style={{
+            height: "100%",
+            width: `${Math.round((learned.size / all.length) * 100)}%`,
+            background: "linear-gradient(90deg,#FFD166,#F77F00)",
+          }}/>
+        </div>
+        <div style={{ textAlign: "center", marginBottom: 18 }}>
+          {learned.size}/{all.length} learned
         </div>
 
-        <div style={panel}>
-          <h2 style={title}>Auslan Sign</h2>
-          <div style={imageBox}>
-            {selected ? (
+        {/* 左侧网格 */}
+        <div className="ln-left-grid">
+          {filtered.map((item) => (
+            <div key={item} className="ln-card" onClick={() => handleSelect(item)}>
               <img
-                src={imgMap[selected] || "/assets/placeholder.png"}
-                alt={`Sign for ${selected}`}
-                style={{ maxHeight: "360px", maxWidth: "100%" }}
+                src={imgMap[item] || "/assets/placeholder.png"}
+                alt={item}
+                onError={(ev) => { ev.currentTarget.src = "/assets/placeholder.png"; }}
               />
-            ) : (
-              <p style={{ color: "#555" }}>Select a letter or number to see the sign</p>
-            )}
-          </div>
+              <div style={{ letterSpacing: 1 }}>{item}</div>
+            </div>
+          ))}
         </div>
       </div>
+
+      {/* 右侧固定详情：整块面板按 open 状态上下滑；过渡结束后若 pending 则切页再上滑 */}
+      <aside
+        className={`ln-fixed-right ${open ? 'open' : ''}`}
+        onTransitionEnd={handlePanelTransitionEnd}
+      >
+        <div className="ln-stage">
+          {current ? (
+            <div style={{ textAlign: "center", width: "100%" }}>
+              <h2 style={{ marginBottom: 12, fontSize: 28 }}>{current}</h2>
+              <img
+                src={imgMap[current] || "/assets/placeholder.png"}
+                alt={current}
+                style={{ maxHeight: 320, width: "auto" }}
+                onError={(ev) => { ev.currentTarget.src = "/assets/placeholder.png"; }}
+              />
+            </div>
+          ) : (
+            <p style={{ color: "#eaca8dff" }}>Select a card to see details</p>
+          )}
+        </div>
+
+        <div className="ln-detail-footer">
+          <button
+            className="ln-btn ok"
+            onClick={() => current && setLearned((p) => new Set(p).add(current))}
+            disabled={!current || !open}
+            style={!current || !open ? { opacity: .6, cursor: "not-allowed" } : undefined}
+          >
+            Learned
+          </button>
+          <button
+            className="ln-btn bad"
+            onClick={() =>
+              current && setLearned((p) => { const n = new Set(p); n.delete(current); return n; })
+            }
+            disabled={!current || !open}
+            style={!current || !open ? { opacity: .6, cursor: "not-allowed" } : undefined}
+          >
+            Not yet
+          </button>
+        </div>
+      </aside>
     </div>
   );
 }
