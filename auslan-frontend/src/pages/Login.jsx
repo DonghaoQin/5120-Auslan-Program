@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import DOMPurify from "dompurify";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -24,23 +25,28 @@ const Login = () => {
     e.preventDefault();
     setError("");
 
-    if (!username || !password) {
+    // Sanitize input
+    const cleanUsername = DOMPurify.sanitize(username);
+    const cleanPassword = DOMPurify.sanitize(password);
+
+    if (!cleanUsername || !cleanPassword) {
       setError("Please enter both username and password.");
       return;
     }
 
+    if (submitting) return; // Prevent rapid submits
     setSubmitting(true);
     try {
       // TODO: replace with real auth API
       await new Promise((r) => setTimeout(r, 600));
 
-      if (username === "test" && password === "test") {
-        if (remember) localStorage.setItem("login_username", username);
+      if (cleanUsername === "test" && cleanPassword === "test") {
+        if (remember) localStorage.setItem("login_username", cleanUsername);
         else localStorage.removeItem("login_username");
 
         navigate("/home"); // redirect
       } else {
-        setError("Invalid username or password.");
+        setError("Login failed. Please check your credentials and try again.");
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");
@@ -52,7 +58,7 @@ const Login = () => {
   return (
     <div style={styles.container}>
       <form style={styles.form} onSubmit={handleSubmit}>
-        <h2 style={styles.title}>Login</h2>
+        <h2 style={styles.title}>Start Learning Auslan</h2>
 
         {error && <p style={styles.error}>{error}</p>}
 
@@ -62,6 +68,8 @@ const Login = () => {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           style={styles.input}
+          aria-label="Username"
+          autoComplete="username"
         />
 
         <input
@@ -70,6 +78,8 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
+          aria-label="Password"
+          autoComplete="off"
         />
 
         <label style={styles.checkboxRow}>
