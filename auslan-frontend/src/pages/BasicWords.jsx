@@ -80,12 +80,17 @@ export default function BasicWords() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(learned)));
   }, [learned]);
 
-  const all = useMemo(() => words, [words]);
+  // Sort words alphabetically by title
+  const all = useMemo(() => {
+    return [...words].sort((a, b) => a.title.localeCompare(b.title));
+  }, [words]);
+
+  // Filter by first letter only
   const filtered = useMemo(
     () =>
-      all.filter((x) =>
-        x.title.toLowerCase().includes(search.toLowerCase())
-      ),
+      search
+        ? all.filter((x) => x.title[0]?.toLowerCase() === search[0]?.toLowerCase())
+        : all,
     [all, search]
   );
 

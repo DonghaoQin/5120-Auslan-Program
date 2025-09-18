@@ -624,7 +624,7 @@ export default function Home() {
                   {/* Basic Words */}
                   <button
                     ref={(el) => (refs.current[1] = el)}
-                    onClick={() => nav("/basic-words")}
+                    onClick={() => nav("/learn/words")}
                     style={cardStyle("#fff3b0", "#ffe08a")}
                     onMouseEnter={(e) => hoverOn(e)}
                     onMouseLeave={(e) => hoverOff(e)}
@@ -637,7 +637,7 @@ export default function Home() {
                   {/* Mini Quiz */}
                   <button
                     ref={(el) => (refs.current[2] = el)}
-                    onClick={() => nav("/mini-quiz")}
+                    onClick={() => nav("/quiz")}
                     style={cardStyle("#e7d1ff", "#d5b8ff")}
                     onMouseEnter={(e) => hoverOn(e)}
                     onMouseLeave={(e) => hoverOff(e)}
