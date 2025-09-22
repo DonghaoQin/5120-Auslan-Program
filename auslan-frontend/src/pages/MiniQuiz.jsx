@@ -123,10 +123,14 @@ export default function MiniQuiz({ totalQuestions = 10 }) {
   const btn = (filled = true) => ({
     padding: "10px 16px", borderRadius: 10, border: "1px solid #222",
     background: filled ? "#222" : "#fff", color: filled ? "#fff" : "#222", cursor: "pointer", fontWeight: 600,
+    transition: "all 0.3s ease", transform: "translateY(0)",
+    boxShadow: filled ? "0 4px 12px rgba(34, 34, 34, 0.2)" : "0 2px 8px rgba(0, 0, 0, 0.1)",
   });
   const tabBtn = (active) => ({
     padding: "8px 12px", borderRadius: 10, border: "1px solid #ccc",
     background: active ? "#111" : "#f6f7f8", color: active ? "#fff" : "#222", cursor: "pointer", fontWeight: 600,
+    transition: "all 0.3s ease", transform: "translateY(0)",
+    boxShadow: active ? "0 3px 10px rgba(17, 17, 17, 0.2)" : "0 2px 6px rgba(0, 0, 0, 0.05)",
   });
   const optionBtn = (isChosen, isCorrect, locked) => ({
     display: "block", width: "100%", textAlign: "left",
@@ -134,6 +138,10 @@ export default function MiniQuiz({ totalQuestions = 10 }) {
     border: `2px solid ${locked ? (isCorrect ? "#22c55e" : isChosen ? "#ef4444" : "#e5e7eb") : "#e5e7eb"}`,
     background: locked ? (isCorrect ? "#ecfdf5" : isChosen ? "#fef2f2" : "#fff") : "#fff",
     cursor: locked ? "default" : "pointer", fontWeight: 600,
+    transition: "all 0.3s ease", transform: "translateY(0)",
+    boxShadow: locked 
+      ? (isCorrect ? "0 4px 15px rgba(34, 197, 94, 0.2)" : isChosen ? "0 4px 15px rgba(239, 68, 68, 0.2)" : "0 2px 8px rgba(0, 0, 0, 0.1)")
+      : "0 2px 8px rgba(0, 0, 0, 0.1)",
   });
 
   const progressOuter = { width: "100%", height: 10, background: "#f0f2f5", borderRadius: 6, overflow: "hidden" };
@@ -156,8 +164,44 @@ export default function MiniQuiz({ totalQuestions = 10 }) {
 
       {/* Mode toggle */}
       <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
-        <button type="button" style={tabBtn(!onlyLearned)} onClick={() => setOnlyLearned(false)}>📚 All Items</button>
-        <button type="button" style={tabBtn(!!onlyLearned)} onClick={() => setOnlyLearned(true)}>✅ Learned Only</button>
+        <button 
+          type="button" 
+          style={tabBtn(!onlyLearned)} 
+          onClick={() => setOnlyLearned(false)}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow = !onlyLearned 
+              ? "0 6px 15px rgba(17, 17, 17, 0.3)" 
+              : "0 4px 12px rgba(0, 0, 0, 0.15)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = !onlyLearned 
+              ? "0 3px 10px rgba(17, 17, 17, 0.2)" 
+              : "0 2px 6px rgba(0, 0, 0, 0.05)";
+          }}
+        >
+          📚 All Items
+        </button>
+        <button 
+          type="button" 
+          style={tabBtn(!!onlyLearned)} 
+          onClick={() => setOnlyLearned(true)}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow = onlyLearned 
+              ? "0 6px 15px rgba(17, 17, 17, 0.3)" 
+              : "0 4px 12px rgba(0, 0, 0, 0.15)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = onlyLearned 
+              ? "0 3px 10px rgba(17, 17, 17, 0.2)" 
+              : "0 2px 6px rgba(0, 0, 0, 0.05)";
+          }}
+        >
+          ✅ Learned Only
+        </button>
       </div>
 
       {/* Intro */}
@@ -176,7 +220,26 @@ export default function MiniQuiz({ totalQuestions = 10 }) {
             {availableCount === 0 && " — please learn some items first."}
           </div>
 
-          <button type="button" style={btn(true)} onClick={generateQuestions} disabled={availableCount === 0}>
+          <button 
+            type="button" 
+            style={btn(true)} 
+            onClick={generateQuestions} 
+            disabled={availableCount === 0}
+            onMouseEnter={(e) => {
+              if (availableCount > 0) {
+                e.currentTarget.style.transform = "translateY(-3px)";
+                e.currentTarget.style.boxShadow = "0 8px 20px rgba(34, 34, 34, 0.3)";
+                e.currentTarget.style.background = "#111";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (availableCount > 0) {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(34, 34, 34, 0.2)";
+                e.currentTarget.style.background = "#222";
+              }
+            }}
+          >
             Start Quiz 🚀
           </button>
         </section>
@@ -219,6 +282,20 @@ export default function MiniQuiz({ totalQuestions = 10 }) {
                       style={optionBtn(isChosen, isCorrect, locked)}
                       disabled={locked}
                       onClick={() => handleChoose(opt)}
+                      onMouseEnter={(e) => {
+                        if (!locked) {
+                          e.currentTarget.style.transform = "translateY(-2px)";
+                          e.currentTarget.style.boxShadow = "0 6px 15px rgba(0, 0, 0, 0.15)";
+                          e.currentTarget.style.borderColor = "#007bff";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!locked) {
+                          e.currentTarget.style.transform = "translateY(0)";
+                          e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.1)";
+                          e.currentTarget.style.borderColor = "#e5e7eb";
+                        }
+                      }}
                     >
                       <span style={{ opacity: 0.7, marginRight: 8 }}>{i + 1}.</span>
                       {opt}
@@ -234,6 +311,20 @@ export default function MiniQuiz({ totalQuestions = 10 }) {
                   style={{ ...btn(true), opacity: selected == null ? 0.6 : 1 }}
                   disabled={selected == null}
                   onClick={handleNext}
+                  onMouseEnter={(e) => {
+                    if (selected != null) {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 6px 15px rgba(34, 34, 34, 0.3)";
+                      e.currentTarget.style.background = "#111";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selected != null) {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(34, 34, 34, 0.2)";
+                      e.currentTarget.style.background = "#222";
+                    }
+                  }}
                 >
                   {index === questions.length - 1 ? "Finish Quiz 🎉" : "Next ▶"}
                 </button>
@@ -273,8 +364,42 @@ export default function MiniQuiz({ totalQuestions = 10 }) {
           )}
 
           <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-            <button type="button" style={btn(true)} onClick={generateQuestions}>Try Again ♻</button>
-            <button type="button" style={btn(false)} onClick={handleRestart}>Back to Settings</button>
+            <button 
+              type="button" 
+              style={btn(true)} 
+              onClick={generateQuestions}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 6px 15px rgba(34, 34, 34, 0.3)";
+                e.currentTarget.style.background = "#111";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(34, 34, 34, 0.2)";
+                e.currentTarget.style.background = "#222";
+              }}
+            >
+              Try Again ♻
+            </button>
+            <button 
+              type="button" 
+              style={btn(false)} 
+              onClick={handleRestart}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
+                e.currentTarget.style.background = "#f8f9fa";
+                e.currentTarget.style.borderColor = "#007bff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.1)";
+                e.currentTarget.style.background = "#fff";
+                e.currentTarget.style.borderColor = "#222";
+              }}
+            >
+              Back to Settings
+            </button>
           </div>
         </section>
       )}
