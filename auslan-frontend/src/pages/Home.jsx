@@ -79,7 +79,7 @@ export default function Home() {
     transition: "all 0.3s ease",
     transform: "translateY(0)",
     display: "block",
-    margin: "500px auto 0 auto",
+    margin: "300px auto 0 auto",
   };
 
   /* ---------- Scroll 动画：两幕在一个 pin 区 ---------- */
@@ -517,7 +517,7 @@ export default function Home() {
               onClick={() => nav("/insights")}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-3px)";
-                e.currentTarget.style.boxShadow = "0 16px 35px rgba(99,91,255,0.5)";
+                e.currentTarget.style.boxShadow = "0 16px 60px rgba(99,91,255,0.5)";
                 e.currentTarget.style.background = "linear-gradient(135deg,#5a52e8,#6f2bd1)";
               }}
               onMouseLeave={(e) => {
