@@ -3,22 +3,65 @@ import DOMPurify from "dompurify";
 
 const STORAGE_KEY = "LN_LEARNED_V2";
 
-// 顶部避让 & 搜索区高度（用于与左侧首排卡片齐平）
+// 顶部避让 & 搜索区高度（用于 sticky/右侧面板）
 const TOP_GAP = 96;
 const SEARCH_BLOCK_H = 128;
 
 // 布局尺寸
 const MAX_W = 1200;  // 容器最大宽度
 const RIGHT_W = 600; // 右侧固定栏宽度
-const GAP = 24;      // 左右列间距
+const GAP = 24;      // 右侧面板与主列间距
 
-// ✅ 你的后端接口（返回所有单词/视频）
+// ✅ 后端接口
 const API_URL = "https://auslan-backend.onrender.com/videos/";
 
+/* ------------ Level 配置（可随时微调） ------------- */
+const LEVEL_COLORS = {
+  1: { bg: "#E6F7F2", bar: "#86E3CB", border: "#66D6BC" },  // 薄荷绿
+  2: { bg: "#FFF4E0", bar: "#FFC36E", border: "#F7A940" },  // 杏黄色
+  3: { bg: "#ECEAFF", bar: "#B7B4FF", border: "#9895FF" },  // 柔和紫
+};
+const slug = (s) =>
+  (s || "")
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^\w]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "");
+
+const LEVEL_MAP = (() => {
+  const L1 = [
+    "hello","hi","thank_you","apology","no","help","what","who","we","you",
+    "mum","friend","love","like","look","come_here","go_to","stop","wait",
+    "play","home","school","teacher","dog","apple","baby"
+  ];
+  const L2 = [
+    "again","already","annoying","ask","bad","bath","big","brother","cute",
+    "dont_know","drink","finished","fun","hairbrush","how_old","meat","move",
+    "now","our","people","pizza","seat","share","surprised","tired","welcome"
+  ];
+  const L3 = [
+    "auslan","sign_name","deaf_mute","thinking_reflection","back_of_body",
+    "jump_off","wash_face","disappointment","slow_down","sleeping","spoon",
+    "australia","understand","upset","sad","nothing","wear","world","yourself",
+    "climb","copy","dislike","bye_bye"
+  ];
+  const m = {};
+  L1.forEach(k => m[k] = 1);
+  L2.forEach(k => m[k] = 2);
+  L3.forEach(k => m[k] = 3);
+  return m;
+})();
+const levelOf = (title) => LEVEL_MAP[slug(title)] ?? 2;
+
+/* --------------------------------------------------- */
+
 export default function BasicWords() {
-  const [current, setCurrent] = useState(null);   // 正在展示的 item（对象）
-  const [pending, setPending] = useState(null);   // 等待切换的 item（对象）
-  const [open, setOpen] = useState(false);        // 右栏是否展开
+  const [current, setCurrent] = useState(null);
+  const [pending, setPending] = useState(null);
+  const [open, setOpen] = useState(false);
   const [learned, setLearned] = useState(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -28,10 +71,13 @@ export default function BasicWords() {
   });
   const [search, setSearch] = useState("");
 
-  // 🔄 从远端加载 words（保持 UI 不变，仅替换数据源）
+  // 折叠状态：默认展开（仅在非搜索时起作用）
+  const [collapsed, setCollapsed] = useState({ 1: false, 2: false, 3: false });
+
+  // 🔄 拉取词表
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [words, setWords] = useState([]); // [{id, title, url}, ...]
+  const [words, setWords] = useState([]);
 
   useEffect(() => {
     let alive = true;
@@ -43,29 +89,19 @@ export default function BasicWords() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
-        // ✅ 兼容不同后端字段名：优先 title，其次 name/word/text
-        // 原来：const normalized = (Array.isArray(data) ? data : []).map((x, idx) => { ... });
+        const normalized = (Array.isArray(data) ? data : []).map((x, idx) => {
+          const title =
+            x.filename?.toString() ||
+            x.title?.toString() ||
+            x.name?.toString() ||
+            x.word?.toString() ||
+            x.text?.toString() ||
+            `Item ${idx + 1}`;
 
-  const normalized = (Array.isArray(data) ? data : []).map((x, idx) => {
-    const title =
-      x.filename?.toString() ||  // ✅ 用后端的 filename
-      x.title?.toString() ||
-      x.name?.toString() ||
-      x.word?.toString() ||
-      x.text?.toString() ||
-      `Item ${idx + 1}`;
+          const url = (typeof x.url === "string" ? x.url : null);
 
-    const url =
-      (typeof x.url === "string" ? x.url : null);   // ✅ 用后端的 url（是完整的 S3 链接）
-
-    return {
-      id: x.id ?? x._id ?? `${title}-${idx}`,
-      title,
-      url,
-      raw: x,
-    };
-  });
-
+          return { id: x.id ?? x._id ?? `${title}-${idx}`, title, url, raw: x };
+        });
 
         if (alive) setWords(normalized);
       } catch (e) {
@@ -81,22 +117,61 @@ export default function BasicWords() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(learned)));
   }, [learned]);
 
-  // Sort words alphabetically by title
+  // 基础排序：按字母
   const all = useMemo(() => {
     return [...words].sort((a, b) => a.title.localeCompare(b.title));
   }, [words]);
 
-  // Sanitize search input before filtering
+  // 搜索过滤
   const sanitizedSearch = useMemo(() => DOMPurify.sanitize(search), [search]);
   const filtered = useMemo(
     () =>
       sanitizedSearch
-        ? all.filter((x) => x.title.toLowerCase().startsWith(sanitizedSearch.toLowerCase()))
+        ? all.filter((x) =>
+            x.title.toLowerCase().includes(sanitizedSearch.toLowerCase())
+          )
         : all,
     [all, sanitizedSearch]
   );
 
-  // —— 样式 —— //
+  // 是否在搜索状态
+  const isSearching = sanitizedSearch.trim().length > 0;
+
+  // 全局进度
+  const learnedCount = useMemo(() => {
+    const keys = new Set([...learned]);
+    return all.reduce((acc, x) => acc + (keys.has(x.title) ? 1 : 0), 0);
+  }, [all, learned]);
+
+  // 分桶 + 组内排序（已学优先，再字母序）
+  const buckets = useMemo(() => {
+    const b = { 1: [], 2: [], 3: [] };
+    filtered.forEach((item) => b[levelOf(item.title)].push(item));
+    const sorter = (a, b) => {
+      const A = learned.has(a.title) ? 0 : 1;
+      const B = learned.has(b.title) ? 0 : 1;
+      if (A !== B) return A - B;
+      return a.title.localeCompare(b.title);
+    };
+    b[1].sort(sorter); b[2].sort(sorter); b[3].sort(sorter);
+    return b;
+  }, [filtered, learned]);
+
+  // 右侧详情交互（地鼠切换）
+  const handleSelect = (item) => {
+    if (!current) { setCurrent(item); setOpen(true); return; }
+    if (item?.id === current?.id) return;
+    setPending(item); setOpen(false);
+  };
+  const handlePanelTransitionEnd = (e) => {
+    if (e.propertyName !== "transform") return;
+    if (!open && pending) {
+      setCurrent(pending); setPending(null);
+      requestAnimationFrame(() => setOpen(true));
+    }
+  };
+
+  /* ------------------------- 样式 ------------------------- */
   const page = {
     minHeight: "100vh",
     background: "#F6F7FB",
@@ -106,47 +181,13 @@ export default function BasicWords() {
     color: "#222",
   };
 
-  const container = {
-    maxWidth: MAX_W,
-    margin: "0 auto",
-  };
-
-  // 点击左侧卡片：处理“地鼠”效果（保持原交互）
-  const handleSelect = (item) => {
-    if (!current) {
-      setCurrent(item);
-      setOpen(true);
-      return;
-    }
-    if (item?.id === current?.id) return;
-    setPending(item);
-    setOpen(false);
-  };
-
-  // 面板过渡结束：如果刚刚是“下滑关闭”并且有 pending，则换内容并上滑
-  const handlePanelTransitionEnd = (e) => {
-    if (e.propertyName !== "transform") return; // 只关心 transform 动画
-    if (!open && pending) {
-      setCurrent(pending);
-      setPending(null);
-      requestAnimationFrame(() => setOpen(true));
-    }
-  };
-
-  // 计算进度（用 title 作为唯一键存储）
-  const learnedCount = useMemo(() => {
-    const keys = new Set([...learned]);
-    return all.reduce((acc, x) => acc + (keys.has(x.title) ? 1 : 0), 0);
-  }, [all, learned]);
-
-
   return (
     <div style={page}>
       <style>{`
         .ln-card {
           background: #fff;
           border-radius: 16px;
-          padding: 14px 10px;
+          padding: 10px 6px;
           text-align: center;
           cursor: pointer;
           font-weight: 700;
@@ -155,101 +196,78 @@ export default function BasicWords() {
           user-select: none;
           transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
         }
-        .ln-card:hover {
-          transform: translateY(-2px);
-          border-color: #CFD4DC;
-          box-shadow: 0 10px 22px rgba(0,0,0,.12);
-        }
-        /* 这里不再显示图片缩略图，保留原有 hover 质感 */
-        .ln-card-title {
-          letter-spacing: .5px;
-          line-height: 1.2;
-          font-size: 18px;
-          padding: 10px 6px 4px;
-          word-break: break-word;
-        }
+        .ln-card:hover { transform: translateY(-2px); border-color: #CFD4DC; box-shadow: 0 10px 22px rgba(0,0,0,.12); }
+        .ln-card-title { letter-spacing: .5px; line-height: 1.2; font-size: 16px; padding: 8px 6px 4px; word-break: break-word; }
+        .ln-card-learned { border: 2px solid #FFA500; }
 
-        /* 面板固定：不随页面滚动 */
+        /* 页面两列：左侧导航（sticky） + 右侧主列（为右侧详情面板让出空间） */
+        .ln-layout { max-width: ${MAX_W}px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 16px; }
+        .ln-left-nav {
+          position: sticky; 
+          top: ${TOP_GAP + 12}px; 
+          align-self: start;
+          background: #fff; 
+          border: 1px solid #EEF0F2; 
+          border-radius: 14px; 
+          padding: 12px;
+          box-shadow: 0 6px 16px rgba(0,0,0,.06);
+        }
+        .ln-left-btn {
+          display: flex; justify-content: space-between; align-items: center;
+          width: 100%; padding: 10px 12px; margin-bottom: 8px;
+          font-weight: 700; border-radius: 10px; border: 1px solid #E5E7EB; background: #fff; cursor: pointer;
+          transition: transform .12s ease, box-shadow .12s ease;
+        }
+        .ln-left-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,.08); }
+        .ln-left-pill { font-size: 12px; opacity: .8; }
+        .ln-left-arrow { transition: transform .18s ease; }
+        .ln-left-arrow.collapsed { transform: rotate(-90deg); }
+
+        .ln-main { margin-right: ${RIGHT_W + GAP}px; }
+
+        /* 右侧固定面板 */
         .ln-fixed-right {
           position: fixed;
-          top: ${TOP_GAP + SEARCH_BLOCK_H}px;         /* 与左侧首排对齐 */
-          right: calc((100vw - ${MAX_W}px) / 2);      /* 与容器右缘对齐 */
+          top: ${TOP_GAP + SEARCH_BLOCK_H}px;
+          right: calc((100vw - ${MAX_W}px) / 2);
           width: ${RIGHT_W}px;
-          height: calc(100vh - ${TOP_GAP + SEARCH_BLOCK_H}px - 0px);
-          display: flex;
-          flex-direction: column;
+          height: calc(100vh - ${TOP_GAP + SEARCH_BLOCK_H}px);
+          display: flex; flex-direction: column;
           background: #fff;
-          border-radius: 18px 18px 0 0;               /* 底部直角 */
+          border-radius: 18px 18px 0 0;
           box-shadow: 0 10px 24px rgba(0,0,0,.12);
           overflow: hidden;
-
-          transform: translateY(100%);
-          opacity: 0;
-          pointer-events: none;
+          transform: translateY(100%); opacity: 0; pointer-events: none;
           transition: transform .45s ease-in-out, opacity .45s ease-in-out;
-          will-change: transform, opacity;
         }
-        .ln-fixed-right.open {
-          transform: translateY(0);
-          opacity: 1;
-          pointer-events: auto;
+        .ln-fixed-right.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .ln-stage { flex: 1; overflow: auto; padding: 28px; display: grid; place-items: center; background: #fff; }
+        .ln-detail-footer { height: 180px; background: #fff; border-top: 1px solid #EEF0F2; display:flex; align-items:center; justify-content:center; gap:16px; padding:18px 20px 0; }
+        .ln-btn { border:none; border-radius:10px; padding:20px 32px; font-weight:700; color:#fff; cursor:pointer; }
+        .ln-btn.ok { background:#f2b64fff; } .ln-btn.bad { background:#ef4444ff; }
+
+        /* 组内容网格（支持折叠动画） */
+        .ln-group-grid { 
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; 
+          align-content: start; margin-bottom: 18px; 
+          transition: max-height .35s ease;
         }
-
-        .ln-stage {
-          flex: 1;
-          overflow: auto;
-          padding: 28px;
-          display: grid;
-          place-items: center;
-          background: #fff;
-        }
-
-        .ln-detail-footer {
-          height: 180px;
-          background: #fff;
-          border-top: 1px solid #EEF0F2;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 16px;
-          padding: 18px 20px 0;
-        }
-        .ln-btn { border: none; border-radius: 10px; padding: 20px 32px; font-weight: 700; color: #fff; cursor: pointer; }
-        .ln-btn.ok { background: #f2b64fff; }
-        .ln-btn.bad { background: #ef4444ff; }
-
-        /* 左侧网格 */
-        .ln-left-grid {
-          margin-right: ${RIGHT_W + GAP}px;
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);  /* ✅ 固定三列 */
-          gap: 12px;                              /* ✅ 缩小间距 */
-          align-content: start;
-        }
-
-        .ln-card {
-          padding: 10px 6px;                      /* ✅ 缩小按钮 */
-          font-size: 16px;
-        }
-
-
-        .ln-card-learned {
-          border: 2px solid #FFA500;  /* 橙色边框 */
-        }
-
+        .ln-group-grid.collapsed { max-height: 0; overflow: hidden; }
 
         @media (max-width: ${MAX_W + RIGHT_W + GAP}px) {
-          .ln-left-grid { margin-right: ${RIGHT_W + 16}px; }
+          .ln-main { margin-right: ${RIGHT_W + 16}px; }
         }
         @media (max-width: 980px) {
-          .ln-fixed-right { position: static; width: 100%; height: auto; border-radius: 16px;
-            transform:none; opacity:1; pointer-events:auto; }
-          .ln-left-grid { margin-right: 0; }
+          .ln-layout { grid-template-columns: 1fr; }
+          .ln-left-nav { position: static; }
+          .ln-fixed-right { position: static; width: 100%; height: auto; border-radius: 16px; transform:none; opacity:1; pointer-events:auto; }
+          .ln-main { margin-right: 0; }
+          .ln-group-grid { grid-template-columns: repeat(2, 1fr); }
         }
       `}</style>
 
-      <div style={container}>
-        {/* 搜索 + 进度 */}
+      {/* 顶部：搜索 + 全局进度 */}
+      <div style={{ maxWidth: MAX_W, margin: "0 auto" }}>
         <input
           type="text"
           placeholder="Search words..."
@@ -271,66 +289,121 @@ export default function BasicWords() {
             background: "linear-gradient(90deg,#FFD166,#F77F00)",
           }}/>
         </div>
-        
-        
-
         <div style={{ textAlign: "center", marginBottom: 18 }}>
           {learnedCount}/{all.length} learned
           {learnedCount > 0 && (
             <button
               onClick={() => setLearned(new Set())}
               style={{
-                marginLeft: 12,
-                padding: "4px 10px",
-                fontSize: 14,
-                border: "1px solid #ddd",
-                borderRadius: 6,
-                cursor: "pointer",
-                background: "#fff",
+                marginLeft: 12, padding: "4px 10px", fontSize: 14,
+                border: "1px solid #ddd", borderRadius: 6, cursor: "pointer", background: "#fff",
               }}
             >
               Clear All
             </button>
           )}
         </div>
-
-
-
-
-
-        {/* 状态提示 */}
-        {loading && (
-          <div style={{ textAlign: "center", margin: "8px 0 16px", color: "#6B7280" }}>
-            Loading words...
-          </div>
-        )}
-        {error && (
-          <div style={{ textAlign: "center", margin: "8px 0 16px", color: "#ef4444" }}>
-            {error}
-          </div>
-        )}
-
-        {/* 左侧网格 */}
-        <div className="ln-left-grid">
-          {filtered.map((item) => (
-            <div
-              key={item.id}
-              className={`ln-card ${learned.has(item.title) ? "ln-card-learned" : ""}`}
-              onClick={() => handleSelect(item)}
-            >
-              <div className="ln-card-title">{item.title}</div>
-            </div>
-          ))}
-
-          {!loading && filtered.length === 0 && (
-            <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#ef4444", fontWeight: 600 }}>
-              No matching word found.
-            </div>
-          )}
-        </div>
       </div>
 
-      {/* 右侧固定详情 */}
+      {/* 状态提示 */}
+      {loading && <div style={{ textAlign: "center", color: "#6B7280" }}>Loading words...</div>}
+      {error && <div style={{ textAlign: "center", color: "#ef4444" }}>{error}</div>}
+
+      {/* 主布局：左侧导航 + 右侧分组主列（仅网格，无 Level 横条） */}
+      <div className="ln-layout">
+        {/* 左侧导航（sticky & 控制折叠/展开；搜索时只定位） */}
+        <aside className="ln-left-nav">
+          {[1,2,3].map((lv) => {
+            const items = buckets[lv];
+            const { n, total } = (()=>{
+              const total = items.length;
+              const n = items.reduce((acc, x) => acc + (learned.has(x.title) ? 1 : 0), 0);
+              return { n, total };
+            })();
+            const color = LEVEL_COLORS[lv];
+            const disabled = isSearching && items.length === 0; // 搜索时且该组无结果 → 禁用
+            const isCol = collapsed[lv];
+
+            return (
+              <button
+                key={lv}
+                className="ln-left-btn"
+                onClick={() => {
+                  if (disabled) return;
+                  if (isSearching) {
+                    const el = document.querySelector(`#level-${lv}`);
+                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  } else {
+                    setCollapsed(p => ({ ...p, [lv]: !p[lv] }));
+                  }
+                }}
+                style={{ 
+                  borderColor: color.border,
+                  opacity: disabled ? .45 : 1,
+                  cursor: disabled ? "not-allowed" : "pointer",
+                }}
+                title={
+                  disabled
+                    ? `No results in Level ${lv}`
+                    : (isCol ? `Expand Level ${lv}` : `Collapse Level ${lv}`)
+                }
+              >
+                <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 10, height: 20, borderRadius: 6, background: color.border }} />
+                  Level {lv}
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span className="ln-left-pill" style={{ color: color.border }}>{n}/{total}</span>
+                  {/* 箭头只体现“当前折叠态”，搜索时我们不切折叠，所以维持当前 UI */}
+                  <span className={`ln-left-arrow ${isCol ? "collapsed" : ""}`}
+                        style={{ display: "inline-block", borderTop: "6px solid transparent", borderBottom: "6px solid transparent", borderLeft: `10px solid ${color.border}` }} />
+                </span>
+              </button>
+            );
+          })}
+          {/* 一键折叠/展开全部（非搜索才有意义，但不做强限制） */}
+          <button className="ln-left-btn" onClick={() => setCollapsed({ 1: true, 2: true, 3: true })}>
+            Collapse all
+          </button>
+          <button className="ln-left-btn" onClick={() => setCollapsed({ 1: false, 2: false, 3: false })}>
+            Expand all
+          </button>
+        </aside>
+
+        {/* 右侧主列（仅渲染网格分组；搜索时强制展开并隐藏空 Level） */}
+        <main className="ln-main">
+          {[1,2,3].map((lv) => {
+            const items = buckets[lv];
+            if (isSearching && items.length === 0) return null;  // 搜索时隐藏空组
+
+            const color = LEVEL_COLORS[lv];
+            const isCol = isSearching ? false : collapsed[lv];  // 搜索时强制展开
+
+            return (
+              <section key={lv} id={`level-${lv}`}>
+                <div className={`ln-group-grid ${isCol ? "collapsed" : ""}`}>
+                  {items.map((item) => (
+                    <div
+                      key={item.id}
+                      className={`ln-card ${learned.has(item.title) ? "ln-card-learned" : ""}`}
+                      onClick={() => handleSelect(item)}
+                      style={{ borderLeft: `6px solid ${color.border}` }}
+                    >
+                      <div className="ln-card-title">{item.title}</div>
+                    </div>
+                  ))}
+                  {!loading && items.length === 0 && (
+                    <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#ef4444", fontWeight: 600 }}>
+                      No items in this level.
+                    </div>
+                  )}
+                </div>
+              </section>
+            );
+          })}
+        </main>
+      </div>
+
       {/* 右侧固定详情 */}
       <aside
         className={`ln-fixed-right ${open ? "open" : ""}`}
@@ -340,18 +413,12 @@ export default function BasicWords() {
           {current ? (
             <div style={{ textAlign: "center", width: "100%" }}>
               <h2 style={{ marginBottom: 12, fontSize: 28 }}>{current.title}</h2>
-
-              {/* 如果有视频地址则播放；没有则给个友好提示 */}
               {current.url ? (
                 <video
                   key={current.url}
                   src={current.url}
                   controls
-                  style={{
-                    maxHeight: "60vh", // 让视频更大
-                    maxWidth: "100%",
-                    borderRadius: 12,
-                  }}
+                  style={{ maxHeight: "60vh", maxWidth: "100%", borderRadius: 12 }}
                 />
               ) : (
                 <p style={{ color: "#6B7280" }}>This item has no video URL.</p>
@@ -388,11 +455,6 @@ export default function BasicWords() {
           </button>
         </div>
       </aside>
-        
-
-
-
-
     </div>
   );
 }

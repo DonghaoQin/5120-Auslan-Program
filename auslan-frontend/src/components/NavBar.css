@@ -89,3 +89,17 @@
 .navbar .brand * {
   color: inherit; /* 子元素跟随父元素颜色 */
 }
+
+/* 顶端遮挡条，避免内容从导航上方缝隙露出来 */
+.top-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20px;  /* 对应 .navbar 的 top: 20px */
+  background: rgba(255, 255, 255, 0.6); /* 半透明，跟 navbar 风格一致 */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px); /* Safari 支持 */
+  z-index: 999; /* 比正文高，但比 navbar 稍低 */
+  pointer-events: none; /* 不影响交互 */
+}

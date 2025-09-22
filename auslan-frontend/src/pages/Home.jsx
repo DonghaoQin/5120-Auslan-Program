@@ -367,7 +367,7 @@ export default function Home() {
                 Trends
               </h3>
               <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
-                Key issues faced by DHH students
+                How learning needs are evolving for DHH people
               </p>
             </div>
           </div>
@@ -409,7 +409,7 @@ export default function Home() {
                 Challenges
               </h3>
               <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
-                Key issues faced by DHH students
+                Barriers in education and everyday communication
               </p>
             </div>
           </div>
@@ -452,7 +452,7 @@ export default function Home() {
                 Resources
               </h3>
               <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
-                Key issues faced by DHH students
+                Support tools and strategies that make a difference
               </p>
             </div>
           </div>
