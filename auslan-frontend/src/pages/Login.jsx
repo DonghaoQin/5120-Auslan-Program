@@ -40,7 +40,7 @@ const Login = () => {
       // TODO: replace with real auth API
       await new Promise((r) => setTimeout(r, 600));
 
-      if (cleanUsername === "test" && cleanPassword === "test") {
+      if (cleanUsername === "test" && cleanPassword === "TA47") {
         if (remember) localStorage.setItem("login_username", cleanUsername);
         else localStorage.removeItem("login_username");
 
