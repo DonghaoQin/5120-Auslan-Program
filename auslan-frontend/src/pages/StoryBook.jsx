@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 
 /** ---------- Story data (14 pages) ---------- */
 const storyData = {
-  title: "I Found a Frog",
+  title: "I Found a Frog.",
   cover: "https://i.imgur.com/lSLaM0x.png",
   pages: [
     {
