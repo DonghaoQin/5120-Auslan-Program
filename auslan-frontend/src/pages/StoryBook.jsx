@@ -318,6 +318,7 @@ export default function StoryBook() {
           justifyContent: "center",
           transformStyle: "preserve-3d",
           gap: 12,
+          marginTop: "4rem",
           ...flipStyle,
         }}
       >
