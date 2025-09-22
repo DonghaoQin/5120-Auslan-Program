@@ -79,7 +79,7 @@ export default function Home() {
     transition: "all 0.3s ease",
     transform: "translateY(0)",
     display: "block",
-    margin: "32px auto 0 auto",
+    margin: "500px auto 0 auto",
   };
 
   /* ---------- Scroll 动画：两幕在一个 pin 区 ---------- */
@@ -392,7 +392,7 @@ export default function Home() {
             style={{
               position: "absolute",
               left: "50%",
-              top: "65%",
+              top: "70%",
               transform: "translate(-50%, -50%)",
               width: 360,
               height: 400,
