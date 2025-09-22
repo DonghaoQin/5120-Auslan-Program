@@ -66,15 +66,20 @@ export default function Home() {
     lineHeight: 1.7,
   };
   const ctaPrimary = {
-    marginTop: 24,
-    padding: "14px 24px",
+    marginTop: 32,
+    padding: "18px 36px",
     borderRadius: 999,
     border: "none",
     background: "linear-gradient(135deg,#635bff,#7c3aed)",
     color: "#fff",
     fontWeight: 700,
+    fontSize: "18px",
     cursor: "pointer",
-    boxShadow: "0 10px 26px rgba(99,91,255,0.35)",
+    boxShadow: "0 12px 30px rgba(99,91,255,0.4)",
+    transition: "all 0.3s ease",
+    transform: "translateY(0)",
+    display: "block",
+    margin: "32px auto 0 auto",
   };
 
   /* ---------- Scroll 动画：两幕在一个 pin 区 ---------- */
@@ -239,6 +244,16 @@ export default function Home() {
             <button
               style={ctaPrimary}
               onClick={() => nav("/learn/letters-numbers")}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-3px)";
+                e.currentTarget.style.boxShadow = "0 16px 35px rgba(99,91,255,0.5)";
+                e.currentTarget.style.background = "linear-gradient(135deg,#5a52e8,#6f2bd1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 12px 30px rgba(99,91,255,0.4)";
+                e.currentTarget.style.background = "linear-gradient(135deg,#635bff,#7c3aed)";
+              }}
             >
               Start Learning →
             </button>
@@ -484,17 +499,32 @@ export default function Home() {
             </p>
             <button
               style={{
-                marginTop: 24,
-                padding: "14px 24px",
+                marginTop: 32,
+                padding: "18px 36px",
                 borderRadius: 999,
                 border: "none",
                 background: "linear-gradient(135deg,#635bff,#7c3aed)",
                 color: "white",
                 fontWeight: 700,
                 cursor: "pointer",
-                fontSize: "1rem",
+                fontSize: "18px",
+                boxShadow: "0 12px 30px rgba(99,91,255,0.4)",
+                transition: "all 0.3s ease",
+                transform: "translateY(0)",
+                display: "block",
+                margin: "32px auto 0 auto",
               }}
               onClick={() => nav("/insights")}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-3px)";
+                e.currentTarget.style.boxShadow = "0 16px 35px rgba(99,91,255,0.5)";
+                e.currentTarget.style.background = "linear-gradient(135deg,#5a52e8,#6f2bd1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 12px 30px rgba(99,91,255,0.4)";
+                e.currentTarget.style.background = "linear-gradient(135deg,#635bff,#7c3aed)";
+              }}
             >
               Insights →
             </button>
@@ -634,22 +664,9 @@ export default function Home() {
                     <div>Home / School / Play — 50+ words.</div>
                   </button>
 
-                  {/* Mini Quiz */}
+                  {/* Story Book（第3个） */}
                   <button
                     ref={(el) => (refs.current[2] = el)}
-                    onClick={() => nav("/quiz")}
-                    style={cardStyle("#e7d1ff", "#d5b8ff")}
-                    onMouseEnter={(e) => hoverOn(e)}
-                    onMouseLeave={(e) => hoverOff(e)}
-                  >
-                    <div style={{ fontSize: 42, marginBottom: 8 }}>🧠</div>
-                    <div style={titleStyle}>Mini Quiz</div>
-                    <div>Quick 5-question check.</div>
-                  </button>
-
-                  {/* Story Book（第4个） */}
-                  <button
-                    ref={(el) => (refs.current[3] = el)}
                     onClick={() => nav("/story-book")} // 若路由是 /storybook 改这里
                     style={cardStyle("#b9d7ff", "#9bc6ff")}
                     onMouseEnter={(e) => hoverOn(e)}
@@ -658,6 +675,19 @@ export default function Home() {
                     <div style={{ fontSize: 42, marginBottom: 8 }}>📖</div>
                     <div style={titleStyle}>Story Book</div>
                     <div>Read and learn with stories.</div>
+                  </button>
+
+                  {/* Mini Quiz */}
+                  <button
+                    ref={(el) => (refs.current[3] = el)}
+                    onClick={() => nav("/quiz")}
+                    style={cardStyle("#e7d1ff", "#d5b8ff")}
+                    onMouseEnter={(e) => hoverOn(e)}
+                    onMouseLeave={(e) => hoverOff(e)}
+                  >
+                    <div style={{ fontSize: 42, marginBottom: 8 }}>🧠</div>
+                    <div style={titleStyle}>Mini Quiz</div>
+                    <div>Quick 5-question check.</div>
                   </button>
                 </div>
 

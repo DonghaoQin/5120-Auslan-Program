@@ -318,6 +318,7 @@ export default function StoryBook() {
           justifyContent: "center",
           transformStyle: "preserve-3d",
           gap: 12,
+          marginTop: "4rem",
           ...flipStyle,
         }}
       >
@@ -331,24 +332,115 @@ export default function StoryBook() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginTop: "1rem",
-          maxWidth: 560,
+          marginTop: "2rem",
+          maxWidth: 600,
           marginInline: "auto",
-          gap: 12,
+          gap: 20,
+          padding: "20px",
+          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%)",
+          borderRadius: "20px",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.3)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <button onClick={goPrev} disabled={!canGoPrev}>
-          Previous
+        <button 
+          onClick={goPrev} 
+          disabled={!canGoPrev}
+          style={{
+            padding: "12px 24px",
+            borderRadius: "25px",
+            border: "none",
+            background: canGoPrev 
+              ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" 
+              : "linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%)",
+            color: canGoPrev ? "white" : "#999",
+            fontWeight: "600",
+            fontSize: "14px",
+            cursor: canGoPrev ? "pointer" : "not-allowed",
+            boxShadow: canGoPrev 
+              ? "0 8px 20px rgba(102, 126, 234, 0.3)" 
+              : "0 4px 10px rgba(0, 0, 0, 0.1)",
+            transition: "all 0.3s ease",
+            transform: "translateY(0)",
+            fontFamily: "'Inter', sans-serif",
+            minWidth: "90px",
+          }}
+          onMouseEnter={(e) => {
+            if (canGoPrev) {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 12px 25px rgba(102, 126, 234, 0.4)";
+              e.currentTarget.style.background = "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (canGoPrev) {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 8px 20px rgba(102, 126, 234, 0.3)";
+              e.currentTarget.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+            }
+          }}
+        >
+          ← Previous
         </button>
-        <span style={{ color: "#444" }}>
+        <span 
+          style={{ 
+            color: "#555", 
+            fontWeight: "500",
+            fontSize: "14px",
+            padding: "8px 16px",
+            background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+            borderRadius: "20px",
+            border: "1px solid rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+            fontFamily: "'Inter', sans-serif",
+            letterSpacing: "0.5px",
+          }}
+        >
           {isCover
-            ? "Cover Page"
-            : `Pages ${pageIndex + 1}${rightPage ? "-" + (pageIndex + 2) : ""} of ${
+            ? "📖 Cover Page"
+            : `📄 Page ${pageIndex + 1}${rightPage ? "-" + (pageIndex + 2) : ""} of ${
                 storyData.pages.length
               }`}
         </span>
-        <button onClick={goNext} disabled={!canGoNext}>
-          Next
+        <button 
+          onClick={goNext} 
+          disabled={!canGoNext}
+          style={{
+            padding: "12px 24px",
+            borderRadius: "25px",
+            border: "none",
+            background: canGoNext 
+              ? "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)" 
+              : "linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%)",
+            color: canGoNext ? "#8b4513" : "#999",
+            fontWeight: "600",
+            fontSize: "14px",
+            cursor: canGoNext ? "pointer" : "not-allowed",
+            boxShadow: canGoNext 
+              ? "0 8px 20px rgba(252, 182, 159, 0.3)" 
+              : "0 4px 10px rgba(0, 0, 0, 0.1)",
+            transition: "all 0.3s ease",
+            transform: "translateY(0)",
+            fontFamily: "'Inter', sans-serif",
+            minWidth: "90px",
+          }}
+          onMouseEnter={(e) => {
+            if (canGoNext) {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 12px 25px rgba(252, 182, 159, 0.4)";
+              e.currentTarget.style.background = "linear-gradient(135deg, #fde2c0 0%, #fa9d8d 100%)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (canGoNext) {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 8px 20px rgba(252, 182, 159, 0.3)";
+              e.currentTarget.style.background = "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)";
+            }
+          }}
+        >
+          Next →
         </button>
       </div>
 
@@ -375,21 +467,36 @@ export default function StoryBook() {
               aria-label="Close video"
               style={{
                 position: "absolute",
-                top: "-35px",
-                right: "-35px",
-                background: "red",
+                top: "-45px",
+                right: "-45px",
+                background: "linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)",
                 color: "white",
                 border: "none",
                 borderRadius: "50%",
-                width: "35px",
-                height: "35px",
+                width: "40px",
+                height: "40px",
                 cursor: "pointer",
-                fontWeight: 700,
-                fontSize: "1.2rem",
-                boxShadow: "0 2px 5px rgba(0,0,0,0.3)",
+                fontWeight: "700",
+                fontSize: "18px",
+                boxShadow: "0 6px 20px rgba(238, 90, 36, 0.3)",
+                transition: "all 0.3s ease",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transform: "scale(1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.1) rotate(90deg)";
+                e.currentTarget.style.boxShadow = "0 8px 25px rgba(238, 90, 36, 0.5)";
+                e.currentTarget.style.background = "linear-gradient(135deg, #ff5252 0%, #d63031 100%)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1) rotate(0deg)";
+                e.currentTarget.style.boxShadow = "0 6px 20px rgba(238, 90, 36, 0.3)";
+                e.currentTarget.style.background = "linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)";
               }}
             >
-              ×
+              ✕
             </button>
             <video
               src={videoSrc}
