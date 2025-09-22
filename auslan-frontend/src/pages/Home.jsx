@@ -634,22 +634,9 @@ export default function Home() {
                     <div>Home / School / Play — 50+ words.</div>
                   </button>
 
-                  {/* Mini Quiz */}
+                  {/* Story Book（第3个） */}
                   <button
                     ref={(el) => (refs.current[2] = el)}
-                    onClick={() => nav("/quiz")}
-                    style={cardStyle("#e7d1ff", "#d5b8ff")}
-                    onMouseEnter={(e) => hoverOn(e)}
-                    onMouseLeave={(e) => hoverOff(e)}
-                  >
-                    <div style={{ fontSize: 42, marginBottom: 8 }}>🧠</div>
-                    <div style={titleStyle}>Mini Quiz</div>
-                    <div>Quick 5-question check.</div>
-                  </button>
-
-                  {/* Story Book（第4个） */}
-                  <button
-                    ref={(el) => (refs.current[3] = el)}
                     onClick={() => nav("/story-book")} // 若路由是 /storybook 改这里
                     style={cardStyle("#b9d7ff", "#9bc6ff")}
                     onMouseEnter={(e) => hoverOn(e)}
@@ -658,6 +645,19 @@ export default function Home() {
                     <div style={{ fontSize: 42, marginBottom: 8 }}>📖</div>
                     <div style={titleStyle}>Story Book</div>
                     <div>Read and learn with stories.</div>
+                  </button>
+
+                  {/* Mini Quiz */}
+                  <button
+                    ref={(el) => (refs.current[3] = el)}
+                    onClick={() => nav("/quiz")}
+                    style={cardStyle("#e7d1ff", "#d5b8ff")}
+                    onMouseEnter={(e) => hoverOn(e)}
+                    onMouseLeave={(e) => hoverOff(e)}
+                  >
+                    <div style={{ fontSize: 42, marginBottom: 8 }}>🧠</div>
+                    <div style={titleStyle}>Mini Quiz</div>
+                    <div>Quick 5-question check.</div>
                   </button>
                 </div>
 

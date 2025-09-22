@@ -33,11 +33,11 @@ export default function NavBar() {
           <NavLink to="/learn/words" className="nav-button">
             Basic Words
           </NavLink>
-          <NavLink to="/quiz" className="nav-button">
-            Mini Quiz
-          </NavLink>
           <NavLink to="/story-book" className="nav-button">
             Story Book
+          </NavLink>
+          <NavLink to="/quiz" className="nav-button">
+            Mini Quiz
           </NavLink>
         </div>
       </nav>
