@@ -1,106 +1,178 @@
-/* ------- 全局：背景纯白 ------- */
-html, body, #root {
-  background: #fff;        /* 纯白 */
+/* =========================================================
+   Insights.css  ——  一份可直接替换的完整样式
+   可调变量
+========================================================= */
+:root{
+  --nav-top: 160px;           /* 左侧目录吸顶距离（想整体上移就调小） */
+  --hero-pt: 120px;           /* 顶部大标题与页面顶端距离 */
+  --hero-maxw: 960px;         /* 头图最大宽度 */
+  --container-maxw: 1200px;   /* 页宽 */
 }
 
-html { scroll-behavior: smooth; }
+/* ---------- 基础 ---------- */
+html, body, #root { background:#fff; }
+html { scroll-behavior:smooth; }
+* { box-sizing: border-box; }
 
-/* ------- 页面容器 ------- */
-.insights-page {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  max-width: 1200px;
+/* ---------- 顶部：总标题 + 16:9 图片 ---------- */
+.insights-hero{
+  max-width: var(--container-maxw);
   margin: 0 auto;
-  padding: 120px 20px 60px;   /* ⭐ 整体下移，避免被顶部 tab 遮挡 */
-  font-family: "Inter", system-ui, sans-serif;
-  color: #222;
-  line-height: 1.8;
-  background: #fff;           /* 纯白，没有卡片感 */
-  gap: 24px;
+  padding: var(--hero-pt) 20px 28px; /* 被导航挡住就把 --hero-pt 调大 */
+  text-align: center;
+}
+.insights-hero h1{
+  font-size: clamp(24px, 3.2vw, 36px);
+  line-height: 1.2;
+  font-weight: 750;
+  letter-spacing: .2px;
+  margin: 0 auto 16px;
+  max-width: 980px;
+}
+.insights-hero-media{
+  width: min(88vw, var(--hero-maxw));
+  margin: 0 auto;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,.06);
+}
+.insights-hero-media img{
+  display:block;
+  width:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  object-position:center;
 }
 
-/* ------- 左侧目录：位置更“居中一点” ------- */
-.insights-nav {
-  flex: 0 0 240px;
-  /* 让目录本身更靠下： */
-  position: sticky;
-  top: 160px;                 /* ⭐ 比之前更低一点，看起来更居中 */
-  align-self: flex-start;
-  margin-top: 12px;           /* 细调 */
+/* ---------- 页面主体 ---------- */
+.insights-page{
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  gap:24px;
+  max-width: var(--container-maxw);
+  margin:0 auto;
+  padding:60px 20px 60px;   /* 与头图间距，想更靠上可减小 */
+  color:#222;
+  line-height:1.8;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* ========== 目录标题：左边橙色竖条 ========== */
-.insights-nav h3 {
-  position: relative;
-  padding-left: 12px;
+/* ---------- 左侧目录 ---------- */
+.insights-nav{
+  flex:0 0 240px;
+  position:sticky;
+  top: var(--nav-top);       /* 想让目录更靠上/下，改这里或变量 */
+  align-self:flex-start;
 }
-.insights-nav h3::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: #ff7a00; /* 橙色 */
-  border-radius: 2px;
+.insights-nav h3{
+  position:relative;
+  padding-left:12px;
+  margin:0 0 8px;
+}
+.insights-nav h3::before{
+  content:"";
+  position:absolute; left:0; top:0; bottom:0;
+  width:4px; background:#ff7a00; border-radius:2px;
+}
+.insights-nav ul{ list-style:none; padding:0; margin:0; }
+.insights-nav li{ list-style:none; margin:0; }
+.insights-nav li::marker{ content:""; }
+.insights-nav a{
+  display:block; position:relative;
+  padding:6px 0 6px 12px;
+  color:#666; text-decoration:none; transition:color .2s ease;
+}
+.insights-nav a:hover{ color:#111; }
+.insights-nav a:hover::before,
+.insights-nav a.active::before{
+  content:""; position:absolute; left:0; top:0; bottom:0;
+  width:3px; background:#aaa; border-radius:2px;
+}
+.insights-nav a.active{ color:#111; font-weight:600; }
+
+/* ---------- 正文区块 ---------- */
+.insights-content{ flex:1 1 auto; min-width:0; }
+.insights-section{ margin-bottom:48px; }
+.insights-section h2{
+  font-size: clamp(22px, 2.4vw, 28px);
+  margin: 0 0 12px;
+}
+.insights-section h4{
+  font-size:18px; margin:24px 0 12px; font-weight:700;
+}
+.section-source{
+  margin-top:10px; color:#777; font-size:14px;
 }
 
-/* ========== 目录链接：默认灰色，无下划线 ========== */
-.insights-nav a {
-  display: block;
-  position: relative;
-  padding: 6px 0 6px 12px; /* 给竖条留空间 */
-  color: #666;             /* 默认灰色 */
-  text-decoration: none;   /* 去掉下划线 */
-  transition: color .2s ease;
+/* ---------- Tip（淡黄色提示框） ---------- */
+.tip{
+  background:#fff7e6;
+  border:1px solid #ffe4b8;
+  border-radius:12px;
+  padding:16px 18px;
+  margin:16px 0 24px;
+  box-shadow:0 1px 0 rgba(0,0,0,.03);
+}
+.tip-title{
+  display:flex; align-items:center; gap:8px;
+  font-weight:600; color:#6b4f00; margin:0 0 6px;
+}
+.tip p{ margin:0; color:#5c4a1a; line-height:1.7; }
+
+/* ---------- 资源卡片网格 ---------- */
+.resources-intro{ margin:8px 0 16px; }
+.resources-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap:24px;
+  margin:8px 0 12px;
+}
+@media (max-width: 860px){
+  .resources-grid{ grid-template-columns: 1fr; }
+}
+.resource-card{
+  display:flex; flex-direction:column;
+  background:#fff;
+  border:1px solid #e9e9e9;
+  border-radius:16px;
+  overflow:hidden;
+  text-decoration:none; color:inherit;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.resource-card:hover{
+  transform: translateY(-2px);
+  box-shadow:0 8px 22px rgba(0,0,0,.08);
+  border-color:#e0dfdf;
+}
+.resource-media img{
+  display:block; width:100%;
+  aspect-ratio:16/9; object-fit:cover; object-position:center;
+}
+.resource-body{ padding:16px 18px 18px; }
+.resource-title{ margin:0 0 6px; font-size:18px; font-weight:700; }
+.resource-desc{ margin:0 0 12px; color:#555; line-height:1.7; }
+
+.resource-tags{ display:flex; gap:8px; flex-wrap:wrap; }
+.resource-tag{
+  font-size:12px; padding:4px 8px; border-radius:999px;
+  background:#f2f4f7; border:1px solid #e6e8ec; color:#475467;
 }
 
-/* 悬停：黑色字体 + 左边灰色竖条 */
-.insights-nav a:hover {
-  color: #111;
-}
-.insights-nav a:hover::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: #aaa; /* 灰色 */
-  border-radius: 2px;
+/* ---------- 深色模式可选 ---------- */
+@media (prefers-color-scheme: dark){
+  .resource-card{ background:#171717; border-color:#2b2b2b; box-shadow:none; }
+  .resource-card:hover{ border-color:#3a3a3a; box-shadow:0 8px 22px rgba(0,0,0,.45); }
+  .resource-desc{ color:#cfcfcf; }
+  .resource-tag{ background:#222; border-color:#333; color:#ddd; }
+  .tip{ background:#2a220f; border-color:#5a430f; }
+  .tip-title{ color:#f7cf76; }
+  .tip p{ color:#f1e0b8; }
 }
 
-/* （可选）点击后保持激活态：黑色字体 + 灰色竖条 */
-.insights-nav a.active {
-  color: #111;
-  font-weight: 600;
+/* ---------- 小屏微调 ---------- */
+@media (max-width:768px){
+  .insights-hero{ padding-top: 140px; }
+  .insights-hero-media{ width:min(92vw, 720px); }
 }
-.insights-nav a.active::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: #aaa;
-  border-radius: 2px;
-}
-/* 去掉目录项前面的圆点，并清掉左缩进 */
-.insights-nav ul {
-  list-style: none;
-  padding-left: 0;   /* 关键：去掉默认缩进 */
-  margin-left: 0;
-}
-.insights-nav li {
-  list-style: none;
-  margin-left: 0;
-}
-/* 兼容性兜底：防止 ::marker 仍然显示 */
-.insights-nav li::marker {
-  content: "";
-}
-
-/* 保持副标题与 “Insights” 文本对齐（两者同样的左内边距） */
-.insights-nav h3 { padding-left: 12px; }   /* 这行你之前已有，用来留出橙色竖条 */
-.insights-nav a  { padding-left: 12px; }   /* 与标题一致，文本左边缘对齐 */
