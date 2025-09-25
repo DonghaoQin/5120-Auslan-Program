@@ -15,12 +15,19 @@ const GAP = 24;      // 右侧面板与主列间距
 // ✅ 后端接口
 const API_URL = "https://auslan-backend.onrender.com/videos/";
 
-/* ------------ Level 配置（可随时微调） ------------- */
-const LEVEL_COLORS = {
-  1: { bg: "#E6F7F2", bar: "#86E3CB", border: "#66D6BC" },  // 薄荷绿
-  2: { bg: "#FFF4E0", bar: "#FFC36E", border: "#F7A940" },  // 杏黄色
-  3: { bg: "#ECEAFF", bar: "#B7B4FF", border: "#9895FF" },  // 柔和紫
+/* ------------ Category 配置 ------------- */
+const CATEGORY_COLORS = {
+  "1A. Essentials_Survival Signs": { bg: "#E6F7F2", bar: "#86E3CB", border: "#66D6BC" },
+  "1B. Greetings & Social Basics": { bg: "#FFF4E0", bar: "#FFC36E", border: "#F7A940" },
+  "2A. Family Members": { bg: "#ECEAFF", bar: "#B7B4FF", border: "#9895FF" },
+  "2B. Feelings/Needs": { bg: "#F0F4FF", bar: "#93C5FD", border: "#3B82F6" },
+  "3A. School/Play": { bg: "#FEF2F2", bar: "#FCA5A5", border: "#EF4444" },
+  "3B. Everyday/Actions": { bg: "#F5F3FF", bar: "#C4B5FD", border: "#8B5CF6" },
+  "4A. Basic Questions": { bg: "#ECFDF5", bar: "#6EE7B7", border: "#10B981" },
+  "4B. Interaction Clarification": { bg: "#FFFBEB", bar: "#FDE68A", border: "#F59E0B" },
+  "Other": { bg: "#F3F4F6", bar: "#D1D5DB", border: "#6B7280" },
 };
+
 const slug = (s) =>
   (s || "")
     .toString()
@@ -31,32 +38,30 @@ const slug = (s) =>
     .replace(/_+/g, "_")
     .replace(/^_|_$/g, "");
 
-const LEVEL_MAP = (() => {
-  const L1 = [
-    "hello","hi","thank_you","apology","no","help","what","who","we","you",
-    "mum","friend","love","like","look","come_here","go_to","stop","wait",
-    "play","home","school","teacher","dog","apple","baby"
-  ];
-  const L2 = [
-    "again","already","annoying","ask","bad","bath","big","brother","cute",
-    "dont_know","drink","finished","fun","hairbrush","how_old","meat","move",
-    "now","our","people","pizza","seat","share","surprised","tired","welcome"
-  ];
-  const L3 = [
-    "auslan","sign_name","deaf_mute","thinking_reflection","back_of_body",
-    "jump_off","wash_face","disappointment","slow_down","sleeping","spoon",
-    "australia","understand","upset","sad","nothing","wear","world","yourself",
-    "climb","copy","dislike","bye_bye"
-  ];
+const CATEGORY_MAP = (() => {
+  const C1A = ["thank_you","no","stop","help","seat","drink","sleeping","go_to","now","not"];
+  const C1B = ["hello","bye_bye","apology","ask","welcome","hi"];
+  const C2A = ["mum","brother","sister","baby","you","we","yourself","people","our"];
+  const C2B = ["sad","tired","love","smile","upset","cute","like","bad","pizza","dislike","surprised","dont_know","disappointment","thinking_reflection","annoying"];
+  const C3A = ["play","school","teacher","friend","home","already","finished","big","fun","copy","jump_off"];
+  const C3B = ["wash_face","share","wait","come_here","move","climb","wear","spoon","look","bath","back_of_body","hairbrush"];
+  const C4A = ["what","why","who","how_old"];
+  const C4B = ["again","slow_down","understand","nothing"];
+  const OTHER = ["auslan","deaf_mute","australia","sign_name","dog","apple","world"];
+
   const m = {};
-  L1.forEach(k => m[k] = 1);
-  L2.forEach(k => m[k] = 2);
-  L3.forEach(k => m[k] = 3);
+  C1A.forEach(k => m[k] = "1A. Essentials_Survival Signs");
+  C1B.forEach(k => m[k] = "1B. Greetings & Social Basics");
+  C2A.forEach(k => m[k] = "2A. Family Members");
+  C2B.forEach(k => m[k] = "2B. Feelings/Needs");
+  C3A.forEach(k => m[k] = "3A. School/Play");
+  C3B.forEach(k => m[k] = "3B. Everyday/Actions");
+  C4A.forEach(k => m[k] = "4A. Basic Questions");
+  C4B.forEach(k => m[k] = "4B. Interaction Clarification");
+  OTHER.forEach(k => m[k] = "Other");
   return m;
 })();
-const levelOf = (title) => LEVEL_MAP[slug(title)] ?? 2;
-
-/* --------------------------------------------------- */
+const categoryOf = (title) => CATEGORY_MAP[slug(title)] ?? "Other";
 
 export default function BasicWords() {
   const [current, setCurrent] = useState(null);
@@ -71,8 +76,8 @@ export default function BasicWords() {
   });
   const [search, setSearch] = useState("");
 
-  // 折叠状态：默认展开（仅在非搜索时起作用）
-  const [collapsed, setCollapsed] = useState({ 1: false, 2: false, 3: false });
+  // 折叠状态：每个分组独立
+  const [collapsed, setCollapsed] = useState({});
 
   // 🔄 拉取词表
   const [loading, setLoading] = useState(false);
@@ -143,19 +148,31 @@ export default function BasicWords() {
     return all.reduce((acc, x) => acc + (keys.has(x.title) ? 1 : 0), 0);
   }, [all, learned]);
 
-  // 分桶 + 组内排序（已学优先，再字母序）
+  // 分桶 + 组内排序
   const buckets = useMemo(() => {
-    const b = { 1: [], 2: [], 3: [] };
-    filtered.forEach((item) => b[levelOf(item.title)].push(item));
-    const sorter = (a, b) => {
-      const A = learned.has(a.title) ? 0 : 1;
-      const B = learned.has(b.title) ? 0 : 1;
-      if (A !== B) return A - B;
-      return a.title.localeCompare(b.title);
-    };
-    b[1].sort(sorter); b[2].sort(sorter); b[3].sort(sorter);
+    const b = {};
+    filtered.forEach((item) => {
+      const cat = categoryOf(item.title);
+      if (!b[cat]) b[cat] = [];
+      b[cat].push(item);
+    });
+    Object.keys(b).forEach((k) => {
+      b[k].sort((a, b) => a.title.localeCompare(b.title));
+    });
     return b;
   }, [filtered, learned]);
+
+  const categories = [
+    "1A. Essentials_Survival Signs",
+    "1B. Greetings & Social Basics",
+    "2A. Family Members",
+    "2B. Feelings/Needs",
+    "3A. School/Play",
+    "3B. Everyday/Actions",
+    "4A. Basic Questions",
+    "4B. Interaction Clarification",
+    "Other",
+  ];
 
   // 右侧详情交互（地鼠切换）
   const handleSelect = (item) => {
@@ -164,7 +181,7 @@ export default function BasicWords() {
     setPending(item); setOpen(false);
   };
   const handlePanelTransitionEnd = (e) => {
-    if (e.propertyName !== "transform") return;
+    if (e.propertyName && e.propertyName !== "transform") return;
     if (!open && pending) {
       setCurrent(pending); setPending(null);
       requestAnimationFrame(() => setOpen(true));
@@ -184,74 +201,29 @@ export default function BasicWords() {
   return (
     <div style={page}>
       <style>{`
-        .ln-card {
-          background: #fff;
-          border-radius: 16px;
-          padding: 10px 6px;
-          text-align: center;
-          cursor: pointer;
-          font-weight: 700;
-          box-shadow: 0 4px 12px rgba(0,0,0,.06);
-          border: 1px solid #EEF0F2;
-          user-select: none;
-          transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-        }
+        .ln-card { background: #fff; border-radius: 16px; padding: 10px 6px; text-align: center; cursor: pointer; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,.06); border: 1px solid #EEF0F2; user-select: none; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
         .ln-card:hover { transform: translateY(-2px); border-color: #CFD4DC; box-shadow: 0 10px 22px rgba(0,0,0,.12); }
         .ln-card-title { letter-spacing: .5px; line-height: 1.2; font-size: 16px; padding: 8px 6px 4px; word-break: break-word; }
-        .ln-card-learned { border: 2px solid #FFA500; }
+        .ln-card-learned { border: 4px solid #FFA500; }
 
-        /* 页面两列：左侧导航（sticky） + 右侧主列（为右侧详情面板让出空间） */
         .ln-layout { max-width: ${MAX_W}px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 16px; }
-        .ln-left-nav {
-          position: sticky; 
-          top: ${TOP_GAP + 12}px; 
-          align-self: start;
-          background: #fff; 
-          border: 1px solid #EEF0F2; 
-          border-radius: 14px; 
-          padding: 12px;
-          box-shadow: 0 6px 16px rgba(0,0,0,.06);
-        }
-        .ln-left-btn {
-          display: flex; justify-content: space-between; align-items: center;
-          width: 100%; padding: 10px 12px; margin-bottom: 8px;
-          font-weight: 700; border-radius: 10px; border: 1px solid #E5E7EB; background: #fff; cursor: pointer;
-          transition: transform .12s ease, box-shadow .12s ease;
-        }
+        .ln-left-nav { position: sticky; top: ${TOP_GAP + 12}px; align-self: start; background: #fff; border: 1px solid #EEF0F2; border-radius: 14px; padding: 12px; box-shadow: 0 6px 16px rgba(0,0,0,.06); }
+        .ln-left-btn { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 10px 12px; margin-bottom: 8px; font-weight: 700; border-radius: 10px; border: 1px solid #E5E7EB; background: #fff; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
         .ln-left-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,.08); }
         .ln-left-pill { font-size: 12px; opacity: .8; }
-        .ln-left-arrow { transition: transform .18s ease; }
+        .ln-left-arrow { transition: transform .18s ease; display:inline-block; border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
         .ln-left-arrow.collapsed { transform: rotate(-90deg); }
 
         .ln-main { margin-right: ${RIGHT_W + GAP}px; }
 
-        /* 右侧固定面板 */
-        .ln-fixed-right {
-          position: fixed;
-          top: ${TOP_GAP + SEARCH_BLOCK_H}px;
-          right: calc((100vw - ${MAX_W}px) / 2);
-          width: ${RIGHT_W}px;
-          height: calc(100vh - ${TOP_GAP + SEARCH_BLOCK_H}px);
-          display: flex; flex-direction: column;
-          background: #fff;
-          border-radius: 18px 18px 0 0;
-          box-shadow: 0 10px 24px rgba(0,0,0,.12);
-          overflow: hidden;
-          transform: translateY(100%); opacity: 0; pointer-events: none;
-          transition: transform .45s ease-in-out, opacity .45s ease-in-out;
-        }
+        .ln-fixed-right { position: fixed; top: ${TOP_GAP + SEARCH_BLOCK_H}px; right: calc((100vw - ${MAX_W}px) / 2); width: ${RIGHT_W}px; height: calc(100vh - ${TOP_GAP + SEARCH_BLOCK_H}px); display: flex; flex-direction: column; background: #fff; border-radius: 18px 18px 0 0; box-shadow: 0 10px 24px rgba(0,0,0,.12); overflow: hidden; transform: translateY(100%); opacity: 0; pointer-events: none; transition: transform .45s ease-in-out, opacity .45s ease-in-out; }
         .ln-fixed-right.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
         .ln-stage { flex: 1; overflow: auto; padding: 28px; display: grid; place-items: center; background: #fff; }
         .ln-detail-footer { height: 180px; background: #fff; border-top: 1px solid #EEF0F2; display:flex; align-items:center; justify-content:center; gap:16px; padding:18px 20px 0; }
         .ln-btn { border:none; border-radius:10px; padding:20px 32px; font-weight:700; color:#fff; cursor:pointer; }
         .ln-btn.ok { background:#f2b64fff; } .ln-btn.bad { background:#ef4444ff; }
 
-        /* 组内容网格（支持折叠动画） */
-        .ln-group-grid { 
-          display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; 
-          align-content: start; margin-bottom: 18px; 
-          transition: max-height .35s ease;
-        }
+        .ln-group-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-content: start; margin-bottom: 18px; transition: max-height .35s ease; }
         .ln-group-grid.collapsed { max-height: 0; overflow: hidden; }
 
         @media (max-width: ${MAX_W + RIGHT_W + GAP}px) {
@@ -273,35 +245,13 @@ export default function BasicWords() {
           placeholder="Search words..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            display: "block", width: "90%", maxWidth: 640,
-            margin: "0 auto 16px auto", padding: "12px 16px",
-            borderRadius: 12, border: "1px solid #D1D5DB", fontSize: 16, background: "#fff",
-          }}
+          style={{ display: "block", width: "90%", maxWidth: 640, margin: "0 auto 16px auto", padding: "12px 16px", borderRadius: 12, border: "1px solid #D1D5DB", fontSize: 16, background: "#fff" }}
         />
-        <div style={{
-          maxWidth: 960, margin: "0 auto 10px auto",
-          height: 10, background: "#E5E7EB", borderRadius: 999, overflow: "hidden",
-        }}>
-          <div style={{
-            height: "100%",
-            width: `${all.length ? Math.round((learnedCount / all.length) * 100) : 0}%`,
-            background: "linear-gradient(90deg,#FFD166,#F77F00)",
-          }}/>
+        <div style={{ maxWidth: 960, margin: "0 auto 10px auto", height: 10, background: "#E5E7EB", borderRadius: 999, overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${all.length ? Math.round((learnedCount / all.length) * 100) : 0}%`, background: "linear-gradient(90deg,#FFD166,#F77F00)" }}/>
         </div>
         <div style={{ textAlign: "center", marginBottom: 18 }}>
           {learnedCount}/{all.length} learned
-          {learnedCount > 0 && (
-            <button
-              onClick={() => setLearned(new Set())}
-              style={{
-                marginLeft: 12, padding: "4px 10px", fontSize: 14,
-                border: "1px solid #ddd", borderRadius: 6, cursor: "pointer", background: "#fff",
-              }}
-            >
-              Clear All
-            </button>
-          )}
         </div>
       </div>
 
@@ -309,78 +259,95 @@ export default function BasicWords() {
       {loading && <div style={{ textAlign: "center", color: "#6B7280" }}>Loading words...</div>}
       {error && <div style={{ textAlign: "center", color: "#ef4444" }}>{error}</div>}
 
-      {/* 主布局：左侧导航 + 右侧分组主列（仅网格，无 Level 横条） */}
+      {/* 主布局：左侧导航 + 右侧分组主列 */}
       <div className="ln-layout">
-        {/* 左侧导航（sticky & 控制折叠/展开；搜索时只定位） */}
+        {/* 左侧导航（保持原样式&功能，并集中于左侧） */}
         <aside className="ln-left-nav">
-          {[1,2,3].map((lv) => {
-            const items = buckets[lv];
+          {[
+            "1A. Essentials_Survival Signs",
+            "1B. Greetings & Social Basics",
+            "2A. Family Members",
+            "2B. Feelings/Needs",
+            "3A. School/Play",
+            "3B. Everyday/Actions",
+            "4A. Basic Questions",
+            "4B. Interaction Clarification",
+            "Other",
+          ].map((cat) => {
+            const items = buckets[cat] || [];
             const { n, total } = (()=>{
               const total = items.length;
               const n = items.reduce((acc, x) => acc + (learned.has(x.title) ? 1 : 0), 0);
               return { n, total };
             })();
-            const color = LEVEL_COLORS[lv];
+            const color = CATEGORY_COLORS[cat] || { border: "#cbd5e1" };
             const disabled = isSearching && items.length === 0; // 搜索时且该组无结果 → 禁用
-            const isCol = collapsed[lv];
+            const isCol = collapsed[cat];
 
             return (
               <button
-                key={lv}
+                key={cat}
                 className="ln-left-btn"
                 onClick={() => {
                   if (disabled) return;
                   if (isSearching) {
-                    const el = document.querySelector(`#level-${lv}`);
+                    const el = document.querySelector(`#cat-${slug(cat)}`);
                     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                   } else {
-                    setCollapsed(p => ({ ...p, [lv]: !p[lv] }));
+                    setCollapsed(p => ({ ...p, [cat]: !p[cat] }));
                   }
                 }}
-                style={{ 
-                  borderColor: color.border,
-                  opacity: disabled ? .45 : 1,
-                  cursor: disabled ? "not-allowed" : "pointer",
-                }}
-                title={
-                  disabled
-                    ? `No results in Level ${lv}`
-                    : (isCol ? `Expand Level ${lv}` : `Collapse Level ${lv}`)
-                }
+                style={{ borderColor: color.border, opacity: disabled ? .45 : 1, cursor: disabled ? "not-allowed" : "pointer" }}
+                title={disabled ? `No results in ${cat}` : (isCol ? `Expand ${cat}` : `Collapse ${cat}`)}
               >
                 <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ width: 10, height: 20, borderRadius: 6, background: color.border }} />
-                  Level {lv}
+                  <span style={{ fontSize: 12, textAlign: "left", lineHeight: 1.2 }}>{cat}</span>
                 </span>
                 <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <span className="ln-left-pill" style={{ color: color.border }}>{n}/{total}</span>
-                  {/* 箭头只体现“当前折叠态”，搜索时我们不切折叠，所以维持当前 UI */}
-                  <span className={`ln-left-arrow ${isCol ? "collapsed" : ""}`}
-                        style={{ display: "inline-block", borderTop: "6px solid transparent", borderBottom: "6px solid transparent", borderLeft: `10px solid ${color.border}` }} />
+                  <span className={`ln-left-arrow ${isCol ? "collapsed" : ""}`} style={{ borderLeft: `10px solid ${color.border}` }} />
                 </span>
               </button>
             );
           })}
-          {/* 一键折叠/展开全部（非搜索才有意义，但不做强限制） */}
-          <button className="ln-left-btn" onClick={() => setCollapsed({ 1: true, 2: true, 3: true })}>
-            Collapse all
-          </button>
-          <button className="ln-left-btn" onClick={() => setCollapsed({ 1: false, 2: false, 3: false })}>
-            Expand all
-          </button>
+          {/* 一键折叠/展开全部（保留原功能） */}
+          <button className="ln-left-btn" onClick={() => {
+            const allCats = Object.keys(buckets).length ? Object.keys(buckets) : [
+              "1A. Essentials_Survival Signs","1B. Greetings & Social Basics","2A. Family Members","2B. Feelings/Needs","3A. School/Play","3B. Everyday/Actions","4A. Basic Questions","4B. Interaction Clarification","Other"
+            ];
+            const state = {}; allCats.forEach(c=> state[c] = true); setCollapsed(state);
+          }}>Collapse all</button>
+          <button className="ln-left-btn" onClick={() => {
+            const allCats = Object.keys(buckets).length ? Object.keys(buckets) : [
+              "1A. Essentials_Survival Signs","1B. Greetings & Social Basics","2A. Family Members","2B. Feelings/Needs","3A. School/Play","3B. Everyday/Actions","4A. Basic Questions","4B. Interaction Clarification","Other"
+            ];
+            const state = {}; allCats.forEach(c=> state[c] = false); setCollapsed(state);
+          }}>Expand all</button>
         </aside>
 
-        {/* 右侧主列（仅渲染网格分组；搜索时强制展开并隐藏空 Level） */}
+        {/* 右侧主列（仅渲染网格分组；搜索时强制展开并隐藏空组） */}
         <main className="ln-main">
-          {[1,2,3].map((lv) => {
-            const items = buckets[lv];
+          {[
+            "1A. Essentials_Survival Signs",
+            "1B. Greetings & Social Basics",
+            "2A. Family Members",
+            "2B. Feelings/Needs",
+            "3A. School/Play",
+            "3B. Everyday/Actions",
+            "4A. Basic Questions",
+            "4B. Interaction Clarification",
+            "Other",
+          ].map((cat) => {
+            const items = buckets[cat] || [];
             if (isSearching && items.length === 0) return null;  // 搜索时隐藏空组
 
-            const color = LEVEL_COLORS[lv];
-            const isCol = isSearching ? false : collapsed[lv];  // 搜索时强制展开
+            const color = CATEGORY_COLORS[cat] || { border: "#cbd5e1" };
+            const isCol = isSearching ? false : collapsed[cat];  // 搜索时强制展开
 
             return (
-              <section key={lv} id={`level-${lv}`}>
+              <section key={cat} id={`cat-${slug(cat)}`}>
+                {/* <h3 style={{ margin: "12px 0", color: color.border }}>{cat}</h3> */}
                 <div className={`ln-group-grid ${isCol ? "collapsed" : ""}`}>
                   {items.map((item) => (
                     <div
@@ -394,7 +361,7 @@ export default function BasicWords() {
                   ))}
                   {!loading && items.length === 0 && (
                     <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#ef4444", fontWeight: 600 }}>
-                      No items in this level.
+                      No items in this category.
                     </div>
                   )}
                 </div>
