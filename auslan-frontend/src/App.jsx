@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import NavBar from "./components/NavBar.jsx";
 import Login from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
@@ -8,11 +9,27 @@ import BasicWords from "./pages/BasicWords.jsx";
 import MiniQuiz from "./pages/MiniQuiz.jsx";
 import StoryBook from "./pages/StoryBook.jsx";
 
+// Component to scroll to top on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth" // Optional: smooth scrolling animation
+    });
+  }, [pathname]);
+
+  return null;
+}
+
 export default function App() {
   const location = useLocation();
   const hideNav = location.pathname === "/";
   return (
     <div className="app">
+      <ScrollToTop />
       {!hideNav && <NavBar />}
       <div className="container">
         <Routes>
