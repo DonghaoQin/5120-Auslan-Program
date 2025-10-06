@@ -1,33 +1,94 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 const API_URL = "https://auslan-backend.onrender.com/videos/";
-const STORAGE_KEY = "FLASHCARD_LEARNED_V1";
+const STORAGE_KEY = "LN_LEARNED_V2";
 
-export default function FlashCardMobile() {
-  const [words, setWords] = useState([]);
-  const [index, setIndex] = useState(0);
+const CATEGORY_COLORS = {
+  "1A. Essentials_Survival Signs": "#66D6BC",
+  "1B. Greetings & Social Basics": "#F7A940",
+  "2A. Family Members": "#9895FF",
+  "2B. Feelings/Needs": "#3B82F6",
+  "3A. School/Play": "#EF4444",
+  "3B. Everyday/Actions": "#8B5CF6",
+  "4A. Basic Questions": "#10B981",
+  "4B. Interaction Clarification": "#F59E0B",
+  "Other": "#6B7280",
+};
+
+// same slug + category map logic
+const slug = (s) =>
+  (s || "")
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^\w]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "");
+
+const CATEGORY_MAP = (() => {
+  const C1A = ["thank_you","no","stop","help","seat","drink","sleeping","go_to","now","not"];
+  const C1B = ["hello","bye_bye","apology","ask","welcome","hi"];
+  const C2A = ["mum","brother","sister","baby","you","we","yourself","people","our"];
+  const C2B = ["sad","tired","love","smile","upset","cute","like","bad","pizza","dislike","surprised","dont_know","disappointment","thinking_reflection","annoying"];
+  const C3A = ["play","school","teacher","friend","home","already","finished","big","fun","copy","jump_off"];
+  const C3B = ["wash_face","share","wait","come_here","move","climb","wear","spoon","look","bath","back_of_body","hairbrush"];
+  const C4A = ["what","why","who","how_old"];
+  const C4B = ["again","slow_down","understand","nothing"];
+  const OTHER = ["auslan","deaf_mute","australia","sign_name","dog","apple","world"];
+
+  const m = {};
+  C1A.forEach(k => m[k] = "1A. Essentials_Survival Signs");
+  C1B.forEach(k => m[k] = "1B. Greetings & Social Basics");
+  C2A.forEach(k => m[k] = "2A. Family Members");
+  C2B.forEach(k => m[k] = "2B. Feelings/Needs");
+  C3A.forEach(k => m[k] = "3A. School/Play");
+  C3B.forEach(k => m[k] = "3B. Everyday/Actions");
+  C4A.forEach(k => m[k] = "4A. Basic Questions");
+  C4B.forEach(k => m[k] = "4B. Interaction Clarification");
+  OTHER.forEach(k => m[k] = "Other");
+  return m;
+})();
+const categoryOf = (title) => CATEGORY_MAP[slug(title)] ?? "Other";
+
+export default function FlashCardBasicWords() {
+  const [step, setStep] = useState("category"); // "category" | "words" | "video"
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedWord, setSelectedWord] = useState(null);
   const [learned, setLearned] = useState(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return new Set(saved ? JSON.parse(saved) : []);
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return new Set(raw ? JSON.parse(raw) : []);
     } catch {
       return new Set();
     }
   });
 
+  const [words, setWords] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // fetch from same API
   useEffect(() => {
     (async () => {
       try {
         const res = await fetch(API_URL);
         const data = await res.json();
-        const normalized = (Array.isArray(data) ? data : []).map((x, i) => ({
-          id: x.id ?? i,
-          title: x.filename ?? x.title ?? `Item ${i + 1}`,
-          url: x.url ?? "",
-        }));
+        const normalized = (Array.isArray(data) ? data : []).map((x, idx) => {
+          const title =
+            x.filename?.toString() ||
+            x.title?.toString() ||
+            x.name?.toString() ||
+            x.word?.toString() ||
+            x.text?.toString() ||
+            `Item ${idx + 1}`;
+          const url = typeof x.url === "string" ? x.url : null;
+          return { id: x.id ?? idx, title, url };
+        });
         setWords(normalized);
       } catch (err) {
-        console.error("Failed to fetch:", err);
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
@@ -36,47 +97,93 @@ export default function FlashCardMobile() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...learned]));
   }, [learned]);
 
-  const current = words[index] || null;
-  const total = words.length;
-
-  const handleNext = () => setIndex((i) => (i + 1) % total);
-  const handlePrev = () => setIndex((i) => (i - 1 + total) % total);
-  const toggleLearned = () => {
-    if (!current) return;
-    setLearned((prev) => {
-      const next = new Set(prev);
-      if (next.has(current.title)) next.delete(current.title);
-      else next.add(current.title);
-      return next;
+  const buckets = useMemo(() => {
+    const b = {};
+    words.forEach((item) => {
+      const cat = categoryOf(item.title);
+      if (!b[cat]) b[cat] = [];
+      b[cat].push(item);
     });
-  };
+    return b;
+  }, [words]);
 
-  if (!current) {
+  if (loading)
     return (
       <div style={styles.center}>
-        <h3>Loading videos...</h3>
+        <p>Loading vocabulary...</p>
+      </div>
+    );
+
+  // Step 1 — choose category
+  if (step === "category") {
+    return (
+      <div style={styles.page}>
+        <h2 style={styles.header}>Choose a Scenario</h2>
+        <div style={styles.grid}>
+          {Object.keys(buckets).map((cat) => (
+            <button
+              key={cat}
+              style={{
+                ...styles.categoryCard,
+                borderColor: CATEGORY_COLORS[cat] || "#ccc",
+              }}
+              onClick={() => {
+                setSelectedCategory(cat);
+                setStep("words");
+              }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
     );
   }
 
-  const learnedCount = learned.size;
-  const progress = total ? Math.round((learnedCount / total) * 100) : 0;
-  const isLearned = learned.has(current.title);
-
-  return (
-    <div style={styles.page}>
-      <div style={styles.header}>
-        <h2 style={{ margin: 0 }}>{current.title}</h2>
-        <p style={{ margin: "4px 0", fontSize: 14, color: "#666" }}>
-          {index + 1} / {total} | Learned: {learnedCount} ({progress}%)
-        </p>
+  // Step 2 — choose word
+  if (step === "words" && selectedCategory) {
+    const items = buckets[selectedCategory] || [];
+    return (
+      <div style={styles.page}>
+        <button style={styles.backBtn} onClick={() => setStep("category")}>
+          ⬅ Back
+        </button>
+        <h2 style={styles.header}>{selectedCategory}</h2>
+        <div style={styles.wordGrid}>
+          {items.map((item) => (
+            <button
+              key={item.id}
+              style={{
+                ...styles.wordCard,
+                borderColor: CATEGORY_COLORS[selectedCategory],
+                background: learned.has(item.title) ? "#E6F7F2" : "#fff",
+              }}
+              onClick={() => {
+                setSelectedWord(item);
+                setStep("video");
+              }}
+            >
+              {item.title.replace("_", " ")}
+            </button>
+          ))}
+        </div>
       </div>
+    );
+  }
 
-      <div style={styles.videoContainer}>
-        {current.url ? (
+  // Step 3 — view video
+  if (step === "video" && selectedWord) {
+    const isLearned = learned.has(selectedWord.title);
+    return (
+      <div style={styles.page}>
+        <button style={styles.backBtn} onClick={() => setStep("words")}>
+          ⬅ Back
+        </button>
+        <h2 style={styles.header}>{selectedWord.title.replace("_", " ")}</h2>
+        {selectedWord.url ? (
           <video
-            key={current.url}
-            src={current.url}
+            key={selectedWord.url}
+            src={selectedWord.url}
             controls
             playsInline
             style={styles.video}
@@ -84,82 +191,97 @@ export default function FlashCardMobile() {
         ) : (
           <p>No video available</p>
         )}
-      </div>
 
-      <div style={styles.controls}>
-        <button style={styles.navBtn} onClick={handlePrev}>
-          ⬅ Prev
-        </button>
         <button
           style={{
             ...styles.learnBtn,
-            backgroundColor: isLearned ? "#10B981" : "#F59E0B",
+            background: isLearned ? "#10B981" : "#F59E0B",
           }}
-          onClick={toggleLearned}
+          onClick={() =>
+            setLearned((prev) => {
+              const next = new Set(prev);
+              if (next.has(selectedWord.title)) next.delete(selectedWord.title);
+              else next.add(selectedWord.title);
+              return next;
+            })
+          }
         >
-          {isLearned ? "Learned ✅" : "Mark Learned"}
-        </button>
-        <button style={styles.navBtn} onClick={handleNext}>
-          Next ➡
+          {isLearned ? "Learned ✅" : "Mark as Learned"}
         </button>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
-/* --- Inline mobile-first styles --- */
+/* --- Mobile-first styles --- */
 const styles = {
   page: {
-    background: "#F6F7FB",
+    background: "#F9FAFB",
     minHeight: "100vh",
-    padding: "1rem",
-    textAlign: "center",
+    padding: "1.2rem",
     fontFamily: "'Poppins', sans-serif",
+    textAlign: "center",
+  },
+  header: {
+    fontSize: 20,
+    marginBottom: "1rem",
+    color: "#111827",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+    gap: "12px",
+  },
+  categoryCard: {
+    background: "#fff",
+    border: "2px solid #E5E7EB",
+    borderRadius: "12px",
+    padding: "1rem",
+    fontWeight: 600,
+    cursor: "pointer",
+    boxShadow: "0 2px 5px rgba(0,0,0,0.08)",
+  },
+  wordGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+    gap: "10px",
+  },
+  wordCard: {
+    background: "#fff",
+    border: "2px solid #D1D5DB",
+    borderRadius: "10px",
+    padding: "0.8rem",
+    fontWeight: 600,
+    cursor: "pointer",
+    textTransform: "capitalize",
+    boxShadow: "0 2px 5px rgba(0,0,0,0.08)",
+  },
+  backBtn: {
+    background: "none",
+    border: "none",
+    color: "#3B82F6",
+    fontWeight: 600,
+    fontSize: 16,
+    marginBottom: "0.5rem",
+    cursor: "pointer",
+  },
+  video: {
+    maxWidth: "100%",
+    borderRadius: "12px",
+    marginBottom: "1rem",
+  },
+  learnBtn: {
+    color: "#fff",
+    border: "none",
+    borderRadius: "10px",
+    padding: "0.9rem 1.2rem",
+    fontWeight: 600,
+    cursor: "pointer",
+    width: "80%",
   },
   center: {
     display: "grid",
     placeItems: "center",
     height: "100vh",
-    color: "#666",
-  },
-  header: {
-    marginBottom: "1rem",
-  },
-  videoContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "60vh",
-    marginBottom: "1rem",
-  },
-  video: {
-    maxHeight: "100%",
-    maxWidth: "100%",
-    borderRadius: "12px",
-  },
-  controls: {
-    display: "flex",
-    justifyContent: "space-around",
-    alignItems: "center",
-    gap: "0.5rem",
-  },
-  navBtn: {
-    padding: "0.8rem 1.2rem",
-    border: "none",
-    borderRadius: "10px",
-    backgroundColor: "#3B82F6",
-    color: "#fff",
-    fontWeight: 600,
-    cursor: "pointer",
-    flex: 1,
-  },
-  learnBtn: {
-    padding: "0.8rem 1.2rem",
-    border: "none",
-    borderRadius: "10px",
-    color: "#fff",
-    fontWeight: 700,
-    cursor: "pointer",
-    flex: 2,
   },
 };
