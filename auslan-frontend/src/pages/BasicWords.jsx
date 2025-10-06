@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import DOMPurify from "dompurify";
+import { QRCodeCanvas } from "qrcode.react";
 
 const STORAGE_KEY = "LN_LEARNED_V2";
 
@@ -422,6 +423,34 @@ export default function BasicWords() {
           </button>
         </div>
       </aside>
+      {/* 📱 Floating QR Code (bottom-right corner) */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: "24px",
+          right: "32px",
+          background: "#fff",
+          border: "2px solid #E5E7EB",
+          borderRadius: "16px",
+          padding: "12px 16px",
+          boxShadow: "0 6px 16px rgba(0,0,0,0.12)",
+          textAlign: "center",
+          zIndex: 9999,
+        }}
+      >
+        <p style={{ fontSize: "13px", marginBottom: "4px", color: "#444" }}>
+          📱 Flashcard Mode
+        </p>
+        <QRCodeCanvas
+          value="https://helloauslan.me/flashcard"
+          size={100}
+          bgColor="#ffffff"
+          fgColor="#000000"
+          level="M"
+          includeMargin={true}
+          style={{ borderRadius: "8px" }}
+        />
+      </div>
     </div>
   );
 }
