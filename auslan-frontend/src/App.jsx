@@ -8,7 +8,7 @@ import LettersNumbers from "./pages/LettersNumbers.jsx";
 import BasicWords from "./pages/BasicWords.jsx";
 import MiniQuiz from "./pages/MiniQuiz.jsx";
 import StoryBook from "./pages/StoryBook.jsx";
-import Flashcard from "./pages/FlashCardMobile";
+import Flashcard from "./pages/Flashcard.jsx";
 
 // Component to scroll to top on route change
 function ScrollToTop() {
@@ -42,7 +42,7 @@ export default function App() {
           <Route path="/quiz" element={<MiniQuiz />} />
           <Route path="/story-book" element={<StoryBook />} />
           <Route path="*" element={<Navigate to="/" replace />} />
-          <Route path="/flashcard" element={<flashcardQR />} />
+          <Route path="/flashcard" element={<Flashcard />} />
         </Routes>
       </div>
     </div>
