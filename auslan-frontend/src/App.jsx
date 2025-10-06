@@ -42,6 +42,7 @@ export default function App() {
           <Route path="/quiz" element={<MiniQuiz />} />
           <Route path="/story-book" element={<StoryBook />} />
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/flashcard" element={<flashcardQR />} />
         </Routes>
       </div>
     </div>
