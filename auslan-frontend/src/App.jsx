@@ -8,7 +8,7 @@ import LettersNumbers from "./pages/LettersNumbers.jsx";
 import BasicWords from "./pages/BasicWords.jsx";
 import MiniQuiz from "./pages/MiniQuiz.jsx";
 import StoryBook from "./pages/StoryBook.jsx";
-import Flashcard from "./pages/Flashcard.jsx"; //  for mobile QR flashcard page
+import Flashcard from "./pages/Flashcard.jsx"; 
 
 // Component: scroll to top on route change
 function ScrollToTop() {
@@ -28,13 +28,13 @@ function ScrollToTop() {
 export default function App() {
   const location = useLocation();
 
-  //  Hide NavBar on login ("/") and on flashcard page (mobile view)
+  // Hide NavBar on login ("/") and on flashcard page (mobile view)
   const hideNav = location.pathname === "/" || location.pathname === "/flashcard";
 
   return (
     <div className="app">
       <ScrollToTop />
-      {/*  Only show NavBar on main app pages */}
+      {/* Only show NavBar on main app pages */}
       {!hideNav && <NavBar />}
 
       <div className="container">
