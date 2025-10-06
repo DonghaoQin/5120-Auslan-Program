@@ -8,27 +8,9 @@ import LettersNumbers from "./pages/LettersNumbers.jsx";
 import BasicWords from "./pages/BasicWords.jsx";
 import MiniQuiz from "./pages/MiniQuiz.jsx";
 import StoryBook from "./pages/StoryBook.jsx";
-import Flashcard from "./pages/Flashcard.jsx";
+import Flashcard from "./pages/Flashcard.jsx"; //  for mobile QR flashcard page
 
-function App() {
-  const location = useLocation();
-  const hideNav = location.pathname === "/flashcard"; // flashcard
-
-  return (
-    <div className="app">
-      {!hideNav && <NavBar />} {/*navbar */}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/words" element={<BasicWords />} />
-        <Route path="/flashcard" element={<Flashcard />} /> {/* for phone */}
-      </Routes>
-    </div>
-  );
-}
-
-export default App;
-
-// Component to scroll to top on route change
+// Component: scroll to top on route change
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -36,7 +18,7 @@ function ScrollToTop() {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: "smooth" // Optional: smooth scrolling animation
+      behavior: "smooth",
     });
   }, [pathname]);
 
@@ -45,20 +27,33 @@ function ScrollToTop() {
 
 export default function App() {
   const location = useLocation();
-  const hideNav = location.pathname === "/";
+
+  //  Hide NavBar on login ("/") and on flashcard page (mobile view)
+  const hideNav = location.pathname === "/" || location.pathname === "/flashcard";
+
   return (
     <div className="app">
       <ScrollToTop />
+      {/*  Only show NavBar on main app pages */}
       {!hideNav && <NavBar />}
+
       <div className="container">
         <Routes>
+          {/*  Public pages */}
           <Route path="/" element={<Login />} />
+
+          {/*  Main app pages */}
           <Route path="/home" element={<Home />} />
           <Route path="/insights" element={<Insights />} />
           <Route path="/learn/letters-numbers" element={<LettersNumbers />} />
           <Route path="/learn/words" element={<BasicWords />} />
           <Route path="/quiz" element={<MiniQuiz />} />
           <Route path="/story-book" element={<StoryBook />} />
+
+          {/*  Mobile QR Flashcard page (independent, no NavBar) */}
+          <Route path="/flashcard" element={<Flashcard />} />
+
+          {/*  Fallback redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
