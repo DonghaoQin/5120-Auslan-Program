@@ -8,7 +8,7 @@ import LettersNumbers from "./pages/LettersNumbers.jsx";
 import BasicWords from "./pages/BasicWords.jsx";
 import MiniQuiz from "./pages/MiniQuiz.jsx";
 import StoryBook from "./pages/StoryBook.jsx";
-import flashcardQR from "./pages/FlashCardMobile";
+import Flashcard from "./pages/FlashCardMobile";
 
 // Component to scroll to top on route change
 function ScrollToTop() {
