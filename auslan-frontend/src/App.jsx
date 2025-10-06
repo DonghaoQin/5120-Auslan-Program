@@ -10,6 +10,24 @@ import MiniQuiz from "./pages/MiniQuiz.jsx";
 import StoryBook from "./pages/StoryBook.jsx";
 import Flashcard from "./pages/Flashcard.jsx";
 
+function App() {
+  const location = useLocation();
+  const hideNav = location.pathname === "/flashcard"; // flashcard
+
+  return (
+    <div className="app">
+      {!hideNav && <NavBar />} {/*navbar */}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/words" element={<BasicWords />} />
+        <Route path="/flashcard" element={<FlashCardMobile />} /> {/* for phone */}
+      </Routes>
+    </div>
+  );
+}
+
+export default App;
+
 // Component to scroll to top on route change
 function ScrollToTop() {
   const { pathname } = useLocation();
