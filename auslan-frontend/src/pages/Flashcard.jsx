@@ -15,6 +15,13 @@ const CATEGORY_COLORS = {
   "Other": "#6B7280",
 };
 
+useEffect(() => {
+  window.history.pushState(null, null, window.location.href);
+  window.onpopstate = function () {
+    window.history.go(1); 
+  };
+}, []);
+
 // same slug + category map logic
 const slug = (s) =>
   (s || "")
