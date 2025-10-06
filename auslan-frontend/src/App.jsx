@@ -20,7 +20,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/words" element={<BasicWords />} />
-        <Route path="/flashcard" element={<FlashCardMobile />} /> {/* for phone */}
+        <Route path="/flashcard" element={<Flashcard />} /> {/* for phone */}
       </Routes>
     </div>
   );
@@ -60,7 +60,6 @@ export default function App() {
           <Route path="/quiz" element={<MiniQuiz />} />
           <Route path="/story-book" element={<StoryBook />} />
           <Route path="*" element={<Navigate to="/" replace />} />
-          <Route path="/flashcard" element={<Flashcard />} />
         </Routes>
       </div>
     </div>
