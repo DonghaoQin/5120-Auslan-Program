@@ -442,7 +442,7 @@ export default function BasicWords() {
           📱 Flashcard Mode
         </p>
         <QRCodeCanvas
-          value="https://helloauslan.me/flashcard"
+          value="http://localhost:5173/flashcard" 
           size={100}
           bgColor="#ffffff"
           fgColor="#000000"
