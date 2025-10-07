@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 const API_URL = "https://auslan-backend.onrender.com/videos/";
 const STORAGE_KEY = "LN_LEARNED_V2";
@@ -12,17 +12,10 @@ const CATEGORY_COLORS = {
   "3B. Everyday/Actions": "#8B5CF6",
   "4A. Basic Questions": "#10B981",
   "4B. Interaction Clarification": "#F59E0B",
-  "Other": "#6B7280",
+  Other: "#6B7280",
 };
 
-useEffect(() => {
-  window.history.pushState(null, null, window.location.href);
-  window.onpopstate = function () {
-    window.history.go(1); 
-  };
-}, []);
-
-// same slug + category map logic
+// --- utility functions ---
 const slug = (s) =>
   (s || "")
     .toString()
@@ -34,30 +27,102 @@ const slug = (s) =>
     .replace(/^_|_$/g, "");
 
 const CATEGORY_MAP = (() => {
-  const C1A = ["thank_you","no","stop","help","seat","drink","sleeping","go_to","now","not"];
-  const C1B = ["hello","bye_bye","apology","ask","welcome","hi"];
-  const C2A = ["mum","brother","sister","baby","you","we","yourself","people","our"];
-  const C2B = ["sad","tired","love","smile","upset","cute","like","bad","pizza","dislike","surprised","dont_know","disappointment","thinking_reflection","annoying"];
-  const C3A = ["play","school","teacher","friend","home","already","finished","big","fun","copy","jump_off"];
-  const C3B = ["wash_face","share","wait","come_here","move","climb","wear","spoon","look","bath","back_of_body","hairbrush"];
-  const C4A = ["what","why","who","how_old"];
-  const C4B = ["again","slow_down","understand","nothing"];
-  const OTHER = ["auslan","deaf_mute","australia","sign_name","dog","apple","world"];
+  const C1A = [
+    "thank_you",
+    "no",
+    "stop",
+    "help",
+    "seat",
+    "drink",
+    "sleeping",
+    "go_to",
+    "now",
+    "not",
+  ];
+  const C1B = ["hello", "bye_bye", "apology", "ask", "welcome", "hi"];
+  const C2A = [
+    "mum",
+    "brother",
+    "sister",
+    "baby",
+    "you",
+    "we",
+    "yourself",
+    "people",
+    "our",
+  ];
+  const C2B = [
+    "sad",
+    "tired",
+    "love",
+    "smile",
+    "upset",
+    "cute",
+    "like",
+    "bad",
+    "pizza",
+    "dislike",
+    "surprised",
+    "dont_know",
+    "disappointment",
+    "thinking_reflection",
+    "annoying",
+  ];
+  const C3A = [
+    "play",
+    "school",
+    "teacher",
+    "friend",
+    "home",
+    "already",
+    "finished",
+    "big",
+    "fun",
+    "copy",
+    "jump_off",
+  ];
+  const C3B = [
+    "wash_face",
+    "share",
+    "wait",
+    "come_here",
+    "move",
+    "climb",
+    "wear",
+    "spoon",
+    "look",
+    "bath",
+    "back_of_body",
+    "hairbrush",
+  ];
+  const C4A = ["what", "why", "who", "how_old"];
+  const C4B = ["again", "slow_down", "understand", "nothing"];
+  const OTHER = [
+    "auslan",
+    "deaf_mute",
+    "australia",
+    "sign_name",
+    "dog",
+    "apple",
+    "world",
+  ];
 
   const m = {};
-  C1A.forEach(k => m[k] = "1A. Essentials_Survival Signs");
-  C1B.forEach(k => m[k] = "1B. Greetings & Social Basics");
-  C2A.forEach(k => m[k] = "2A. Family Members");
-  C2B.forEach(k => m[k] = "2B. Feelings/Needs");
-  C3A.forEach(k => m[k] = "3A. School/Play");
-  C3B.forEach(k => m[k] = "3B. Everyday/Actions");
-  C4A.forEach(k => m[k] = "4A. Basic Questions");
-  C4B.forEach(k => m[k] = "4B. Interaction Clarification");
-  OTHER.forEach(k => m[k] = "Other");
+  C1A.forEach((k) => (m[k] = "1A. Essentials_Survival Signs"));
+  C1B.forEach((k) => (m[k] = "1B. Greetings & Social Basics"));
+  C2A.forEach((k) => (m[k] = "2A. Family Members"));
+  C2B.forEach((k) => (m[k] = "2B. Feelings/Needs"));
+  C3A.forEach((k) => (m[k] = "3A. School/Play"));
+  C3B.forEach((k) => (m[k] = "3B. Everyday/Actions"));
+  C4A.forEach((k) => (m[k] = "4A. Basic Questions"));
+  C4B.forEach((k) => (m[k] = "4B. Interaction Clarification"));
+  OTHER.forEach((k) => (m[k] = "Other"));
   return m;
 })();
+
 const categoryOf = (title) => CATEGORY_MAP[slug(title)] ?? "Other";
 
+// --- main component ---
 export default function FlashCardBasicWords() {
   const [step, setStep] = useState("category"); // "category" | "words" | "video"
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -70,11 +135,18 @@ export default function FlashCardBasicWords() {
       return new Set();
     }
   });
-
   const [words, setWords] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // fetch from same API
+  // 🔒 disable back navigation (keep mobile app isolated)
+  useEffect(() => {
+    window.history.pushState(null, null, window.location.href);
+    window.onpopstate = function () {
+      window.history.go(1);
+    };
+  }, []);
+
+  // fetch video list
   useEffect(() => {
     (async () => {
       try {
@@ -93,13 +165,14 @@ export default function FlashCardBasicWords() {
         });
         setWords(normalized);
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch:", err);
       } finally {
         setLoading(false);
       }
     })();
   }, []);
 
+  // persist learned words
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...learned]));
   }, [learned]);
@@ -207,7 +280,8 @@ export default function FlashCardBasicWords() {
           onClick={() =>
             setLearned((prev) => {
               const next = new Set(prev);
-              if (next.has(selectedWord.title)) next.delete(selectedWord.title);
+              if (next.has(selectedWord.title))
+                next.delete(selectedWord.title);
               else next.add(selectedWord.title);
               return next;
             })
@@ -218,6 +292,8 @@ export default function FlashCardBasicWords() {
       </div>
     );
   }
+
+  return null;
 }
 
 /* --- Mobile-first styles --- */
