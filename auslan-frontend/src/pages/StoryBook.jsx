@@ -1,173 +1,179 @@
-// StoryBook.jsx
 import React, { useEffect, useMemo, useState } from "react";
 
-/** ---------- Story data (14 pages) ---------- */
-const storyData = {
-  title: "I Found a Frog.",
-  cover: "https://i.imgur.com/lSLaM0x.png",
-  pages: [
-    {
-      image: "https://i.imgur.com/fEtytpr.png",
-      text:
-        "Even though I have grandchildren of my own, it seems like it was only yesterday when I returned home from school to find a frog in my bedroom.",
-      interactiveWords: ["frog", "school", "bedroom"],
-    },
-    {
-      image: "https://i.imgur.com/RPSGWGD.png",
-      text:
-        'My mother just chuckled when I yelled out, “I found a frog on my bed.” Now, she knew that I would eventually find one but she let me discover a wonder of Nature that many people miss.',
-      interactiveWords: ["frog", "mother", "Nature"],
-    },
-    {
-      image: "https://i.imgur.com/rWx1mrm.png",
-      text:
-        "You see, a little earlier that spring, when I was 6 years old; I saw some little, black fish in a pond. Since I didn’t have any pets I went home and asked my mother if I could have one.",
-      interactiveWords: ["fish", "pond", "mother"],
-    },
-    {
-      image: "https://i.imgur.com/Y40D3nf.png",
-      text:
-        "After we talked about my catching some of the fish I saw, and the responsibility of having a pet, she agreed.",
-      interactiveWords: ["fish", "pet", "responsibility"],
-    },
-    {
-      image: "https://i.imgur.com/P5s9Jnx.png",
-      text:
-        "She gave me a bowl, told me to go catch a few, and said that while I was out she would prepare their new home. Off I went.",
-      interactiveWords: ["bowl", "few", "home"],
-    },
-    {
-      image: "https://i.imgur.com/SnBUcf5.png",
-      text:
-        "There were so many that they were easy to catch. I filled the bowl and ran home.",
-      interactiveWords: ["many", "easy", "ran"],
-    },
-    {
-      image: "https://i.imgur.com/TQJYDOc.png",
-      text:
-        'When I got home, my mother had an old fish bowl filled with water sitting on the corner of my desk. She asked to see the fish, looked, and with a big smile said, “Tadpoles. – Wow! You are in for a surprise.”',
-      interactiveWords: ["home", "mother", "fish", "smile", "surprise"],
-    },
-    {
-      image: "https://i.imgur.com/TQJYDOc.png",
-      text:
-        "I asked what she meant and she just said that I would have to wait and see, but to watch my fish carefully.",
-      interactiveWords: ["see", "fish"],
-    },
-    {
-      image: "https://i.imgur.com/vfROXNN.png",
-      text:
-        'After a few weeks, I noticed some were changing. “Mom,” I yelled with excitement. “Come here, my fish are growing legs.” She came into my room, looked, smiled, and told me to keep watching.',
-      interactiveWords: ["few", "weeks", "Mom", "here", "fish", "legs", "looked", "smiled"],
-    },
-    {
-      image: "https://i.imgur.com/YSEyB8a.png",
-      text:
-        'After several more weeks, there were more changes. “Mom,” I yelled with excitement. “Come here, my fish are growing front legs and their tail is going away.”',
-      interactiveWords: ["weeks", "Mom", "Come"],
-    },
-    {
-      image: "https://i.imgur.com/BNF9d86.png",
-      text:
-        "A week or so later when I got up, I was amazed. There were more changes. My fish didn’t have tails, their legs were bigger, and they didn’t look like the little black fish I had caught earlier in the Spring.",
-      interactiveWords: ["week", "fish", "legs", "little"],
-    },
-    {
-      image: "https://i.imgur.com/akDqrhB.png",
-      text:
-        'That day, when I returned home from school, is when I yelled out, “I found a frog on my bed.”',
-      interactiveWords: ["school", "bed", "frog"],
-    },
-    {
-      image: "https://i.imgur.com/akDqrhB.png",
-      text:
-        '“Surprise,” yelled mom. “You watched a miracle right before your eyes. A fish changed into a frog.”',
-      interactiveWords: ["mom", "eyes", "fish", "frog"],
-    },
-    {
-      image: "https://i.imgur.com/v3hnEYs.png",
-      text: "Off I went.",
-      interactiveWords: [],
-    },
-  ],
-};
+/* ----------------------------------------------------------------
+   BOOK LIST (DATA)
+   TEAM NOTE:
+   - Add new books by pushing objects into the `books` array below.
+   - Each book requires: id (string), title (string), cover (URL),
+     and pages (array). Each page needs: image (URL), text (string),
+     and optional interactiveWords (array of keywords to trigger Auslan videos).
+   - Keep covers hosted reliably; if a cover fails to load, a placeholder appears.
+------------------------------------------------------------------*/
+const books = [
+  // Book 1: Existing "I Found a Frog."
+  {
+    id: "frog",
+    title: "I Found a Frog.",
+    cover: "https://i.imgur.com/lSLaM0x.png",
+    pages: [
+      { image: "https://i.imgur.com/fEtytpr.png",
+        text:
+          "Even though I have grandchildren of my own, it seems like it was only yesterday when I returned home from school to find a frog in my bedroom.",
+        interactiveWords: ["frog", "school", "bedroom"], },
+      { image: "https://i.imgur.com/RPSGWGD.png",
+        text:
+          'My mother just chuckled when I yelled out, “I found a frog on my bed.” Now, she knew that I would eventually find one but she let me discover a wonder of Nature that many people miss.',
+        interactiveWords: ["frog", "mother", "Nature"], },
+      { image: "https://i.imgur.com/rWx1mrm.png",
+        text:
+          "You see, a little earlier that spring, when I was 6 years old; I saw some little, black fish in a pond. Since I didn’t have any pets I went home and asked my mother if I could have one.",
+        interactiveWords: ["fish", "pond", "mother"], },
+      { image: "https://i.imgur.com/Y40D3nf.png",
+        text:
+          "After we talked about my catching some of the fish I saw, and the responsibility of having a pet, she agreed.",
+        interactiveWords: ["fish", "pet", "responsibility"], },
+      { image: "https://i.imgur.com/P5s9Jnx.png",
+        text:
+          "She gave me a bowl, told me to go catch a few, and said that while I was out she would prepare their new home. Off I went.",
+        interactiveWords: ["bowl", "few", "home"], },
+      { image: "https://i.imgur.com/SnBUcf5.png",
+        text:
+          "There were so many that they were easy to catch. I filled the bowl and ran home.",
+        interactiveWords: ["many", "easy", "ran"], },
+      { image: "https://i.imgur.com/TQJYDOc.png",
+        text:
+          'When I got home, my mother had an old fish bowl filled with water sitting on the corner of my desk. She asked to see the fish, looked, and with a big smile said, “Tadpoles. – Wow! You are in for a surprise.”',
+        interactiveWords: ["home", "mother", "fish", "smile", "surprise"], },
+      { image: "https://i.imgur.com/TQJYDOc.png",
+        text:
+          "I asked what she meant and she just said that I would have to wait and see, but to watch my fish carefully.",
+        interactiveWords: ["see", "fish"], },
+      { image: "https://i.imgur.com/vfROXNN.png",
+        text:
+          'After a few weeks, I noticed some were changing. “Mom,” I yelled with excitement. “Come here, my fish are growing legs.” She came into my room, looked, smiled, and told me to keep watching.',
+        interactiveWords: ["few", "weeks", "Mom", "here", "fish", "legs", "looked", "smiled"], },
+      { image: "https://i.imgur.com/YSEyB8a.png",
+        text:
+          'After several more weeks, there were more changes. “Mom,” I yelled with excitement. “Come here, my fish are growing front legs and their tail is going away.”',
+        interactiveWords: ["weeks", "Mom", "Come"], },
+      { image: "https://i.imgur.com/BNF9d86.png",
+        text:
+          "A week or so later when I got up, I was amazed. There were more changes. My fish didn’t have tails, their legs were bigger, and they didn’t look like the little black fish I had caught earlier in the Spring.",
+        interactiveWords: ["week", "fish", "legs", "little"], },
+      { image: "https://i.imgur.com/akDqrhB.png",
+        text:
+          'That day, when I returned home from school, is when I yelled out, “I found a frog on my bed.”',
+        interactiveWords: ["school", "bed", "frog"], },
+      { image: "https://i.imgur.com/akDqrhB.png",
+        text:
+          '“Surprise,” yelled mom. “You watched a miracle right before your eyes. A fish changed into a frog.”',
+        interactiveWords: ["mom", "eyes", "fish", "frog"], },
+      { image: "https://i.imgur.com/v3hnEYs.png",
+        text: "Off I went.",
+        interactiveWords: [], },
+    ],
+  },
 
-/** ---------- Auslan video mapping ---------- */
+  // Book 2: Sample placeholder (replace with real content/cover)
+  {
+    id: "puppy",
+    title: "The Lost Puppy",
+    cover: "https://i.imgur.com/3q2hJXj.png",
+    pages: [
+      { image: "https://i.imgur.com/8vU8GxS.png", text: "Once I found a little puppy near the park.", interactiveWords: ["puppy", "park"] },
+      { image: "https://i.imgur.com/8vU8GxS.png", text: "We asked neighbours for help and followed the tiny paw prints.", interactiveWords: ["help"] },
+      { image: "https://i.imgur.com/8vU8GxS.png", text: "Finally, we reunited the puppy with its family!", interactiveWords: ["family"] },
+    ],
+  },
+
+  // Book 3: Sample placeholder
+  {
+    id: "tree",
+    title: "The Magic Tree",
+    cover: "https://i.imgur.com/qV7B0bL.png",
+    pages: [
+      { image: "https://i.imgur.com/6v9YvQq.png", text: "There was a tree that whispered in the wind.", interactiveWords: ["tree", "wind"] },
+      { image: "https://i.imgur.com/6v9YvQq.png", text: "Every whisper taught a new word in Auslan.", interactiveWords: ["Auslan", "word"] },
+      { image: "https://i.imgur.com/6v9YvQq.png", text: "Kids gathered to learn and play happily.", interactiveWords: ["learn", "play"] },
+    ],
+  },
+];
+
+/* ----------------------------------------------------------------
+   AUSLAN VIDEO MAPPING
+   - Lowercase keys are recommended (we normalize clicked words).
+   - If a clicked word is not mapped here, no video will open.
+------------------------------------------------------------------*/
 const auslanVideos = {
-  frog:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/32/32980.mp4",
-  school:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/31/31820.mp4",
+  frog: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/32/32980.mp4",
+  school: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/31/31820.mp4",
   bedroom: "https://www.w3schools.com/html/mov_bbb.mp4",
-  mother:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/23/23491_1.mp4",
+  mother: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/23/23491_1.mp4",
   nature: "https://www.w3schools.com/html/mov_bbb.mp4",
-  fish:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/34/34710.mp4",
+  fish: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/34/34710.mp4",
   pond: "https://www.w3schools.com/html/mov_bbb.mp4",
-  pet:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/45/45810_1.mp4",
-  responsibility:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/41/41871_1.mp4",
-  bowl:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/46/46290_1.mp4",
-  few:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/63/63630_1.mp4",
-  home:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/33/33390_1.mp4",
-  many:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/30/30260_1.mp4",
-  easy:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/59/5960.mp4",
-  ran:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/59/59080_1.mp4",
-  smile:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/63/63590_1.mp4",
-  surprise:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/29/29560_1.mp4",
-  see:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/55/5510.mp4",
-  weeks:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/26/26280_1.mp4",
-  here:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/79/7940_1.mp4",
-  legs:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/35/35060.mp4",
-  looked:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/15/15460_1.mp4",
-  mom:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/23/23491_1.mp4",
-  come:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/70/7040_1.mp4",
-  week:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/26/26280_1.mp4",
-  little:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/63/63640_1.mp4",
-  eyes:
-    "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/52/5210.mp4",
+  pet: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/45/45810_1.mp4",
+  responsibility: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/41/41871_1.mp4",
+  bowl: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/46/46290_1.mp4",
+  few: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/63/63630_1.mp4",
+  home: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/33/33390_1.mp4",
+  many: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/30/30260_1.mp4",
+  easy: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/59/5960.mp4",
+  ran: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/59/59080_1.mp4",
+  smile: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/63/63590_1.mp4",
+  surprise: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/29/29560_1.mp4",
+  see: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/55/5510.mp4",
+  weeks: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/26/26280_1.mp4",
+  here: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/79/7940_1.mp4",
+  legs: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/35/35060.mp4",
+  looked: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/15/15460_1.mp4",
+  mom: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/23/23491_1.mp4",
+  come: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/70/7040_1.mp4",
+  week: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/26/26280_1.mp4",
+  little: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/63/63640_1.mp4",
+  eyes: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/52/5210.mp4",
 };
 
-/** ---------- Component ---------- */
 export default function StoryBook() {
-  const [pageIndex, setPageIndex] = useState(-1); // -1 = cover
+  /* ----------------------- BOOKSHELF / READER TOGGLE -----------------------
+     - selectedBookIndex === null → show bookshelf
+     - selectedBookIndex !== null → show reader for that book
+  --------------------------------------------------------------------------*/
+  const [selectedBookIndex, setSelectedBookIndex] = useState(null);
+  const currentBook = selectedBookIndex == null ? null : books[selectedBookIndex];
+
+  /* --------------------------- READER STATE -------------------------------
+     - pageIndex: -1 means cover page
+     - videoSrc: current Auslan video (if any)
+     - flip/flipDirection: small page flip animation
+  --------------------------------------------------------------------------*/
+  const [pageIndex, setPageIndex] = useState(-1);
   const [videoSrc, setVideoSrc] = useState(null);
   const [clickedWord, setClickedWord] = useState(null);
   const [flip, setFlip] = useState(false);
   const [flipDirection, setFlipDirection] = useState("next");
 
+  // When switching books, reset reading state
+  useEffect(() => {
+    setPageIndex(-1);
+    setVideoSrc(null);
+    setClickedWord(null);
+  }, [selectedBookIndex]);
+
   const isCover = pageIndex === -1;
 
+  // Compute left and right pages for the two-page layout
   const leftPage = useMemo(
-    () => (isCover ? { cover: true } : storyData.pages[pageIndex]),
-    [isCover, pageIndex]
+    () => (!currentBook ? null : isCover ? { cover: true } : currentBook.pages[pageIndex]),
+    [currentBook, isCover, pageIndex]
   );
   const rightPage = useMemo(() => {
-    if (isCover) return null;
+    if (!currentBook || isCover) return null;
     const nextIdx = pageIndex + 1;
-    return nextIdx < storyData.pages.length ? storyData.pages[nextIdx] : null;
-  }, [isCover, pageIndex]);
+    return nextIdx < currentBook.pages.length ? currentBook.pages[nextIdx] : null;
+  }, [currentBook, isCover, pageIndex]);
 
-  // 交互词点击（大小写不敏感）
+  // Handle interactive word clicks → open Auslan video if mapped
   const handleWordClick = (raw) => {
     const clean = String(raw).replace(/[^a-zA-Z]/g, "");
     const key = clean.toLowerCase();
@@ -177,9 +183,10 @@ export default function StoryBook() {
     setTimeout(() => setClickedWord(null), 800);
   };
 
-  // 翻页（修正边界）
+  // Next / Previous page with bounds and small flip animation
   const goNext = () => {
-    const total = storyData.pages.length;
+    if (!currentBook) return;
+    const total = currentBook.pages.length;
     setFlipDirection("next");
     setFlip(true);
     setTimeout(() => {
@@ -187,12 +194,13 @@ export default function StoryBook() {
         setPageIndex(0);
       } else if (pageIndex + 2 < total) {
         setPageIndex(pageIndex + 2);
-      } // 否则已是最后一对/最后一页
+      }
       setFlip(false);
     }, 300);
   };
 
   const goPrev = () => {
+    if (!currentBook) return;
     setFlipDirection("prev");
     setFlip(true);
     setTimeout(() => {
@@ -206,12 +214,13 @@ export default function StoryBook() {
     }, 300);
   };
 
-  const canGoNext = isCover ? storyData.pages.length > 0 : pageIndex + 2 < storyData.pages.length;
-  const canGoPrev = !isCover;
+  const canGoNext = currentBook ? (isCover ? currentBook.pages.length > 0 : pageIndex + 2 < currentBook.pages.length) : false;
+  const canGoPrev = currentBook ? !isCover : false;
 
-  // 键盘快捷键
+  // Keyboard shortcuts (← → to navigate, Esc to close video)
   useEffect(() => {
     const onKey = (e) => {
+      if (!currentBook) return;
       if (videoSrc) {
         if (e.key === "Escape") setVideoSrc(null);
         return;
@@ -221,8 +230,9 @@ export default function StoryBook() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [canGoNext, canGoPrev, videoSrc, pageIndex, isCover]);
+  }, [currentBook, canGoNext, canGoPrev, videoSrc, pageIndex, isCover]);
 
+  // Flip style for the two-page container
   const flipStyle = flip
     ? {
         transform: flipDirection === "next" ? "rotateY(-180deg)" : "rotateY(180deg)",
@@ -230,7 +240,7 @@ export default function StoryBook() {
       }
     : { transform: "rotateY(0deg)", transition: "transform 0.3s ease" };
 
-  // 子页面
+  /* ---------------------------- PAGE COMPONENT ---------------------------- */
   const Page = ({ page, bg }) => {
     if (!page) return <div style={{ flex: 1 }} />;
     if (page.cover) {
@@ -241,13 +251,13 @@ export default function StoryBook() {
             padding: "1rem",
             textAlign: "center",
             background: "#FFE0B2",
-            borderRadius: "10px",
-            boxShadow: "0 3px 10px rgba(0,0,0,0.3)",
+            borderRadius: "16px",
+            boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
             minHeight: 420,
           }}
         >
-          <img src={storyData.cover} alt="Cover" style={{ maxWidth: "80%", borderRadius: 8 }} />
-          <h2 style={{ marginTop: "1rem", color: "#333" }}>{storyData.title}</h2>
+          <img src={currentBook.cover} alt="Cover" style={{ maxWidth: "80%", borderRadius: 12 }} />
+          <h2 style={{ marginTop: "1rem", color: "#3e2a12" }}>{currentBook.title}</h2>
           <p style={{ color: "#6b4e16" }}>Click “Next” or press → to start</p>
         </div>
       );
@@ -262,12 +272,12 @@ export default function StoryBook() {
           padding: "1rem",
           textAlign: "center",
           background: bg,
-          borderRadius: "10px",
-          boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
+          borderRadius: "16px",
+          boxShadow: "0 10px 24px rgba(0,0,0,0.10)",
           minHeight: 420,
         }}
       >
-        <img src={page.image} alt="Page" style={{ maxWidth: "100%", borderRadius: "10px" }} />
+        <img src={page.image} alt="Page" style={{ maxWidth: "100%", borderRadius: "12px" }} />
         <p style={{ fontSize: "1.1rem", lineHeight: "1.6", marginTop: "0.6rem", color: "#333" }}>
           {page.text.split(" ").map((word, i) => {
             const cleanWord = word.replace(/[^a-zA-Z]/g, "");
@@ -289,7 +299,7 @@ export default function StoryBook() {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = "#004D40";
-                    e.currentTarget.style.transform = "scale(1.2) rotate(-2deg)";
+                    e.currentTarget.style.transform = "scale(1.1) rotate(-2deg)";
                     e.currentTarget.style.textShadow = "0 0 8px #80CBC4";
                   }}
                   onMouseLeave={(e) => {
@@ -309,15 +319,130 @@ export default function StoryBook() {
     );
   };
 
+  /* ----------------------- COVER IMAGE WITH FALLBACK ---------------------- */
+  const CoverImage = ({ src, alt }) => {
+    const [error, setError] = useState(false);
+    if (error || !src) {
+      return (
+        <div
+          style={{
+            height: 300,
+            borderRadius: 12,
+            background: "repeating-linear-gradient(45deg,#fff6e9,#fff6e9 10px,#ffe9cc 10px,#ffe9cc 20px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#8d6e63",
+            fontWeight: 700,
+          }}
+        >
+          Cover unavailable
+        </div>
+      );
+    }
+    return (
+      <img
+        src={src}
+        alt={alt}
+        onError={() => setError(true)}
+        style={{ width: "100%", height: 300, objectFit: "cover", borderRadius: 12 }}
+      />
+    );
+  };
+
+  /* ------------------------------ BOOKSHELF ------------------------------- */
+  const BookShelf = () => {
+    return (
+      <div
+        style={{
+          background: "linear-gradient(135deg, #fffdf6 0%, #fff3e0 100%)",
+          minHeight: "100vh",
+          padding: "2.5rem 1rem 3.5rem",
+          fontFamily: "'Comic Sans MS', cursive",
+        }}
+      >
+        {/* Top description card */}
+        <div
+          style={{
+            background: "linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%)",
+            borderRadius: "22px",
+            padding: "2rem 1.2rem",
+            margin: "0 auto 2rem",
+            textAlign: "center",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
+            maxWidth: 900,
+          }}
+        >
+          <h1 style={{ color: "#4e2a0b", marginBottom: "0.6rem", letterSpacing: ".5px" }}>
+            🐸 Story Time with Auslan!
+          </h1>
+          <p style={{ color: "#5d4037", fontSize: "1rem", lineHeight: "1.6", margin: 0 }}>
+            Explore our interactive storybooks to learn Auslan words while reading fun tales.
+            Click a story below to begin your journey. 💬✨
+          </p>
+        </div>
+
+        {/* Responsive grid of book cards */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: "22px",
+            maxWidth: 1100,
+            margin: "0 auto",
+          }}
+        >
+          {books.map((b, idx) => (
+            <button
+              key={b.id}
+              onClick={() => setSelectedBookIndex(idx)}
+              style={{
+                border: "none",
+                background: "linear-gradient(180deg,#fff8e1,#ffe0b2)",
+                borderRadius: 20,
+                boxShadow: "0 10px 24px rgba(0,0,0,.12)",
+                cursor: "pointer",
+                overflow: "hidden",
+                padding: 14,
+                transition: "transform .22s ease, box-shadow .22s ease",
+                textAlign: "center",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px) scale(1.02)";
+                e.currentTarget.style.boxShadow = "0 16px 34px rgba(0,0,0,.16)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0) scale(1)";
+                e.currentTarget.style.boxShadow = "0 10px 24px rgba(0,0,0,.12)";
+              }}
+            >
+              <CoverImage src={b.cover} alt={b.title} />
+              <div style={{ marginTop: 10, fontWeight: 800, color: "#6b4e16", fontSize: "1.05rem" }}>
+                {b.title}
+              </div>
+              <div style={{ fontSize: 12, color: "#8d6e63" }}>{b.pages.length} pages</div>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  /* ------------------------------ RENDER --------------------------------- */
+  if (currentBook == null) {
+    return <BookShelf />;
+  }
+
+  // Reader view
   return (
     <div style={{ padding: "2rem", fontFamily: "'Comic Sans MS', cursive", perspective: "1200px" }}>
-      {/* 书本 */}
+      {/* Two-page book area */}
       <div
         style={{
           display: "flex",
           justifyContent: "center",
           transformStyle: "preserve-3d",
-          gap: 12,
+          gap: 14,
           marginTop: "4rem",
           ...flipStyle,
         }}
@@ -326,125 +451,104 @@ export default function StoryBook() {
         <Page page={rightPage} bg="#FFF3E0" />
       </div>
 
-      {/* 导航 */}
+      {/* Navigation bar */}
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           marginTop: "2rem",
-          maxWidth: 600,
+          maxWidth: 820,
           marginInline: "auto",
-          gap: 20,
-          padding: "20px",
-          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%)",
+          gap: 12,
+          padding: "16px",
+          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.92) 100%)",
           borderRadius: "20px",
           backdropFilter: "blur(10px)",
           border: "1px solid rgba(255, 255, 255, 0.3)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+          boxShadow: "0 14px 34px rgba(0, 0, 0, 0.12)",
         }}
       >
-        <button 
-          onClick={goPrev} 
+        {/* Back to bookshelf */}
+        <button
+          onClick={() => setSelectedBookIndex(null)}
+          style={{
+            padding: "10px 16px",
+            borderRadius: 20,
+            border: "none",
+            background: "linear-gradient(135deg,#ffd3a5,#fd6585)",
+            color: "#4e2a0b",
+            fontWeight: 800,
+            cursor: "pointer",
+          }}
+        >
+          ⬅ Back to Bookshelf
+        </button>
+
+        <button
+          onClick={goPrev}
           disabled={!canGoPrev}
           style={{
-            padding: "12px 24px",
+            padding: "12px 20px",
             borderRadius: "25px",
             border: "none",
-            background: canGoPrev 
-              ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" 
+            background: canGoPrev
+              ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
               : "linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%)",
             color: canGoPrev ? "white" : "#999",
-            fontWeight: "600",
+            fontWeight: "700",
             fontSize: "14px",
             cursor: canGoPrev ? "pointer" : "not-allowed",
-            boxShadow: canGoPrev 
-              ? "0 8px 20px rgba(102, 126, 234, 0.3)" 
+            boxShadow: canGoPrev
+              ? "0 8px 20px rgba(102, 126, 234, 0.3)"
               : "0 4px 10px rgba(0, 0, 0, 0.1)",
-            transition: "all 0.3s ease",
-            transform: "translateY(0)",
-            fontFamily: "'Inter', sans-serif",
-            minWidth: "90px",
-          }}
-          onMouseEnter={(e) => {
-            if (canGoPrev) {
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = "0 12px 25px rgba(102, 126, 234, 0.4)";
-              e.currentTarget.style.background = "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)";
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (canGoPrev) {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 8px 20px rgba(102, 126, 234, 0.3)";
-              e.currentTarget.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
-            }
+            minWidth: 110,
           }}
         >
           ← Previous
         </button>
-        <span 
-          style={{ 
-            color: "#555", 
-            fontWeight: "500",
+
+        <span
+          style={{
+            color: "#555",
+            fontWeight: "700",
             fontSize: "14px",
-            padding: "8px 16px",
+            padding: "8px 14px",
             background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
-            borderRadius: "20px",
-            border: "1px solid rgba(0, 0, 0, 0.1)",
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-            fontFamily: "'Inter', sans-serif",
-            letterSpacing: "0.5px",
+            borderRadius: "16px",
+            border: "1px solid rgba(0, 0, 0, 0.08)",
           }}
         >
           {isCover
-            ? "📖 Cover Page"
-            : `📄 Page ${pageIndex + 1}${rightPage ? "-" + (pageIndex + 2) : ""} of ${
-                storyData.pages.length
-              }`}
+            ? `📖 ${currentBook.title} — Cover`
+            : `📄 Page ${pageIndex + 1}${rightPage ? "-" + (pageIndex + 2) : ""} / ${currentBook.pages.length}`}
         </span>
-        <button 
-          onClick={goNext} 
+
+        <button
+          onClick={goNext}
           disabled={!canGoNext}
           style={{
-            padding: "12px 24px",
+            padding: "12px 20px",
             borderRadius: "25px",
             border: "none",
-            background: canGoNext 
-              ? "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)" 
+            background: canGoNext
+              ? "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)"
               : "linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%)",
             color: canGoNext ? "#8b4513" : "#999",
-            fontWeight: "600",
+            fontWeight: "700",
             fontSize: "14px",
             cursor: canGoNext ? "pointer" : "not-allowed",
-            boxShadow: canGoNext 
-              ? "0 8px 20px rgba(252, 182, 159, 0.3)" 
+            boxShadow: canGoNext
+              ? "0 8px 20px rgba(252, 182, 159, 0.3)"
               : "0 4px 10px rgba(0, 0, 0, 0.1)",
-            transition: "all 0.3s ease",
-            transform: "translateY(0)",
-            fontFamily: "'Inter', sans-serif",
-            minWidth: "90px",
-          }}
-          onMouseEnter={(e) => {
-            if (canGoNext) {
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = "0 12px 25px rgba(252, 182, 159, 0.4)";
-              e.currentTarget.style.background = "linear-gradient(135deg, #fde2c0 0%, #fa9d8d 100%)";
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (canGoNext) {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 8px 20px rgba(252, 182, 159, 0.3)";
-              e.currentTarget.style.background = "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)";
-            }
+            minWidth: 110,
           }}
         >
           Next →
         </button>
       </div>
 
-      {/* 视频弹窗 */}
+      {/* Video modal */}
       {videoSrc && (
         <div
           onClick={() => setVideoSrc(null)}
@@ -458,10 +562,7 @@ export default function StoryBook() {
             zIndex: 1000,
           }}
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{ position: "relative", textAlign: "center" }}
-          >
+          <div onClick={(e) => e.stopPropagation()} style={{ position: "relative", textAlign: "center" }}>
             <button
               onClick={() => setVideoSrc(null)}
               aria-label="Close video"
@@ -479,21 +580,6 @@ export default function StoryBook() {
                 fontWeight: "700",
                 fontSize: "18px",
                 boxShadow: "0 6px 20px rgba(238, 90, 36, 0.3)",
-                transition: "all 0.3s ease",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transform: "scale(1)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.1) rotate(90deg)";
-                e.currentTarget.style.boxShadow = "0 8px 25px rgba(238, 90, 36, 0.5)";
-                e.currentTarget.style.background = "linear-gradient(135deg, #ff5252 0%, #d63031 100%)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1) rotate(0deg)";
-                e.currentTarget.style.boxShadow = "0 6px 20px rgba(238, 90, 36, 0.3)";
-                e.currentTarget.style.background = "linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)";
               }}
             >
               ✕

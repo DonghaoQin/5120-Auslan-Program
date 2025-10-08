@@ -4,7 +4,7 @@ import LNQuiz from "./LNQuiz.jsx";
 import WordQuiz from "./WordQuiz.jsx";
 
 export default function MiniQuizHub() {
-  const [mode, setMode] = useState(null); // null | "ln" | "words"
+  const [mode, setMode] = useState(null); 
 
   const BackButton = ({ onClick }) => (
     <button
