@@ -82,7 +82,7 @@ button:focus-visible {
   }
 }
 
-/* === 新增，防止页面快速滚动“快进跳过” === */
+
 .scroll-hero {
   overscroll-behavior: contain;
 }

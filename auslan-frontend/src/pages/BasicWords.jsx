@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import DOMPurify from "dompurify";
-import { QRCodeCanvas } from "qrcode.react";
+// import { QRCodeCanvas } from "qrcode.react";
 
 const STORAGE_KEY = "LN_LEARNED_V2";
 
@@ -423,7 +423,7 @@ export default function BasicWords() {
           </button>
         </div>
       </aside>
-      {/* 📱 Floating QR Code (bottom-right corner) */}
+      {/* 📱 Floating QR Code (bottom-right corner)
       <div
         style={{
           position: "fixed",
@@ -450,7 +450,7 @@ export default function BasicWords() {
           includeMargin={true}
           style={{ borderRadius: "8px" }}
         />
-      </div>
+      </div> */}
     </div>
   );
 }
