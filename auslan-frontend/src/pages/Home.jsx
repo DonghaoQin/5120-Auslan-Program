@@ -8,13 +8,10 @@ import HomeLeft from "../assets/Homeleftcard.png";
 import HomeMiddle from "../assets/Homemiddlecard.png";
 import HomeRight from "../assets/Homerightcard.png";
 
-
-
-
 export default function Home() {
   const nav = useNavigate();
 
-  /* ---------- 页面与各区样式 ---------- */
+  /* ---------- Page & section styles ---------- */
   const pageStyle = {
     minHeight: "100vh",
     fontFamily: "Inter, system-ui, sans-serif",
@@ -38,8 +35,7 @@ export default function Home() {
   const overlay = {
     position: "absolute",
     inset: 0,
-    background:
-      "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.35) 100%)",
+    background: "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.35) 100%)",
   };
   const centerWrap = {
     position: "relative",
@@ -82,7 +78,7 @@ export default function Home() {
     margin: "300px auto 0 auto",
   };
 
-  /* ---------- Scroll 动画：两幕在一个 pin 区 ---------- */
+  /* ---------- Scroll-driven scene (two acts within one pinned area) ---------- */
   useEffect(() => {
     const gsapRef = window.gsap;
     const ST = window.ScrollTrigger;
@@ -91,50 +87,47 @@ export default function Home() {
     gsapRef.registerPlugin(ST);
     ST.normalizeScroll(true);
 
-    // 初始：幕1文案左上，幕2文案居中隐藏
+    // Initial positions: copy1 visible at top-left; copy2 centered but hidden
     gsapRef.set(".sh-copy1", { left: "6%", top: "10%", xPercent: 0, y: 0, opacity: 1 });
     gsapRef.set(".sh-copy2", { left: "50%", top: "10%", xPercent: -50, opacity: 0 });
 
-     // 让文字从底部浮现
-    // 文字
+    // Enter animation for "Letters" section text
     gsapRef.fromTo(
       ".letters-section-text",
       { y: 80, opacity: 0 },
       {
         y: 0,
         opacity: 1,
-        duration: 1.5,          // 动画更慢
+        duration: 1.5,
         ease: "power3.out",
         scrollTrigger: {
           trigger: ".letters-section-text",
-          start: "top 60%",     // 元素到视口中下方才触发
-          end: "bottom 60%",    // 动画区间更平滑
+          start: "top 60%",
+          end: "bottom 60%",
           toggleActions: "play none none reverse",
         },
       }
     );
 
-    // 图片
+    // Enter animation for "Letters" section image
     gsapRef.fromTo(
       ".letters-section-img",
       { y: 120, opacity: 0 },
       {
         y: 0,
         opacity: 1,
-        duration: 1.8,          // 动画更慢
+        duration: 1.8,
         ease: "power3.out",
         scrollTrigger: {
           trigger: ".letters-section-img",
-          start: "top 15%",     // 更靠近视口才触发
+          start: "top 15%",
           end: "bottom 65%",
           toggleActions: "play none none reverse",
         },
       }
     );
 
-
-    
-
+    // Main timeline: pin the scene and orchestrate transitions
     const tl = gsapRef.timeline({
       scrollTrigger: {
         trigger: ".scroll-hero",
@@ -155,10 +148,10 @@ export default function Home() {
 
     tl.addLabel("stage0", 0);
 
-    // 人物抬升 & 微放大
+    // Lift and slightly scale the centered photo
     tl.to(".sh-photo", { yPercent: -10, scale: 1.15, duration: 1 }, 0).addLabel("stage1");
 
-    // 白框扩张为整屏
+    // Expand the white frame to full-screen
     tl.to(
       ".sh-frame",
       {
@@ -176,10 +169,10 @@ export default function Home() {
       0.1
     ).addLabel("stage2");
 
-    // 两侧卡片出现
+    // Reveal side cards
     tl.to(".sh-side", { opacity: 1, y: 0, duration: 0.8, stagger: 0.1 }, 0.35).addLabel("stage3");
 
-    // 文案切换
+    // Crossfade copy: hide copy1, show copy2
     tl.to(".sh-copy1", { opacity: 0, duration: 0.5 }, 0.45)
       .to(".sh-copy2", { opacity: 1, duration: 0.8 }, 0.75)
       .addLabel("stage4");
@@ -190,9 +183,7 @@ export default function Home() {
     };
   }, []);
 
-
-
-  // ✅ 卡片公共样式 & hover 工具（放在组件里、但不在 useEffect 里面）
+  /* ---------- Shared card styles and hover helpers ---------- */
   const cardStyle = (c1, c2) => ({
     cursor: "pointer",
     border: "none",
@@ -218,28 +209,18 @@ export default function Home() {
     e.currentTarget.style.boxShadow = "0 18px 40px rgba(0,0,0,.08)";
   };
 
-
   return (
     <div style={pageStyle}>
-      {/* 1) 顶部视频区 */}
+      {/* 1) Top background video hero */}
       <section style={videoSection}>
-        <video
-          style={bgVideo}
-          src={homemovie}
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={heroBg}
-        />
+        <video style={bgVideo} src={homemovie} autoPlay muted loop playsInline poster={heroBg} />
         <div style={overlay} />
 
         <div style={centerWrap}>
           <div>
             <h1 style={videoTitle}>Unlock your Auslan learning</h1>
             <p style={videoSub}>
-              Learn letters, numbers, and everyday words together — also with
-              story book.
+              Learn letters, numbers, and everyday words together — also with story book.
             </p>
             <button
               style={ctaPrimary}
@@ -262,19 +243,10 @@ export default function Home() {
         <div className="scroll-down">⮟</div>
       </section>
 
-      {/* 2) 同一场景两幕：紧跟视频下方 */}
-      <section
-        className="scroll-hero"
-        style={{
-          position: "relative",
-          minHeight: "200vh",
-        }}
-      >
-        <div
-          className="scroll-hero__pin"
-          style={{ position: "relative", height: "100vh", overflow: "hidden" }}
-        >
-          {/* 幕一：整屏棕色背景 */}
+      {/* 2) Two-act scroll scene pinned in the viewport */}
+      <section className="scroll-hero" style={{ position: "relative", minHeight: "200vh" }}>
+        <div className="scroll-hero__pin" style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
+          {/* Act 1: full-screen brown gradient background */}
           <div
             className="sh-bg"
             style={{
@@ -285,7 +257,7 @@ export default function Home() {
             }}
           />
 
-          {/* 幕一：文案 */}
+          {/* Act 1: copy block */}
           <div
             className="sh-copy1"
             style={{
@@ -307,7 +279,9 @@ export default function Home() {
               What is Auslan?
             </h1>
             <p style={{ fontSize: "1.1rem", lineHeight: 1.7, opacity: 0.95 }}>
-              Australian Sign Language (Auslan) is the sign language of the deaf community in Australia. It's a rich, complete language with its own grammar, vocabulary, and cultural nuances.
+              Australian Sign Language (Auslan) is the sign language of the deaf community in
+              Australia. It's a rich, complete language with its own grammar, vocabulary, and
+              cultural nuances.
             </p>
             <button
               style={{
@@ -327,7 +301,7 @@ export default function Home() {
             </button>
           </div>
 
-          {/* 幕二：白框（初始小，后面扩张为整屏） */}
+          {/* Act 2: white frame that expands to full-screen */}
           <div
             className="sh-frame"
             style={{
@@ -344,7 +318,7 @@ export default function Home() {
             }}
           />
 
-          {/* 幕二：左侧卡片 */}
+          {/* Act 2: left card */}
           <div
             className="sh-side sh-left"
             style={{
@@ -378,16 +352,14 @@ export default function Home() {
                 width: "90%",
               }}
             >
-              <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>
-                Trends
-              </h3>
+              <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>Trends</h3>
               <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
                 How learning needs are evolving for DHH people
               </p>
             </div>
           </div>
 
-          {/* 幕二：中间卡片 */}
+          {/* Act 2: center card */}
           <div
             style={{
               position: "absolute",
@@ -420,16 +392,14 @@ export default function Home() {
                 width: "90%",
               }}
             >
-              <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>
-                Challenges
-              </h3>
+              <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>Challenges</h3>
               <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
                 Barriers in education and everyday communication
               </p>
             </div>
           </div>
 
-          {/* 幕二：右侧卡片 */}
+          {/* Act 2: right card */}
           <div
             className="sh-side sh-right"
             style={{
@@ -463,16 +433,14 @@ export default function Home() {
                 width: "90%",
               }}
             >
-              <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>
-                Resources
-              </h3>
+              <h3 style={{ color: "#111", fontSize: 20, fontWeight: 800, margin: 0 }}>Resources</h3>
               <p style={{ color: "#333", fontSize: 14, marginTop: 6 }}>
                 Support tools and strategies that make a difference
               </p>
             </div>
           </div>
 
-          {/* 幕二：文案 */}
+          {/* Act 2: copy block */}
           <div
             className="sh-copy2"
             style={{
@@ -494,8 +462,8 @@ export default function Home() {
               Why people need Auslan?
             </h1>
             <p style={{ fontSize: "1.1rem", lineHeight: 1.7, opacity: 0.95, margin: "0 auto" }}>
-              Auslan is more than signs — it’s culture, identity, and connection.
-              Explore its richness and why it matters.
+              Auslan is more than signs — it’s culture, identity, and connection. Explore its
+              richness and why it matters.
             </p>
             <button
               style={{
@@ -532,194 +500,178 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 3) Bottom activity grid (2x2) + "Pick for me" */}
+      <section
+        id="activities"
+        style={{
+          minHeight: "100vh",
+          padding: "80px 20px 40px",
+          textAlign: "center",
+          background: "radial-gradient(1200px 600px at 50% 0%, rgba(255,255,255,0.9), #e6f7f7)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <h2 style={{ fontSize: "clamp(2rem,4vw,2.6rem)", marginBottom: 12 }}>
+          Choose Your Activity
+        </h2>
+        <p style={{ opacity: 0.8, margin: "0 0 24px" }}>Pick one to continue learning Auslan.</p>
 
-       {/* 3) 页面最下方 4个按钮（两行两列） */}
-        <section
-          id="activities"
-          style={{
-            minHeight: "100vh",
-            padding: "80px 20px 40px",
-            textAlign: "center",
-            background:
-              "radial-gradient(1200px 600px at 50% 0%, rgba(255,255,255,0.9), #e6f7f7)",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <h2 style={{ fontSize: "clamp(2rem,4vw,2.6rem)", marginBottom: 12 }}>
-            Choose Your Activity
-          </h2>
-          <p style={{ opacity: 0.8, margin: "0 0 24px" }}>
-            Pick one to continue learning Auslan.
-          </p>
+        {/* Collect refs for the four cards so "Pick for me" can highlight one */}
+        {(() => {
+          const refs = (window._activityRefs ||= { current: [] });
 
-          {/* 用 ref 收集四个卡片，方便“Pick for me”高亮 */}
-          {(() => {
-            const refs = (window._activityRefs ||= { current: [] });
+          // Random picker with easing: cycles through cards quickly then slows down to the final selection
+          window.pickActivityForMe = () => {
+            const refs = (window._activityRefs ||= { current: [] }).current.filter(Boolean);
+            if (!refs.length) return;
 
-            // 小工具：随机选中 + 平滑滚动 + 2秒高亮
-            // 让四个按钮按顺序滚动，高亮从快到慢，最后停在随机项
-            window.pickActivityForMe = () => {
-              const refs = (window._activityRefs ||= { current: [] }).current.filter(Boolean);
-              if (!refs.length) return;
+            // Tunable parameters
+            const duration = 1800; // total duration in ms
+            const minCycles = 2; // minimum full cycles
+            const extraCycles = 2; // up to N extra cycles
 
-              // —— 可调参数 —— //
-              const duration = 1800;           // 总时长：1.8s（越大越慢）
-              const minCycles = 2;             // 至少转 2 圈
-              const extraCycles = 2;           // 最多再多 0~2 圈
-              // ———————————— //
+            const targetOffset = Math.floor(Math.random() * refs.length);
+            const totalSteps =
+              (minCycles + Math.floor(Math.random() * (extraCycles + 1))) * refs.length + targetOffset;
 
-              const targetOffset = Math.floor(Math.random() * refs.length); // 最终指向偏移
-              const totalSteps = (minCycles + Math.floor(Math.random() * (extraCycles + 1))) * refs.length + targetOffset;
+            const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+            const oldShadow = new WeakMap();
 
-              const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);  // 由快到慢
-              const oldShadow = new WeakMap();
+            let lastStep = -1;
+            const t0 = performance.now();
 
-              let lastStep = -1;
-              const t0 = performance.now();
+            function unhighlight(el) {
+              if (!el) return;
+              el.style.transform = "translateY(0)";
+              el.style.boxShadow = oldShadow.get(el) ?? "";
+              el.style.outline = "";
+            }
+            function highlight(el, strong = false) {
+              if (!oldShadow.has(el)) oldShadow.set(el, el.style.boxShadow);
+              el.style.transform = "translateY(-4px)";
+              el.style.boxShadow = strong
+                ? "0 0 0 8px rgba(80,160,255,.35), 0 26px 60px rgba(0,0,0,.16)"
+                : "0 0 0 6px rgba(80,160,255,.25), 0 22px 60px rgba(0,0,0,.16)";
+              el.style.outline = "3px solid rgba(0,0,0,.10)";
+            }
 
-              function unhighlight(el) {
-                if (!el) return;
-                el.style.transform = "translateY(0)";
-                el.style.boxShadow = oldShadow.get(el) ?? "";
-                el.style.outline = "";
-              }
-              function highlight(el, strong = false) {
-                if (!oldShadow.has(el)) oldShadow.set(el, el.style.boxShadow);
-                el.style.transform = "translateY(-4px)";
-                el.style.boxShadow = strong
-                  ? "0 0 0 8px rgba(80,160,255,.35), 0 26px 60px rgba(0,0,0,.16)"
-                  : "0 0 0 6px rgba(80,160,255,.25), 0 22px 60px rgba(0,0,0,.16)";
-                el.style.outline = "3px solid rgba(0,0,0,.10)";
-              }
+            function frame(now) {
+              const t = Math.min(1, (now - t0) / duration);
+              const step = Math.floor(easeOutCubic(t) * totalSteps);
 
-              function frame(now) {
-                const t = Math.min(1, (now - t0) / duration);
-                const step = Math.floor(easeOutCubic(t) * totalSteps);
-
-                if (step !== lastStep) {
-                  // 取消上一个
-                  if (lastStep >= 0) unhighlight(refs[lastStep % refs.length]);
-
-                  // 高亮当前
-                  const el = refs[step % refs.length];
-                  
-                  highlight(el);
-                  lastStep = step;
-                }
-
-                if (t < 1) {
-                  requestAnimationFrame(frame);
-                } else {
-                  // 最终落点再加强高亮 2 秒
-                  const selected = refs[lastStep % refs.length];
-                  highlight(selected, true);
-                  setTimeout(() => {
-                    refs.forEach((el) => el !== selected && unhighlight(el));
-                  }, 2000);
-                }
+              if (step !== lastStep) {
+                if (lastStep >= 0) unhighlight(refs[lastStep % refs.length]);
+                const el = refs[step % refs.length];
+                highlight(el);
+                lastStep = step;
               }
 
-              requestAnimationFrame(frame);
-            };
+              if (t < 1) {
+                requestAnimationFrame(frame);
+              } else {
+                // Keep the final selection strongly highlighted for 2s
+                const selected = refs[lastStep % refs.length];
+                highlight(selected, true);
+                setTimeout(() => {
+                  refs.forEach((el) => el !== selected && unhighlight(el));
+                }, 2000);
+              }
+            }
 
+            requestAnimationFrame(frame);
+          };
 
-            return (
-              <>
-                {/* 固定 2x2 网格（窄屏自动一列） */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, minmax(280px, 1fr))",
-                    gridAutoRows: "1fr",
-                    gap: 24,
-                    maxWidth: 1100,
-                    margin: "0 auto",
-                  }}
+          return (
+            <>
+              {/* Fixed 2x2 grid (stacks to 1 column on small screens) */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, minmax(280px, 1fr))",
+                  gridAutoRows: "1fr",
+                  gap: 24,
+                  maxWidth: 1100,
+                  margin: "0 auto",
+                }}
+              >
+                {/* Letters & Numbers */}
+                <button
+                  ref={(el) => (refs.current[0] = el)}
+                  onClick={() => nav("/learn/letters-numbers")}
+                  style={cardStyle("#b9f6ca", "#8fe3c0")}
+                  onMouseEnter={hoverOn}
+                  onMouseLeave={hoverOff}
                 >
-                  {/* Letters & Numbers */}
-                  <button
-                    ref={(el) => (refs.current[0] = el)}
-                    onClick={() => nav("/learn/letters-numbers")}
-                    style={cardStyle("#b9f6ca", "#8fe3c0")}
-                    onMouseEnter={(e) => hoverOn(e)}
-                    onMouseLeave={(e) => hoverOff(e)}
-                  >
-                    <div style={{ fontSize: 42, marginBottom: 8 }}>✏️</div>
-                    <div style={titleStyle}>Letters & Numbers</div>
-                    <div>A–Z and 0–9 with practice.</div>
-                  </button>
+                  <div style={{ fontSize: 42, marginBottom: 8 }}>✏️</div>
+                  <div style={titleStyle}>Letters & Numbers</div>
+                  <div>A–Z and 0–9 with practice.</div>
+                </button>
 
-                  {/* Basic Words */}
-                  <button
-                    ref={(el) => (refs.current[1] = el)}
-                    onClick={() => nav("/learn/words")}
-                    style={cardStyle("#fff3b0", "#ffe08a")}
-                    onMouseEnter={(e) => hoverOn(e)}
-                    onMouseLeave={(e) => hoverOff(e)}
-                  >
-                    <div style={{ fontSize: 42, marginBottom: 8 }}>📚</div>
-                    <div style={titleStyle}>Basic Words</div>
-                    <div>Home / School / Play — 50+ words.</div>
-                  </button>
+                {/* Basic Words */}
+                <button
+                  ref={(el) => (refs.current[1] = el)}
+                  onClick={() => nav("/learn/words")}
+                  style={cardStyle("#fff3b0", "#ffe08a")}
+                  onMouseEnter={hoverOn}
+                  onMouseLeave={hoverOff}
+                >
+                  <div style={{ fontSize: 42, marginBottom: 8 }}>📚</div>
+                  <div style={titleStyle}>Basic Words</div>
+                  <div>Home / School / Play — 50+ words.</div>
+                </button>
 
-                  {/* Story Book（第3个） */}
-                  <button
-                    ref={(el) => (refs.current[2] = el)}
-                    onClick={() => nav("/story-book")} // 若路由是 /storybook 改这里
-                    style={cardStyle("#b9d7ff", "#9bc6ff")}
-                    onMouseEnter={(e) => hoverOn(e)}
-                    onMouseLeave={(e) => hoverOff(e)}
-                  >
-                    <div style={{ fontSize: 42, marginBottom: 8 }}>📖</div>
-                    <div style={titleStyle}>Story Book</div>
-                    <div>Read and learn with stories.</div>
-                  </button>
+                {/* Story Book */}
+                <button
+                  ref={(el) => (refs.current[2] = el)}
+                  onClick={() => nav("/story-book")} // If your route is /storybook, update here
+                  style={cardStyle("#b9d7ff", "#9bc6ff")}
+                  onMouseEnter={hoverOn}
+                  onMouseLeave={hoverOff}
+                >
+                  <div style={{ fontSize: 42, marginBottom: 8 }}>📖</div>
+                  <div style={titleStyle}>Story Book</div>
+                  <div>Read and learn with stories.</div>
+                </button>
 
-                  {/* Mini Quiz */}
-                  <button
-                    ref={(el) => (refs.current[3] = el)}
-                    onClick={() => nav("/quiz")}
-                    style={cardStyle("#e7d1ff", "#d5b8ff")}
-                    onMouseEnter={(e) => hoverOn(e)}
-                    onMouseLeave={(e) => hoverOff(e)}
-                  >
-                    <div style={{ fontSize: 42, marginBottom: 8 }}>🧠</div>
-                    <div style={titleStyle}>Mini Quiz</div>
-                    <div>Quick 5-question check.</div>
-                  </button>
-                </div>
+                {/* Mini Quiz */}
+                <button
+                  ref={(el) => (refs.current[3] = el)}
+                  onClick={() => nav("/quiz")}
+                  style={cardStyle("#e7d1ff", "#d5b8ff")}
+                  onMouseEnter={hoverOn}
+                  onMouseLeave={hoverOff}
+                >
+                  <div style={{ fontSize: 42, marginBottom: 8 }}>🧠</div>
+                  <div style={titleStyle}>Mini Quiz</div>
+                  <div>Quick 5-question check.</div>
+                </button>
+              </div>
 
-                {/* 🎲 Pick for me */}
-                <div style={{ marginTop: 28 }}>
-                  <button
-                    onClick={() => window.pickActivityForMe()}
-                    style={{
-                      borderRadius: 999,
-                      padding: "12px 18px",
-                      border: "none",
-                      fontWeight: 700,
-                      boxShadow: "0 10px 24px rgba(0,0,0,.12)",
-                      background:
-                        "linear-gradient(135deg, rgba(130,130,255,.95), rgba(170,210,255,.95))",
-                      cursor: "pointer",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
-                  >
-                    <span style={{ fontSize: 18 }}>🎲 Pick an Activity for Me</span>
-                  </button>
-                </div>
-              </>
-            );
-          })()}
-        </section>
-
-
-
-
-
+              {/* Random picker CTA */}
+              <div style={{ marginTop: 28 }}>
+                <button
+                  onClick={() => window.pickActivityForMe()}
+                  style={{
+                    borderRadius: 999,
+                    padding: "12px 18px",
+                    border: "none",
+                    fontWeight: 700,
+                    boxShadow: "0 10px 24px rgba(0,0,0,.12)",
+                    background: "linear-gradient(135deg, rgba(130,130,255,.95), rgba(170,210,255,.95))",
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+                >
+                  <span style={{ fontSize: 18 }}>🎲 Pick an Activity for Me</span>
+                </button>
+              </div>
+            </>
+          );
+        })()}
+      </section>
     </div>
   );
 }

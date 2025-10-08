@@ -4,16 +4,17 @@ import AusStateMap from "../components/AusStateMap";
 import YearBarChart from "../components/YearBarChart";
 import "./Insights.css";
 
-// 顶部大图（请确保文件存在：src/assets/Insight_picture.png）
+// Top hero image (ensure the asset exists at src/assets/Insight_picture.png)
 import heroImg from "../assets/Insight_picture.png";
 
-/* 资源卡片图片（请在 src/assets/ 放入以下文件名，或改为你的文件名）*/
+// Resource card images (place matching files under src/assets/ or update paths)
 import imgDeafAustralia from "../assets/Deaf_Australia.png";
 import imgNDIS from "../assets/ndis.png";
 import imgSignbank from "../assets/signbank.png";
 import imgEmmanuel from "../assets/TEC.png";
 
 export default function Insights() {
+  // Page content configuration: titles, copy blocks, and data sources
   const sections = {
     Challenges: {
       title: "Challenges",
@@ -90,7 +91,7 @@ export default function Insights() {
 
   return (
     <>
-      {/* 顶部：总标题 + 16:9 图片 */}
+      {/* HERO: main title + 16:9 image */}
       <header className="insights-hero" aria-labelledby="insights-hero-title">
         <h1 id="insights-hero-title">
           From Insight to Action: Supporting Your Auslan Journey
@@ -104,7 +105,7 @@ export default function Insights() {
         </div>
       </header>
 
-      {/* 主体：保留原有目录与内容 */}
+      {/* LAYOUT: sidebar table of contents + main content */}
       <div className="insights-page">
         <aside className="insights-nav" aria-label="Table of contents">
           <h3>Insights</h3>
@@ -122,6 +123,7 @@ export default function Insights() {
             <section id={key} key={key} className="insights-section">
               <h2>{sec.title}</h2>
 
+              {/* Render paragraphs and inline "tip" blocks */}
               {sec.content &&
                 sec.content.map((p, i) => {
                   if (typeof p === "string") return <p key={i}>{p}</p>;
@@ -139,8 +141,10 @@ export default function Insights() {
                   return null;
                 })}
 
+              {/* Optional description for non-resource sections */}
               {!sec.facts && sec.desc && <p>{sec.desc}</p>}
 
+              {/* Data visualizations for the "Population Analysis" section */}
               {key === "Population Analysis" && (
                 <>
                   <h4>How old are people who use Auslan?</h4>
@@ -197,7 +201,7 @@ export default function Insights() {
                 </>
               )}
 
-              {/* 新的资源卡片网格 */}
+              {/* Resources grid */}
               {sec.facts && (
                 <>
                   <p className="resources-intro">{sec.desc}</p>
@@ -234,7 +238,7 @@ export default function Insights() {
                 </>
               )}
 
-              {/* 如果是非资源区块，正常显示来源 */}
+              {/* Default source line for non-resource sections */}
               {!sec.facts && sec.source && (
                 <div className="section-source">Source: {sec.source}</div>
               )}

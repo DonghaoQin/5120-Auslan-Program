@@ -3,38 +3,47 @@ import { letters, numbers } from "../data/letters.js";
 
 const STORAGE_KEY = "LN_LEARNED_V2";
 
-// 顶部避让 & 搜索区高度（用于与左侧首排卡片齐平）
+// Layout constants
 const TOP_GAP = 96;
 const SEARCH_BLOCK_H = 128;
-
-// 布局尺寸
-const MAX_W = 1200;  // 容器最大宽度
-const RIGHT_W = 440; // 右侧固定栏宽度
-const GAP = 24;      // 左右列间距
+const MAX_W = 1200;  // Max container width
+const RIGHT_W = 440; // Right panel width
+const GAP = 24;      // Gap between grid and right panel
 
 export default function LettersNumbers() {
-  const [current, setCurrent] = useState(null);   // 正在展示的 item
-  const [pending, setPending] = useState(null);   // 等待切换的 item
-  const [open, setOpen] = useState(false);        // 右栏是否展开（决定整块上下滑）
+  // Current selected item in detail panel
+  const [current, setCurrent] = useState(null);
+  // Next pending item to switch to after transition
+  const [pending, setPending] = useState(null);
+  // Whether the right panel is open (controls slide animation)
+  const [open, setOpen] = useState(false);
+  // Learned items, stored in localStorage
   const [learned, setLearned] = useState(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       const arr = raw ? JSON.parse(raw) : [];
       return new Set(Array.isArray(arr) ? arr : []);
-    } catch { return new Set(); }
+    } catch {
+      return new Set();
+    }
   });
+  // Search filter state
   const [search, setSearch] = useState("");
 
+  // Sync learned data to localStorage
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(learned)));
   }, [learned]);
 
+  // Merge all letters and numbers
   const all = useMemo(() => [...letters, ...numbers], []);
+  // Filter items based on search
   const filtered = useMemo(
     () => all.filter((x) => x.toLowerCase().includes(search.toLowerCase())),
     [all, search]
   );
 
+  // Mapping characters to sign language images
   const imgMap = {
     A: "/assets/signs/A.PNG", B: "/assets/signs/B.PNG", C: "/assets/signs/C.PNG",
     D: "/assets/signs/D.PNG", E: "/assets/signs/E.PNG", F: "/assets/signs/F.PNG",
@@ -50,7 +59,7 @@ export default function LettersNumbers() {
     6: "/assets/signs/6.PNG", 7: "/assets/signs/7.PNG", 8: "/assets/signs/8.PNG", 9: "/assets/signs/9.PNG",
   };
 
-  // —— 样式 —— //
+  // --- Page Styles --- //
   const page = {
     minHeight: "100vh",
     background: "#F6F7FB",
@@ -65,27 +74,26 @@ export default function LettersNumbers() {
     margin: "0 auto",
   };
 
-  // 点击左侧卡片：处理“地鼠”效果
+  // Handle card selection on left grid
   const handleSelect = (item) => {
     if (!current) {
-      // 第一次打开：直接设置内容并上滑进入
+      // First open: directly show detail panel
       setCurrent(item);
       setOpen(true);
       return;
     }
-    if (item === current) return; // 点了同一个，忽略
-    // 有内容时切换：先下滑关闭，等 transition 结束再换内容上滑
+    if (item === current) return; // Clicked same item, ignore
+    // When switching items: close first, then open next after animation
     setPending(item);
     setOpen(false);
   };
 
-  // 面板过渡结束：如果刚刚是“下滑关闭”并且有 pending，则换内容并上滑
+  // Handle slide animation end for panel transition
   const handlePanelTransitionEnd = (e) => {
-    if (e.propertyName !== "transform") return; // 只关心 transform 动画
+    if (e.propertyName !== "transform") return;
     if (!open && pending) {
       setCurrent(pending);
       setPending(null);
-      // 下一帧再打开，确保浏览器应用了关闭状态后再触发上滑
       requestAnimationFrame(() => setOpen(true));
     }
   };
@@ -110,26 +118,35 @@ export default function LettersNumbers() {
           border-color: #CFD4DC;
           box-shadow: 0 10px 22px rgba(0,0,0,.12);
         }
+        .ln-card.learned {
+          background: linear-gradient(135deg, #FFD166, #F77F00);
+          color: #fff;
+          border-color: #F77F00;
+          box-shadow: 0 6px 16px rgba(247, 127, 0, 0.3);
+        }
+        .ln-card.learned img {
+          filter: brightness(1.05);
+        }
+
         .ln-card img {
           height: 88px; width: auto; margin-bottom: 8px; transition: transform .15s ease;
         }
         .ln-card:hover img { transform: scale(1.06); }
 
-        /* 面板固定：不随页面滚动 */
+        /* Fixed right detail panel */
         .ln-fixed-right {
           position: fixed;
-          top: ${TOP_GAP + SEARCH_BLOCK_H}px;         /* 与左侧首排对齐 */
-          right: calc((100vw - ${MAX_W}px) / 2);      /* 与容器右缘对齐 */
+          top: ${TOP_GAP + SEARCH_BLOCK_H}px;
+          right: calc((100vw - ${MAX_W}px) / 2);
           width: ${RIGHT_W}px;
-          height: calc(100vh - ${TOP_GAP + SEARCH_BLOCK_H}px - 0px);
+          height: calc(100vh - ${TOP_GAP + SEARCH_BLOCK_H}px);
           display: flex;
           flex-direction: column;
           background: #fff;
-          border-radius: 18px 18px 0 0;               /* 底部直角 */
+          border-radius: 18px 18px 0 0;
           box-shadow: 0 10px 24px rgba(0,0,0,.12);
           overflow: hidden;
 
-          /* 关键：整块面板的上下滑动（默认隐藏在底部） */
           transform: translateY(100%);
           opacity: 0;
           pointer-events: none;
@@ -144,14 +161,14 @@ export default function LettersNumbers() {
 
         .ln-stage {
           flex: 1;
-          overflow: auto;           /* 内容多时内部滚，不影响外层固定 */
+          overflow: auto;
           padding: 28px;
           display: grid;
           place-items: center;
           background: #fff;
         }
 
-        /* 底部操作条：矩形、贴右栏底 */
+        /* Footer buttons inside right panel */
         .ln-detail-footer {
           height: 180px;
           background: #fff;
@@ -166,7 +183,7 @@ export default function LettersNumbers() {
         .ln-btn.ok { background: #f2b64fff; }
         .ln-btn.bad { background: #ef4444ff; }
 
-        /* 左侧网格为右栏预留空间 */
+        /* Left grid layout with space for right panel */
         .ln-left-grid {
           margin-right: ${RIGHT_W + GAP}px;
           display: grid;
@@ -186,7 +203,7 @@ export default function LettersNumbers() {
       `}</style>
 
       <div style={container}>
-        {/* 搜索 + 进度 */}
+        {/* Search input + progress bar */}
         <input
           type="text"
           placeholder="Search your letter or number..."
@@ -212,10 +229,14 @@ export default function LettersNumbers() {
           {learned.size}/{all.length} learned
         </div>
 
-        {/* 左侧网格 */}
+        {/* Main card grid */}
         <div className="ln-left-grid">
           {filtered.map((item) => (
-            <div key={item} className="ln-card" onClick={() => handleSelect(item)}>
+            <div
+              key={item}
+              className={`ln-card ${learned.has(item) ? 'learned' : ''}`}
+              onClick={() => handleSelect(item)}
+            >
               <img
                 src={imgMap[item] || "/assets/placeholder.png"}
                 alt={item}
@@ -227,7 +248,7 @@ export default function LettersNumbers() {
         </div>
       </div>
 
-      {/* 右侧固定详情：整块面板按 open 状态上下滑；过渡结束后若 pending 则切页再上滑 */}
+      {/* Right detail panel with animation */}
       <aside
         className={`ln-fixed-right ${open ? 'open' : ''}`}
         onTransitionEnd={handlePanelTransitionEnd}

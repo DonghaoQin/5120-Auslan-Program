@@ -1,27 +1,27 @@
 /* =========================================================
-   Insights.css  ——  一份可直接替换的完整样式
-   可调变量
+   Insights.css — Clean and English-commented version
+   Adjustable Variables
 ========================================================= */
-:root{
-  --nav-top: 160px;           /* 左侧目录吸顶距离（想整体上移就调小） */
-  --hero-pt: 120px;           /* 顶部大标题与页面顶端距离 */
-  --hero-maxw: 960px;         /* 头图最大宽度 */
-  --container-maxw: 1200px;   /* 页宽 */
+:root {
+  --nav-top: 160px;           /* Sticky sidebar offset from top */
+  --hero-pt: 120px;           /* Space between hero title and page top */
+  --hero-maxw: 960px;         /* Max width for hero image */
+  --container-maxw: 1200px;   /* Overall page width */
 }
 
-/* ---------- 基础 ---------- */
-html, body, #root { background:#fff; }
-html { scroll-behavior:smooth; }
+/* ---------- Base Layout ---------- */
+html, body, #root { background: #fff; }
+html { scroll-behavior: smooth; }
 * { box-sizing: border-box; }
 
-/* ---------- 顶部：总标题 + 16:9 图片 ---------- */
-.insights-hero{
+/* ---------- Hero Section (title + image) ---------- */
+.insights-hero {
   max-width: var(--container-maxw);
   margin: 0 auto;
-  padding: var(--hero-pt) 20px 28px; /* 被导航挡住就把 --hero-pt 调大 */
+  padding: var(--hero-pt) 20px 28px; /* If the navbar overlaps, increase --hero-pt */
   text-align: center;
 }
-.insights-hero h1{
+.insights-hero h1 {
   font-size: clamp(24px, 3.2vw, 36px);
   line-height: 1.2;
   font-weight: 750;
@@ -29,150 +29,179 @@ html { scroll-behavior:smooth; }
   margin: 0 auto 16px;
   max-width: 980px;
 }
-.insights-hero-media{
+.insights-hero-media {
   width: min(88vw, var(--hero-maxw));
   margin: 0 auto;
-  border-radius:16px;
-  overflow:hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,.06);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .06);
 }
-.insights-hero-media img{
-  display:block;
-  width:100%;
-  aspect-ratio:16/9;
-  object-fit:cover;
-  object-position:center;
+.insights-hero-media img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  object-position: center;
 }
 
-/* ---------- 页面主体 ---------- */
-.insights-page{
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  gap:24px;
+/* ---------- Page Layout ---------- */
+.insights-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
   max-width: var(--container-maxw);
-  margin:0 auto;
-  padding:60px 20px 60px;   /* 与头图间距，想更靠上可减小 */
-  color:#222;
-  line-height:1.8;
+  margin: 0 auto;
+  padding: 60px 20px 60px;   /* Space between hero and content */
+  color: #222;
+  line-height: 1.8;
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* ---------- 左侧目录 ---------- */
-.insights-nav{
-  flex:0 0 240px;
-  position:sticky;
-  top: var(--nav-top);       /* 想让目录更靠上/下，改这里或变量 */
-  align-self:flex-start;
+/* ---------- Left Sidebar Navigation ---------- */
+.insights-nav {
+  flex: 0 0 240px;
+  position: sticky;
+  top: var(--nav-top);       /* Adjust for vertical alignment */
+  align-self: flex-start;
 }
-.insights-nav h3{
-  position:relative;
-  padding-left:12px;
-  margin:0 0 8px;
+.insights-nav h3 {
+  position: relative;
+  padding-left: 12px;
+  margin: 0 0 8px;
 }
-.insights-nav h3::before{
-  content:"";
-  position:absolute; left:0; top:0; bottom:0;
-  width:4px; background:#ff7a00; border-radius:2px;
+.insights-nav h3::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px; background: #ff7a00; border-radius: 2px;
 }
-.insights-nav ul{ list-style:none; padding:0; margin:0; }
-.insights-nav li{ list-style:none; margin:0; }
-.insights-nav li::marker{ content:""; }
-.insights-nav a{
-  display:block; position:relative;
-  padding:6px 0 6px 12px;
-  color:#666; text-decoration:none; transition:color .2s ease;
+.insights-nav ul { list-style: none; padding: 0; margin: 0; }
+.insights-nav li { list-style: none; margin: 0; }
+.insights-nav li::marker { content: ""; }
+.insights-nav a {
+  display: block; position: relative;
+  padding: 6px 0 6px 12px;
+  color: #666; text-decoration: none;
+  transition: color .2s ease;
 }
-.insights-nav a:hover{ color:#111; }
+.insights-nav a:hover { color: #111; }
 .insights-nav a:hover::before,
-.insights-nav a.active::before{
-  content:""; position:absolute; left:0; top:0; bottom:0;
-  width:3px; background:#aaa; border-radius:2px;
+.insights-nav a.active::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px; background: #aaa; border-radius: 2px;
 }
-.insights-nav a.active{ color:#111; font-weight:600; }
+.insights-nav a.active { color: #111; font-weight: 600; }
 
-/* ---------- 正文区块 ---------- */
-.insights-content{ flex:1 1 auto; min-width:0; }
-.insights-section{ margin-bottom:48px; }
-.insights-section h2{
+/* ---------- Main Content ---------- */
+.insights-content { flex: 1 1 auto; min-width: 0; }
+.insights-section { margin-bottom: 48px; }
+.insights-section h2 {
   font-size: clamp(22px, 2.4vw, 28px);
   margin: 0 0 12px;
 }
-.insights-section h4{
-  font-size:18px; margin:24px 0 12px; font-weight:700;
+.insights-section h4 {
+  font-size: 18px;
+  margin: 24px 0 12px;
+  font-weight: 700;
 }
-.section-source{
-  margin-top:10px; color:#777; font-size:14px;
+.section-source {
+  margin-top: 10px;
+  color: #777;
+  font-size: 14px;
 }
 
-/* ---------- Tip（淡黄色提示框） ---------- */
-.tip{
-  background:#fff7e6;
-  border:1px solid #ffe4b8;
-  border-radius:12px;
-  padding:16px 18px;
-  margin:16px 0 24px;
-  box-shadow:0 1px 0 rgba(0,0,0,.03);
+/* ---------- Tip Block (highlight box) ---------- */
+.tip {
+  background: #fff7e6;
+  border: 1px solid #ffe4b8;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 16px 0 24px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .03);
 }
-.tip-title{
-  display:flex; align-items:center; gap:8px;
-  font-weight:600; color:#6b4f00; margin:0 0 6px;
+.tip-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #6b4f00;
+  margin: 0 0 6px;
 }
-.tip p{ margin:0; color:#5c4a1a; line-height:1.7; }
+.tip p {
+  margin: 0;
+  color: #5c4a1a;
+  line-height: 1.7;
+}
 
-/* ---------- 资源卡片网格 ---------- */
-.resources-intro{ margin:8px 0 16px; }
-.resources-grid{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap:24px;
-  margin:8px 0 12px;
+/* ---------- Resource Cards Grid ---------- */
+.resources-intro { margin: 8px 0 16px; }
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin: 8px 0 12px;
 }
-@media (max-width: 860px){
-  .resources-grid{ grid-template-columns: 1fr; }
+@media (max-width: 860px) {
+  .resources-grid { grid-template-columns: 1fr; }
 }
-.resource-card{
-  display:flex; flex-direction:column;
-  background:#fff;
-  border:1px solid #e9e9e9;
-  border-radius:16px;
-  overflow:hidden;
-  text-decoration:none; color:inherit;
-  box-shadow:0 2px 8px rgba(0,0,0,.04);
+.resource-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #e9e9e9;
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
   transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
-.resource-card:hover{
+.resource-card:hover {
   transform: translateY(-2px);
-  box-shadow:0 8px 22px rgba(0,0,0,.08);
-  border-color:#e0dfdf;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .08);
+  border-color: #e0dfdf;
 }
-.resource-media img{
-  display:block; width:100%;
-  aspect-ratio:16/9; object-fit:cover; object-position:center;
+.resource-media img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  object-position: center;
 }
-.resource-body{ padding:16px 18px 18px; }
-.resource-title{ margin:0 0 6px; font-size:18px; font-weight:700; }
-.resource-desc{ margin:0 0 12px; color:#555; line-height:1.7; }
+.resource-body { padding: 16px 18px 18px; }
+.resource-title { margin: 0 0 6px; font-size: 18px; font-weight: 700; }
+.resource-desc { margin: 0 0 12px; color: #555; line-height: 1.7; }
 
-.resource-tags{ display:flex; gap:8px; flex-wrap:wrap; }
-.resource-tag{
-  font-size:12px; padding:4px 8px; border-radius:999px;
-  background:#f2f4f7; border:1px solid #e6e8ec; color:#475467;
+.resource-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.resource-tag {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f2f4f7;
+  border: 1px solid #e6e8ec;
+  color: #475467;
 }
 
-/* ---------- 深色模式可选 ---------- */
-@media (prefers-color-scheme: dark){
-  .resource-card{ background:#171717; border-color:#2b2b2b; box-shadow:none; }
-  .resource-card:hover{ border-color:#3a3a3a; box-shadow:0 8px 22px rgba(0,0,0,.45); }
-  .resource-desc{ color:#cfcfcf; }
-  .resource-tag{ background:#222; border-color:#333; color:#ddd; }
-  .tip{ background:#2a220f; border-color:#5a430f; }
-  .tip-title{ color:#f7cf76; }
-  .tip p{ color:#f1e0b8; }
+/* ---------- Dark Mode (optional) ---------- */
+@media (prefers-color-scheme: dark) {
+  .resource-card { background: #171717; border-color: #2b2b2b; box-shadow: none; }
+  .resource-card:hover { border-color: #3a3a3a; box-shadow: 0 8px 22px rgba(0, 0, 0, .45); }
+  .resource-desc { color: #cfcfcf; }
+  .resource-tag { background: #222; border-color: #333; color: #ddd; }
+  .tip { background: #2a220f; border-color: #5a430f; }
+  .tip-title { color: #f7cf76; }
+  .tip p { color: #f1e0b8; }
 }
 
-/* ---------- 小屏微调 ---------- */
-@media (max-width:768px){
-  .insights-hero{ padding-top: 140px; }
-  .insights-hero-media{ width:min(92vw, 720px); }
+/* ---------- Responsive Tweaks ---------- */
+@media (max-width: 768px) {
+  .insights-hero { padding-top: 140px; }
+  .insights-hero-media { width: min(92vw, 720px); }
 }
