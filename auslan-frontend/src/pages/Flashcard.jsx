@@ -15,7 +15,16 @@ const CATEGORY_COLORS = {
   Other: "#6B7280",
 };
 
-// --- utility functions ---
+// Convert hex → rgba with alpha for transparent background
+function transparent(hex, alpha = 0.3) {
+  const c = hex.substring(1);
+  const num = parseInt(c, 16);
+  const r = num >> 16;
+  const g = (num >> 8) & 0x00ff;
+  const b = num & 0x0000ff;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 const slug = (s) =>
   (s || "")
     .toString()
@@ -27,104 +36,32 @@ const slug = (s) =>
     .replace(/^_|_$/g, "");
 
 const CATEGORY_MAP = (() => {
-  const C1A = [
-    "thank_you",
-    "no",
-    "stop",
-    "help",
-    "seat",
-    "drink",
-    "sleeping",
-    "go_to",
-    "now",
-    "not",
-  ];
+  const C1A = ["thank_you", "no", "stop", "help", "seat", "drink", "sleeping", "go_to", "now", "not"];
   const C1B = ["hello", "bye_bye", "apology", "ask", "welcome", "hi"];
-  const C2A = [
-    "mum",
-    "brother",
-    "sister",
-    "baby",
-    "you",
-    "we",
-    "yourself",
-    "people",
-    "our",
-  ];
-  const C2B = [
-    "sad",
-    "tired",
-    "love",
-    "smile",
-    "upset",
-    "cute",
-    "like",
-    "bad",
-    "pizza",
-    "dislike",
-    "surprised",
-    "dont_know",
-    "disappointment",
-    "thinking_reflection",
-    "annoying",
-  ];
-  const C3A = [
-    "play",
-    "school",
-    "teacher",
-    "friend",
-    "home",
-    "already",
-    "finished",
-    "big",
-    "fun",
-    "copy",
-    "jump_off",
-  ];
-  const C3B = [
-    "wash_face",
-    "share",
-    "wait",
-    "come_here",
-    "move",
-    "climb",
-    "wear",
-    "spoon",
-    "look",
-    "bath",
-    "back_of_body",
-    "hairbrush",
-  ];
+  const C2A = ["mum", "brother", "sister", "baby", "you", "we", "yourself", "people", "our"];
+  const C2B = ["sad", "tired", "love", "smile", "upset", "cute", "like", "bad", "pizza", "dislike", "surprised", "dont_know", "disappointment", "thinking_reflection", "annoying"];
+  const C3A = ["play", "school", "teacher", "friend", "home", "already", "finished", "big", "fun", "copy", "jump_off"];
+  const C3B = ["wash_face", "share", "wait", "come_here", "move", "climb", "wear", "spoon", "look", "bath", "back_of_body", "hairbrush"];
   const C4A = ["what", "why", "who", "how_old"];
   const C4B = ["again", "slow_down", "understand", "nothing"];
-  const OTHER = [
-    "auslan",
-    "deaf_mute",
-    "australia",
-    "sign_name",
-    "dog",
-    "apple",
-    "world",
-  ];
-
+  const OTHER = ["auslan", "deaf_mute", "australia", "sign_name", "dog", "apple", "world"];
   const m = {};
-  C1A.forEach((k) => (m[k] = "1A. Essentials_Survival Signs"));
-  C1B.forEach((k) => (m[k] = "1B. Greetings & Social Basics"));
-  C2A.forEach((k) => (m[k] = "2A. Family Members"));
-  C2B.forEach((k) => (m[k] = "2B. Feelings/Needs"));
-  C3A.forEach((k) => (m[k] = "3A. School/Play"));
-  C3B.forEach((k) => (m[k] = "3B. Everyday/Actions"));
-  C4A.forEach((k) => (m[k] = "4A. Basic Questions"));
-  C4B.forEach((k) => (m[k] = "4B. Interaction Clarification"));
+  C1A.forEach((k) => (m[k] = "Essentials_Survival Signs"));
+  C1B.forEach((k) => (m[k] = "Greetings & Social Basics"));
+  C2A.forEach((k) => (m[k] = "Family Members"));
+  C2B.forEach((k) => (m[k] = "Feelings/Needs"));
+  C3A.forEach((k) => (m[k] = "School/Play"));
+  C3B.forEach((k) => (m[k] = "Everyday/Actions"));
+  C4A.forEach((k) => (m[k] = "Basic Questions"));
+  C4B.forEach((k) => (m[k] = "Interaction Clarification"));
   OTHER.forEach((k) => (m[k] = "Other"));
   return m;
 })();
 
 const categoryOf = (title) => CATEGORY_MAP[slug(title)] ?? "Other";
 
-// --- main component ---
 export default function FlashCardBasicWords() {
-  const [step, setStep] = useState("category"); // "category" | "words" | "video"
+  const [step, setStep] = useState("category");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedWord, setSelectedWord] = useState(null);
   const [learned, setLearned] = useState(() => {
@@ -138,41 +75,30 @@ export default function FlashCardBasicWords() {
   const [words, setWords] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔒 disable back navigation (keep mobile app isolated)
   useEffect(() => {
     window.history.pushState(null, null, window.location.href);
-    window.onpopstate = function () {
-      window.history.go(1);
-    };
+    window.onpopstate = () => window.history.go(1);
   }, []);
 
-  // fetch video list
   useEffect(() => {
     (async () => {
       try {
         const res = await fetch(API_URL);
         const data = await res.json();
-        const normalized = (Array.isArray(data) ? data : []).map((x, idx) => {
-          const title =
-            x.filename?.toString() ||
-            x.title?.toString() ||
-            x.name?.toString() ||
-            x.word?.toString() ||
-            x.text?.toString() ||
-            `Item ${idx + 1}`;
-          const url = typeof x.url === "string" ? x.url : null;
-          return { id: x.id ?? idx, title, url };
-        });
+        const normalized = (Array.isArray(data) ? data : []).map((x, idx) => ({
+          id: x.id ?? idx,
+          title: x.filename || x.title || `Item ${idx + 1}`,
+          url: x.url || null,
+        }));
         setWords(normalized);
       } catch (err) {
-        console.error("Failed to fetch:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
     })();
   }, []);
 
-  // persist learned words
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...learned]));
   }, [learned]);
@@ -187,19 +113,14 @@ export default function FlashCardBasicWords() {
     return b;
   }, [words]);
 
-  if (loading)
-    return (
-      <div style={styles.center}>
-        <p>Loading vocabulary...</p>
-      </div>
-    );
+  if (loading) return <div style={styles.center}><p>Loading vocabulary...</p></div>;
 
-  // Step 1 — choose category
+  // Step 1 — horizontally scrollable category row
   if (step === "category") {
     return (
       <div style={styles.page}>
         <h2 style={styles.header}>Choose a Scenario</h2>
-        <div style={styles.grid}>
+        <div style={styles.categoryScroll}>
           {Object.keys(buckets).map((cat) => (
             <button
               key={cat}
@@ -220,9 +141,10 @@ export default function FlashCardBasicWords() {
     );
   }
 
-  // Step 2 — choose word
+  // Step 2 — words view
   if (step === "words" && selectedCategory) {
     const items = buckets[selectedCategory] || [];
+    const catColor = CATEGORY_COLORS[selectedCategory] || "#ccc";
     return (
       <div style={styles.page}>
         <button style={styles.backBtn} onClick={() => setStep("category")}>
@@ -230,29 +152,35 @@ export default function FlashCardBasicWords() {
         </button>
         <h2 style={styles.header}>{selectedCategory}</h2>
         <div style={styles.wordGrid}>
-          {items.map((item) => (
-            <button
-              key={item.id}
-              style={{
-                ...styles.wordCard,
-                borderColor: CATEGORY_COLORS[selectedCategory],
-                background: learned.has(item.title) ? "#E6F7F2" : "#fff",
-              }}
-              onClick={() => {
-                setSelectedWord(item);
-                setStep("video");
-              }}
-            >
-              {item.title.replace("_", " ")}
-            </button>
-          ))}
+          {items.map((item) => {
+            const isLearned = learned.has(item.title);
+            return (
+              <button
+                key={item.id}
+                style={{
+                  ...styles.wordCard,
+                  borderColor: catColor,
+                  background: isLearned ? transparent(catColor, 0.3) : "#fff",
+                  color: "#111",
+                }}
+                onClick={() => {
+                  setSelectedWord(item);
+                  setStep("video");
+                }}
+              >
+                {item.title.replace("_", " ")}
+              </button>
+            );
+          })}
         </div>
       </div>
     );
   }
 
-  // Step 3 — view video
+  // Step 3 — video
   if (step === "video" && selectedWord) {
+    const cat = categoryOf(selectedWord.title);
+    const color = CATEGORY_COLORS[cat] || "#999";
     const isLearned = learned.has(selectedWord.title);
     return (
       <div style={styles.page}>
@@ -271,17 +199,17 @@ export default function FlashCardBasicWords() {
         ) : (
           <p>No video available</p>
         )}
-
         <button
           style={{
             ...styles.learnBtn,
-            background: isLearned ? "#10B981" : "#F59E0B",
+            background: isLearned ? transparent(color, 0.5) : "#E5E7EB",
+            color: isLearned ? "#111" : "#111",
+            border: `2px solid ${color}`,
           }}
           onClick={() =>
             setLearned((prev) => {
               const next = new Set(prev);
-              if (next.has(selectedWord.title))
-                next.delete(selectedWord.title);
+              if (next.has(selectedWord.title)) next.delete(selectedWord.title);
               else next.add(selectedWord.title);
               return next;
             })
@@ -296,7 +224,7 @@ export default function FlashCardBasicWords() {
   return null;
 }
 
-/* --- Mobile-first styles --- */
+/* --- Styles --- */
 const styles = {
   page: {
     background: "#F9FAFB",
@@ -305,32 +233,30 @@ const styles = {
     fontFamily: "'Poppins', sans-serif",
     textAlign: "center",
   },
-  header: {
-    fontSize: 20,
-    marginBottom: "1rem",
-    color: "#111827",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-    gap: "12px",
+  header: { fontSize: 20, marginBottom: "1rem", color: "#111827" },
+  categoryScroll: {
+    display: "flex",
+    overflowX: "auto",
+    gap: "10px",
+    paddingBottom: "1rem",
   },
   categoryCard: {
+    flex: "0 0 auto",
+    whiteSpace: "nowrap",
     background: "#fff",
     border: "2px solid #E5E7EB",
     borderRadius: "12px",
-    padding: "1rem",
+    padding: "0.8rem 1.2rem",
     fontWeight: 600,
     cursor: "pointer",
     boxShadow: "0 2px 5px rgba(0,0,0,0.08)",
   },
   wordGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
     gap: "10px",
   },
   wordCard: {
-    background: "#fff",
     border: "2px solid #D1D5DB",
     borderRadius: "10px",
     padding: "0.8rem",
@@ -338,6 +264,7 @@ const styles = {
     cursor: "pointer",
     textTransform: "capitalize",
     boxShadow: "0 2px 5px rgba(0,0,0,0.08)",
+    transition: "0.2s all ease",
   },
   backBtn: {
     background: "none",
@@ -354,8 +281,6 @@ const styles = {
     marginBottom: "1rem",
   },
   learnBtn: {
-    color: "#fff",
-    border: "none",
     borderRadius: "10px",
     padding: "0.9rem 1.2rem",
     fontWeight: 600,
