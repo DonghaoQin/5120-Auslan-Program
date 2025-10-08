@@ -4,14 +4,14 @@ const API_URL = "https://auslan-backend.onrender.com/videos/";
 const STORAGE_KEY = "LN_LEARNED_V2";
 
 const CATEGORY_COLORS = {
-  "1A. Essentials_Survival Signs": "#66D6BC",
-  "1B. Greetings & Social Basics": "#F7A940",
-  "2A. Family Members": "#9895FF",
-  "2B. Feelings/Needs": "#3B82F6",
-  "3A. School/Play": "#EF4444",
-  "3B. Everyday/Actions": "#8B5CF6",
-  "4A. Basic Questions": "#10B981",
-  "4B. Interaction Clarification": "#F59E0B",
+  "Essentials_Survival Signs": "#66D6BC",
+  "Greetings & Social Basics": "#F7A940",
+  "Family Members": "#9895FF",
+  "Feelings/Needs": "#3B82F6",
+  "School/Play": "#EF4444",
+  "Everyday/Actions": "#8B5CF6",
+  "Basic Questions": "#10B981",
+  "Interaction Clarification": "#F59E0B",
   Other: "#6B7280",
 };
 
