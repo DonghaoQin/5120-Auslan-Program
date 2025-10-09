@@ -93,7 +93,7 @@ export default function MiniQuizHub() {
       {/* Hub */}
       {mode === null && (
         <>
-          <Title>Mini Quiz Hub</Title>
+          <Title>Quiz Hub</Title>
           <SubTitle>
             Choose a quiz mode below to start your Auslan learning adventure!
           </SubTitle>

@@ -37,7 +37,7 @@ export default function NavBar() {
             Story Book
           </NavLink>
           <NavLink to="/quiz" className="nav-button" onClick={(e) => handleNavClick(e, "/quiz", "Mini Quiz")}>
-            Mini Quiz
+            Quiz Hub
           </NavLink>
         </div>
       </nav>
