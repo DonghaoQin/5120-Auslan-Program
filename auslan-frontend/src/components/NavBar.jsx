@@ -33,10 +33,10 @@ export default function NavBar() {
           <NavLink to="/learn/words" className="nav-button">
             Basic Words
           </NavLink>
-          <NavLink to="/story-book" className="nav-button">
+          <NavLink to="/story-book" className="nav-button"  onClick={(e) => handleNavClick(e, "/story-book", "Story Book")}>
             Story Book
           </NavLink>
-          <NavLink to="/quiz" className="nav-button">
+          <NavLink to="/quiz" className="nav-button" onClick={(e) => handleNavClick(e, "/quiz", "Mini Quiz")}>
             Mini Quiz
           </NavLink>
         </div>
