@@ -534,7 +534,7 @@ export default function BasicWords() {
       </aside>
 
       {/* Floating QR Code (can be toggled later if needed) */}
-      {/* 
+      { 
         <div
           className="qr-container"
           onMouseEnter={() => setShowQRTooltip(true)}
@@ -559,7 +559,7 @@ export default function BasicWords() {
             style={{ borderRadius: "8px" }}
           />
         </div>
-        */}
+        }
 
     </div>
   );
