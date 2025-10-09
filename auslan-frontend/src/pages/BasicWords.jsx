@@ -534,7 +534,7 @@ export default function BasicWords() {
       </aside>
 
       {/* Floating QR Code (can be toggled later if needed) */}
-      { 
+      {
         <div
           className="qr-container"
           onMouseEnter={() => setShowQRTooltip(true)}
@@ -547,7 +547,7 @@ export default function BasicWords() {
           </div>
           <p style={{ fontSize: "13px", marginBottom: "4px", color: "#444", fontWeight: "600" }}>
             <span className="qr-icon">📱</span>
-            Flashcard Mode
+            Scan the QRcode Pratice by your phone. 
           </p>
           <QRCodeCanvas
             value="https://helloauslan.me/flashcard" 
