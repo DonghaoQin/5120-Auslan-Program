@@ -1,5 +1,4 @@
-// ✅ WordQuiz.jsx (with Reload + clear cache + better API handling + Enhanced Animations)
-// This fixes the 'Start Quiz not clickable' problem by showing reload options and ensuring dataset loads correctly.
+// ✅ WordQuiz.jsx (with category selection that resets to intro mode + Enhanced Animations)
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -109,6 +108,24 @@ export default function WordQuiz({ totalQuestions = 10 }) {
   );
   const availableCount = pool.length;
 
+  // ✅ Enhanced category selection handler - always goes back to intro
+  const handleCategorySelect = (category) => {
+    console.log(`📌 Category selected: ${category}`);
+    setGroup(category);
+    
+    // Always reset to intro mode when changing category
+    if (mode !== "intro") {
+      setMode("intro");
+      // Reset quiz state
+      setQuestions([]);
+      setIndex(0);
+      setSelected(null);
+      setScore(0);
+      setFeedback(null);
+      setStartTs(null);
+    }
+  };
+
   const generateQuestions = () => {
     const usable = Math.min(availableCount, totalQuestions);
     if (!usable) {
@@ -144,6 +161,18 @@ export default function WordQuiz({ totalQuestions = 10 }) {
       setSelected(null);
       setFeedback(null);
     } else setMode("summary");
+  };
+
+  // ✅ Back to intro handler with state reset
+  const handleBackToIntro = () => {
+    console.log("🔄 Returning to intro mode");
+    setMode("intro");
+    setQuestions([]);
+    setIndex(0);
+    setSelected(null);
+    setScore(0);
+    setFeedback(null);
+    setStartTs(null);
   };
 
   const elapsed = startTs ? Math.round((Date.now() - startTs) / 1000) : 0;
@@ -210,6 +239,12 @@ export default function WordQuiz({ totalQuestions = 10 }) {
           60% { transform: translateY(-4px); }
         }
 
+        @keyframes categorySelect {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
         .fade-in-up {
           animation: fadeInUp 0.6s ease-out;
         }
@@ -224,6 +259,10 @@ export default function WordQuiz({ totalQuestions = 10 }) {
 
         .shake-animation {
           animation: shake 0.5s;
+        }
+
+        .category-select-animation {
+          animation: categorySelect 0.4s ease;
         }
 
         .quiz-button {
@@ -301,6 +340,10 @@ export default function WordQuiz({ totalQuestions = 10 }) {
           width: 300px;
           height: 300px;
         }
+
+        .category-pill.selected {
+          animation: categorySelect 0.4s ease;
+        }
       `}</style>
 
       <header style={{ marginBottom: 24 }} className="fade-in-up">
@@ -310,6 +353,7 @@ export default function WordQuiz({ totalQuestions = 10 }) {
         </p>
       </header>
 
+      {/* ✅ Enhanced category selection with intro reset */}
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }} className="fade-in-up">
         {CATEGORIES.map((c, idx) => {
           const colorMap = {
@@ -331,8 +375,8 @@ export default function WordQuiz({ totalQuestions = 10 }) {
             <button
               key={c}
               type="button"
-              onClick={() => setGroup(c)}
-              className="category-pill"
+              onClick={() => handleCategorySelect(c)}
+              className={`category-pill ${active ? 'selected' : ''}`}
               style={{
                 border: `2px solid ${color}`,
                 background: active 
@@ -356,6 +400,27 @@ export default function WordQuiz({ totalQuestions = 10 }) {
           );
         })}
       </div>
+
+      {/* ✅ Show category change feedback */}
+      {mode === "intro" && (
+        <div style={{
+          background: "linear-gradient(135deg, #eff6ff, #dbeafe)",
+          padding: "12px 16px",
+          borderRadius: 12,
+          marginBottom: 20,
+          border: "1px solid #93c5fd",
+          textAlign: "center"
+        }} className="fade-in-up">
+          <span style={{ color: "#1d4ed8", fontWeight: 600, fontSize: 14 }}>
+            📊 Selected Category: <strong>{group}</strong>
+            {availableCount > 0 && (
+              <span style={{ color: "#059669", marginLeft: 8 }}>
+                ({availableCount} terms available)
+              </span>
+            )}
+          </span>
+        </div>
+      )}
 
       {mode === "intro" && (
         <section style={card} className="fade-in-up">
@@ -680,7 +745,7 @@ export default function WordQuiz({ totalQuestions = 10 }) {
                 cursor: "pointer",
                 boxShadow: "0 4px 15px rgba(102, 126, 234, 0.2)",
               }}
-              onClick={() => setMode("intro")}
+              onClick={handleBackToIntro}
             >
               Back to Settings ⚙️
             </button>
