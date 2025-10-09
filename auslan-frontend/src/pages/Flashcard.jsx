@@ -235,9 +235,9 @@ const styles = {
   },
   header: { fontSize: 20, marginBottom: "1rem", color: "#111827" },
   categoryScroll: {
-    display: "flex",
-    overflowX: "auto",
-    gap: "10px",
+    display: "grid",
+    overflowX: "1fr",
+    gap: "12px",
     paddingBottom: "1rem",
   },
   categoryCard: {
