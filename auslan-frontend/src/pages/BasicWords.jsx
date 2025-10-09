@@ -7,7 +7,7 @@ const STORAGE_KEY = "LN_LEARNED_V2";
 /** Layout constants */
 const TOP_GAP = 96;                // Top safe area for sticky/offset
 const SEARCH_BLOCK_H = 128;        // Height used to offset the right panel when sticky
-const MAX_W = 1500;                // Max container width
+const MAX_W = 1320;                // Max container width
 const RIGHT_W = 600;               // Fixed right detail panel width
 const GAP = 24;                    // Gap between main column and right panel
 
@@ -82,6 +82,7 @@ export default function BasicWords() {
   /** Search and tooltip state */
   const [search, setSearch] = useState("");
   const [showQRTooltip, setShowQRTooltip] = useState(false);
+  const [qrZoomed, setQrZoomed] = useState(false);
 
   /** Per-category collapsed state */
   const [collapsed, setCollapsed] = useState({});
@@ -214,6 +215,13 @@ export default function BasicWords() {
     color: "#222",
   };
 
+  /** Handle QR click to zoom */
+  const handleQRClick = () => {
+    setQrZoomed(true);
+    // Auto close after 10 seconds or user can click to close
+    setTimeout(() => setQrZoomed(false), 10000);
+  };
+
   return (
     <div style={page}>
       <style>{`
@@ -256,33 +264,146 @@ export default function BasicWords() {
           background: #fff;
           border: 2px solid #E5E7EB;
           border-radius: 16px;
-          padding: 12px 16px;
+          padding: 16px;
           box-shadow: 0 6px 16px rgba(0,0,0,0.12);
           text-align: center;
           z-index: 9999;
           cursor: pointer;
           transition: all 0.3s ease;
           animation: qrPulse 2s infinite;
+          width: 120px;
+          height: 120px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
         }
-        .qr-container:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: #3B82F6; }
+        .qr-container:hover { 
+          transform: scale(1.05); 
+          box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+          border-color: #3B82F6; 
+        }
+
+        .qr-container.zoomed {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) scale(2);
+          z-index: 10000;
+          animation: none;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+          border-color: #3B82F6;
+          width: 180px;
+          height: 180px;
+        }
+
+        .qr-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 9998;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        }
+
+        .qr-overlay.visible {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .qr-text {
+          font-size: 11px;
+          color: #444;
+          font-weight: 600;
+          margin-bottom: 8px;
+          opacity: 0;
+          transform: translateY(5px);
+          transition: all 0.2s ease;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 100px;
+        }
+
+        .qr-container:hover .qr-text {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .qr-container.zoomed .qr-text {
+          opacity: 1;
+          transform: translateY(0);
+          font-size: 14px;
+          max-width: 160px;
+          margin-bottom: 12px;
+        }
 
         .qr-tooltip {
-          position: absolute; bottom: 100%; right: 0; margin-bottom: 10px;
-          background: #1F2937; color: white; padding: 8px 12px; border-radius: 8px;
-          font-size: 12px; font-weight: 600; white-space: nowrap; opacity: 0;
-          transform: translateY(10px); transition: all 0.2s ease; pointer-events: none;
+          position: absolute; 
+          bottom: 100%; 
+          right: 0; 
+          margin-bottom: 10px;
+          background: #1F2937; 
+          color: white; 
+          padding: 8px 12px; 
+          border-radius: 8px;
+          font-size: 12px; 
+          font-weight: 600; 
+          white-space: nowrap; 
+          opacity: 0;
+          transform: translateY(10px); 
+          transition: all 0.2s ease; 
+          pointer-events: none;
         }
         .qr-tooltip:after {
-          content: ''; position: absolute; top: 100%; right: 20px;
-          border: 5px solid transparent; border-top-color: #1F2937;
+          content: ''; 
+          position: absolute; 
+          top: 100%; 
+          right: 20px;
+          border: 5px solid transparent; 
+          border-top-color: #1F2937;
         }
-        .qr-tooltip.visible { opacity: 1; transform: translateY(0); }
+        .qr-tooltip.visible { 
+          opacity: 1; 
+          transform: translateY(0); 
+        }
 
-        .qr-icon { display: inline-block; margin-right: 4px; animation: qrBounce 1.5s infinite; }
+        .qr-tooltip.zoomed-text {
+          position: fixed;
+          bottom: auto;
+          top: calc(50% + 120px);
+          left: 50%;
+          right: auto;
+          transform: translateX(-50%);
+          margin: 0;
+          background: #1F2937;
+          font-size: 14px;
+          z-index: 10001;
+        }
+
+        .qr-tooltip.zoomed-text:after {
+          display: none;
+        }
+
+        .qr-icon { 
+          display: inline-block; 
+          margin-right: 4px; 
+          animation: qrBounce 1.5s infinite; 
+        }
         .qr-nav-arrow {
-          position: absolute; top: -15px; right: 30px; width: 0; height: 0;
-          border-left: 8px solid transparent; border-right: 8px solid transparent;
-          border-bottom: 15px solid #3B82F6; animation: qrArrowBounce 1s infinite;
+          position: absolute; 
+          top: -15px; 
+          right: 30px; 
+          width: 0; 
+          height: 0;
+          border-left: 8px solid transparent; 
+          border-right: 8px solid transparent;
+          border-bottom: 15px solid #3B82F6; 
+          animation: qrArrowBounce 1s infinite;
         }
 
         @keyframes qrPulse {
@@ -290,8 +411,15 @@ export default function BasicWords() {
           50% { box-shadow: 0 6px 16px rgba(0,0,0,0.12), 0 0 0 8px rgba(59, 130, 246, 0.1); }
           100% { box-shadow: 0 6px 16px rgba(0,0,0,0.12), 0 0 0 0 rgba(59, 130, 246, 0); }
         }
-        @keyframes qrBounce { 0%,20%,50%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-3px); } 60% { transform: translateY(-2px); } }
-        @keyframes qrArrowBounce { 0%,100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(-5px); opacity: 0.7; } }
+        @keyframes qrBounce { 
+          0%,20%,50%,80%,100% { transform: translateY(0); } 
+          40% { transform: translateY(-3px); } 
+          60% { transform: translateY(-2px); } 
+        }
+        @keyframes qrArrowBounce { 
+          0%,100% { transform: translateY(0); opacity: 1; } 
+          50% { transform: translateY(-5px); opacity: 0.7; } 
+        }
 
         @media (max-width: ${MAX_W + RIGHT_W + GAP}px) {
           .ln-main { margin-right: ${RIGHT_W + 16}px; }
@@ -533,33 +661,52 @@ export default function BasicWords() {
         </div>
       </aside>
 
-      {/* Floating QR Code (can be toggled later if needed) */}
-      {
-        <div
-          className="qr-container"
-          onMouseEnter={() => setShowQRTooltip(true)}
-          onMouseLeave={() => setShowQRTooltip(false)}
-          onClick={() => window.open("https://helloauslan.me/flashcard", "_blank")}
-        >
-          <div className="qr-nav-arrow"></div>
-          <div className={`qr-tooltip ${showQRTooltip ? 'visible' : ''}`}>
-            Scan to access mobile flashcards!
-          </div>
-          <p style={{ fontSize: "13px", marginBottom: "4px", color: "#444", fontWeight: "600" }}>
-            <span className="qr-icon">📱</span>
-            Scan the QRcode Pratice by your phone. 
-          </p>
-          <QRCodeCanvas
-            value="https://helloauslan.me/flashcard" 
-            size={100}
-            bgColor="#ffffff"
-            fgColor="#000000"
-            level="M"
-            includeMargin={true}
-            style={{ borderRadius: "8px" }}
-          />
+      {/* QR Overlay for zoomed state */}
+      <div 
+        className={`qr-overlay ${qrZoomed ? 'visible' : ''}`}
+        onClick={() => setQrZoomed(false)}
+      />
+
+      {/* Floating QR Code with zoom functionality */}
+      <div
+        className={`qr-container ${qrZoomed ? 'zoomed' : ''}`}
+        onMouseEnter={() => !qrZoomed && setShowQRTooltip(true)}
+        onMouseLeave={() => !qrZoomed && setShowQRTooltip(false)}
+        onClick={() => {
+          if (qrZoomed) {
+            setQrZoomed(false);
+          } else {
+            handleQRClick();
+          }
+        }}
+      >
+        {/* Navigation arrow indicator (hide when zoomed) */}
+        {!qrZoomed && <div className="qr-nav-arrow"></div>}
+        
+        {/* Tooltip */}
+        <div className={`qr-tooltip ${showQRTooltip && !qrZoomed ? 'visible' : ''} ${qrZoomed ? 'zoomed-text visible' : ''}`}>
+          {qrZoomed ? 'Click to close or scan to access flashcards!' : 'Click to zoom or scan to access mobile flashcards!'}
         </div>
-        }
+        
+        {/* Text that appears on hover */}
+        <div className="qr-text">
+          <span className="qr-icon">📱</span>
+          {qrZoomed ? "Flashcard Mode" : "Mobile Practice"}
+        </div>
+        
+        <QRCodeCanvas
+          value="https://helloauslan.me/flashcard" 
+          size={qrZoomed ? 120 : 80}
+          bgColor="#ffffff"
+          fgColor="#000000"
+          level="M"
+          includeMargin={true}
+          style={{ 
+            borderRadius: "8px",
+            transition: "all 0.3s ease"
+          }}
+        />
+      </div>
 
     </div>
   );
