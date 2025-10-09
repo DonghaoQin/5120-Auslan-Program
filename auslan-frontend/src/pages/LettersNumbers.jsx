@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { letters, numbers } from "../data/letters.js";
 
 const STORAGE_KEY = "LN_LEARNED_V2";
@@ -192,13 +193,152 @@ export default function LettersNumbers() {
           align-content: start;
         }
 
+        /* Enhanced Quiz Button Styles */
+        .quiz-button {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: #fff;
+          border: none;
+          border-radius: 16px;
+          padding: 18px 32px;
+          font-size: 18px;
+          font-weight: 700;
+          text-decoration: none;
+          cursor: pointer;
+          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transform: translateY(0);
+          position: relative;
+          overflow: hidden;
+          animation: fadeInUp 0.8s ease-out, pulseGlow 3s infinite;
+        }
+
+        .quiz-button::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+          transition: left 0.5s;
+        }
+
+        .quiz-button:hover::before {
+          left: 100%;
+        }
+
+        .quiz-button:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+          scale: 1.05;
+        }
+
+        .quiz-button:active {
+          transform: translateY(-2px);
+          scale: 1.02;
+        }
+
+        .quiz-button-icon {
+          font-size: 24px;
+          animation: bounce 2s infinite;
+        }
+
+        .quiz-button-text {
+          font-weight: 800;
+          letter-spacing: 0.5px;
+        }
+
+        /* Quiz Button Container - Moved Left */
+        .quiz-button-container {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          margin: 60px 0 40px 0;
+          padding: 20px;
+          background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+          border-radius: 20px;
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255,255,255,0.2);
+          animation: slideInUp 1s ease-out 0.5s both;
+          margin-right: ${RIGHT_W + GAP}px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideInUp {
+          from {
+            opacity: 0;
+            transform: translateY(60px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes pulseGlow {
+          0%, 100% {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+          }
+          50% {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6), 0 0 0 0 rgba(102, 126, 234, 0.4);
+          }
+        }
+
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+          }
+          40% {
+            transform: translateY(-8px);
+          }
+          60% {
+            transform: translateY(-4px);
+          }
+        }
+
         @media (max-width: ${MAX_W + RIGHT_W + GAP}px) {
           .ln-left-grid { margin-right: ${RIGHT_W + 16}px; }
+          .quiz-button-container { margin-right: ${RIGHT_W + 16}px; }
         }
         @media (max-width: 980px) {
           .ln-fixed-right { position: static; width: 100%; height: auto; border-radius: 16px;
             transform:none; opacity:1; pointer-events:auto; }
           .ln-left-grid { margin-right: 0; }
+          .quiz-button-container { 
+            margin: 40px 0 10px 0; 
+            padding: 16px;
+            margin-right: 0;
+            justify-content: center;
+          }
+          .quiz-button {
+            padding: 30px 24px;
+            font-size: 16px;
+            margin: 0;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .quiz-button {
+            padding: 14px 20px;
+            font-size: 15px;
+          }
+          .quiz-button-icon {
+            font-size: 20px;
+          }
         }
       `}</style>
 
@@ -245,6 +385,15 @@ export default function LettersNumbers() {
               <div style={{ letterSpacing: 1 }}>{item}</div>
             </div>
           ))}
+        </div>
+
+        {/* Quiz Button Section - Now Left Aligned */}
+        <div className="quiz-button-container">
+          <Link to="/quiz" className="quiz-button">
+            <span className="quiz-button-icon">🧩</span>
+            <span className="quiz-button-text">Test Your Knowledge - Mini Quiz</span>
+            <span className="quiz-button-icon">✨</span>
+          </Link>
         </div>
       </div>
 
