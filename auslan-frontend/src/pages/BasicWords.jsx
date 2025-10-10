@@ -255,7 +255,7 @@ export default function BasicWords() {
           display: flex;
           gap: 16px;
           justify-content: flex-start; 
-          margin-left: 230px; /* 稍微右一点，看起来更舒服 */
+          margin-left: 230px; 
         }
 
         .ln-left-btn {

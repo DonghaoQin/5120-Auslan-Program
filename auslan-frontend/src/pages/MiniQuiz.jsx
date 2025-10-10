@@ -1,11 +1,12 @@
-// src/pages/MiniQuiz.jsx
 import { useState } from "react";
 import LNQuiz from "./LNQuiz.jsx";
 import WordQuiz from "./WordQuiz.jsx";
+import quizBack from "../assets/QuizBack.png"; // ✅ 导入背景图
 
 export default function MiniQuizHub() {
-  const [mode, setMode] = useState(null); 
+  const [mode, setMode] = useState(null);
 
+  // ✅ 返回按钮
   const BackButton = ({ onClick }) => (
     <button
       onClick={onClick}
@@ -29,6 +30,7 @@ export default function MiniQuizHub() {
     </button>
   );
 
+  // ✅ 卡片样式
   const card = {
     flex: 1,
     minWidth: 280,
@@ -46,6 +48,7 @@ export default function MiniQuizHub() {
     textAlign: "center",
   };
 
+  // ✅ 标题
   const Title = ({ children }) => (
     <h1
       style={{
@@ -55,13 +58,13 @@ export default function MiniQuizHub() {
         color: "#1E293B",
         textShadow: "0 2px 6px rgba(0,0,0,.06)",
         margin: "140px auto 96px",
-
       }}
     >
       {children} <span style={{ color: "#F97316" }}>🧩</span>
     </h1>
   );
 
+  // ✅ 副标题
   const SubTitle = ({ children }) => (
     <p
       style={{
@@ -80,132 +83,151 @@ export default function MiniQuizHub() {
   const handleBack = () => setMode(null);
 
   return (
+    // 🌈 外层背景容器（全屏）
     <div
       style={{
-        maxWidth: 1024,
-        margin: "64px auto 96px",
-        padding: "0 16px",
-        fontFamily: "Inter, system-ui, sans-serif",
-        background: "linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 60%)",
-        borderRadius: 16,
+        backgroundImage: `url(${quizBack})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        minHeight: "100vh",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        paddingTop: "40px",
+        paddingBottom: "80px",
       }}
     >
-      {/* Hub */}
-      {mode === null && (
-        <>
-          <Title>Quiz Hub</Title>
-          <SubTitle>
-            Choose a quiz mode below to start your Auslan learning adventure!
-          </SubTitle>
+      
+      <div
+        style={{
+          maxWidth: 1024,
+          width: "90%",
+          margin: "0 auto",
+          padding: "40px 24px 96px",
+          backgroundColor: "#f8f5f3ff", 
+          borderRadius: 20,
+          boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+          fontFamily: "Inter, system-ui, sans-serif",
+        }}
+      >
+        {/* === Hub 主页 === */}
+        {mode === null && (
+          <>
+            <Title>Quiz Hub</Title>
+            <SubTitle>
+              Choose a quiz mode below to start your Auslan learning adventure!
+            </SubTitle>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: 24,
-              alignItems: "stretch",
-              marginTop: 24,
-            }}
-          >
-            {/* Letters & Numbers card */}
             <div
-              style={card}
-              onClick={() => setMode("ln")}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-8px)";
-                e.currentTarget.style.boxShadow =
-                  "0 16px 36px rgba(59,130,246,.28)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow =
-                  "0 10px 28px rgba(0,0,0,.08)";
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: 24,
+                alignItems: "stretch",
+                marginTop: 24,
               }}
             >
+              {/* 🅰️ Letters & Numbers 卡片 */}
               <div
-                style={{
-                  fontSize: 42,
-                  lineHeight: 1,
-                  marginBottom: 10,
-                  color: "#3B82F6",
+                style={card}
+                onClick={() => setMode("ln")}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-8px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 16px 36px rgba(59,130,246,.28)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow =
+                    "0 10px 28px rgba(0,0,0,.08)";
                 }}
               >
-                🔤
+                <div
+                  style={{
+                    fontSize: 42,
+                    lineHeight: 1,
+                    marginBottom: 10,
+                    color: "#3B82F6",
+                  }}
+                >
+                  🔤
+                </div>
+                <h2
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 800,
+                    color: "#1E3A8A",
+                    margin: "2px 0 8px",
+                  }}
+                >
+                  Letters & Numbers
+                </h2>
+                <p style={{ color: "#475569", fontSize: 15 }}>
+                  Practice recognizing letters (A–Z) and numbers (0–9) from Auslan sign images.
+                </p>
               </div>
-              <h2
-                style={{
-                  fontSize: 22,
-                  fontWeight: 800,
-                  color: "#1E3A8A",
-                  margin: "2px 0 8px",
-                }}
-              >
-                Letters & Numbers
-              </h2>
-              <p style={{ color: "#475569", fontSize: 15 }}>
-                Practice recognizing letters (A–Z) and numbers (0–9) from Auslan
-                sign images.
-              </p>
-            </div>
 
-            {/* Basic Words card */}
-            <div
-              style={card}
-              onClick={() => setMode("words")}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-8px)";
-                e.currentTarget.style.boxShadow =
-                  "0 16px 36px rgba(139,92,246,.28)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow =
-                  "0 10px 28px rgba(0,0,0,.08)";
-              }}
-            >
+              {/* 🎬 Basic Words 卡片 */}
               <div
-                style={{
-                  fontSize: 42,
-                  lineHeight: 1,
-                  marginBottom: 10,
-                  color: "#8B5CF6",
+                style={card}
+                onClick={() => setMode("words")}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-8px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 16px 36px rgba(139,92,246,.28)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow =
+                    "0 10px 28px rgba(0,0,0,.08)";
                 }}
               >
-                🎬
+                <div
+                  style={{
+                    fontSize: 42,
+                    lineHeight: 1,
+                    marginBottom: 10,
+                    color: "#8B5CF6",
+                  }}
+                >
+                  🎬
+                </div>
+                <h2
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 800,
+                    color: "#5B21B6",
+                    margin: "2px 0 8px",
+                  }}
+                >
+                  Basic Words
+                </h2>
+                <p style={{ color: "#475569", fontSize: 15 }}>
+                  Watch Auslan sign videos and guess their meanings by category.
+                </p>
               </div>
-              <h2
-                style={{
-                  fontSize: 22,
-                  fontWeight: 800,
-                  color: "#5B21B6",
-                  margin: "2px 0 8px",
-                }}
-              >
-                Basic Words
-              </h2>
-              <p style={{ color: "#475569", fontSize: 15 }}>
-                Watch Auslan sign videos and guess their meanings by category.
-              </p>
             </div>
+          </>
+        )}
+
+        {/* === LN Quiz 模式 === */}
+        {mode === "ln" && (
+          <div>
+            <BackButton onClick={handleBack} />
+            <LNQuiz />
           </div>
-        </>
-      )}
+        )}
 
-      {/* LN mode */}
-      {mode === "ln" && (
-        <div>
-          <BackButton onClick={handleBack} />
-          <LNQuiz />
-        </div>
-      )}
-
-      {/* Words mode */}
-      {mode === "words" && (
-        <div>
-          <BackButton onClick={handleBack} />
-          <WordQuiz />
-        </div>
-      )}
+        {/* === Word Quiz 模式 === */}
+        {mode === "words" && (
+          <div>
+            <BackButton onClick={handleBack} />
+            <WordQuiz />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
