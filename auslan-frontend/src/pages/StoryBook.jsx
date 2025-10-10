@@ -316,30 +316,32 @@ export default function StoryBook() {
               return (
                 <span
                   key={i}
-                  onClick={() => handleWordClick(cleanWord)}
-                  className={`interactive-word ${isClicked ? "clicked" : ""}`}
+                  onClick={() => hasVideo ? handleWordClick(cleanWord) : null}
                   style={{
-                    color: hasVideo ? "#00796B" : "#FF9800",
-                    cursor: videosLoading ? "wait" : "pointer",
+                    color: hasVideo ? "#00796B" : "#333",
+                    cursor: hasVideo ? (videosLoading ? "wait" : "pointer") : "default",
                     marginRight: "0.2rem",
-                    fontWeight: 700,
-                    transition: "all .2s",
+                    fontWeight: hasVideo ? 700 : "normal",
+                    transition: hasVideo ? "all .2s" : "none",
                     display: "inline-block",
-                    textDecoration: hasVideo ? "none" : "underline",
+                    textDecoration: "none",
                   }}
                   onMouseEnter={(e) => {
-                    if (!videosLoading) {
-                      e.currentTarget.style.color = hasVideo ? "#004D40" : "#F57C00";
+                    if (hasVideo && !videosLoading) {
+                      e.currentTarget.style.color = "#004D40";
                       e.currentTarget.style.transform = "scale(1.1) rotate(-2deg)";
-                      e.currentTarget.style.textShadow = hasVideo ? "0 0 8px #80CBC4" : "0 0 8px #FFB74D";
+                      e.currentTarget.style.textShadow = "0 0 8px #80CBC4";
                     }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = hasVideo ? "#00796B" : "#FF9800";
-                    e.currentTarget.style.transform = "none";
-                    e.currentTarget.style.textShadow = "none";
+                    if (hasVideo) {
+                      e.currentTarget.style.color = "#00796B";
+                      e.currentTarget.style.transform = "none";
+                      e.currentTarget.style.textShadow = "none";
+                    }
                   }}
-                  title={videosLoading ? "Loading videos..." : hasVideo ? "Click to watch Auslan video" : "Video not available"}
+                  title={hasVideo ? (videosLoading ? "Loading videos..." : "Click to watch Auslan video") : undefined}
+                  className={hasVideo && isClicked ? "clicked" : ""}
                 >
                   {word}{" "}
                 </span>
