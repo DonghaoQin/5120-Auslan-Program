@@ -147,10 +147,8 @@ export default function FlashCardBasicWords() {
     const catColor = CATEGORY_COLORS[selectedCategory] || "#ccc";
     return (
       <div style={styles.page}>
-        <button style={styles.backBtn} onClick={() => setStep("category")}>
-          ⬅ Back
-        </button>
         <h2 style={styles.header}>{selectedCategory}</h2>
+
         <div style={styles.wordGrid}>
           {items.map((item) => {
             const isLearned = learned.has(item.title);
@@ -173,6 +171,20 @@ export default function FlashCardBasicWords() {
             );
           })}
         </div>
+
+        {/* ✅ Back button moved to bottom with box */}
+        <div style={styles.backContainer}>
+          <button
+            style={{
+              ...styles.backBtn,
+              border: `2px solid ${catColor}`,
+              color: catColor,
+            }}
+            onClick={() => setStep("category")}
+          >
+            ⬅ Back to Categories
+          </button>
+        </div>
       </div>
     );
   }
@@ -184,9 +196,6 @@ export default function FlashCardBasicWords() {
     const isLearned = learned.has(selectedWord.title);
     return (
       <div style={styles.page}>
-        <button style={styles.backBtn} onClick={() => setStep("words")}>
-          ⬅ Back
-        </button>
         <h2 style={styles.header}>{selectedWord.title.replace("_", " ")}</h2>
         {selectedWord.url ? (
           <video
@@ -199,11 +208,12 @@ export default function FlashCardBasicWords() {
         ) : (
           <p>No video available</p>
         )}
+
         <button
           style={{
             ...styles.learnBtn,
             background: isLearned ? transparent(color, 0.5) : "#E5E7EB",
-            color: isLearned ? "#111" : "#111",
+            color: "#111",
             border: `2px solid ${color}`,
           }}
           onClick={() =>
@@ -217,6 +227,20 @@ export default function FlashCardBasicWords() {
         >
           {isLearned ? "Learned ✅" : "Mark as Learned"}
         </button>
+
+        {/* ✅ Back button at bottom */}
+        <div style={styles.backContainer}>
+          <button
+            style={{
+              ...styles.backBtn,
+              border: `2px solid ${color}`,
+              color: color,
+            }}
+            onClick={() => setStep("words")}
+          >
+            ⬅ Back to Words
+          </button>
+        </div>
       </div>
     );
   }
@@ -235,10 +259,11 @@ const styles = {
   },
   header: { fontSize: 20, marginBottom: "1rem", color: "#111827" },
   categoryScroll: {
-    display: "grid",
-    overflowX: "1fr",
+    display: "flex",
+    overflowX: "auto",
     gap: "12px",
     paddingBottom: "1rem",
+    justifyContent: "flex-start",
   },
   categoryCard: {
     flex: "0 0 auto",
@@ -266,14 +291,19 @@ const styles = {
     boxShadow: "0 2px 5px rgba(0,0,0,0.08)",
     transition: "0.2s all ease",
   },
+  backContainer: {
+    marginTop: "1.5rem",
+    display: "flex",
+    justifyContent: "center",
+  },
   backBtn: {
-    background: "none",
-    border: "none",
-    color: "#3B82F6",
+    background: "white",
+    borderRadius: "10px",
+    padding: "0.8rem 1.2rem",
     fontWeight: 600,
-    fontSize: 16,
-    marginBottom: "0.5rem",
     cursor: "pointer",
+    fontSize: 16,
+    transition: "all 0.2s ease",
   },
   video: {
     maxWidth: "100%",
