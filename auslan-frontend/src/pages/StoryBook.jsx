@@ -9,6 +9,8 @@ import React, { useEffect, useMemo, useState } from "react";
      and optional interactiveWords (array of keywords to trigger Auslan videos).
    - Keep covers hosted reliably; if a cover fails to load, a placeholder appears.
 ------------------------------------------------------------------*/
+const API_URL = "https://auslan-backend.onrender.com/book1/";
+
 const books = [
   // Book 1: Existing "I Found a Frog."
   {
@@ -22,11 +24,11 @@ const books = [
         interactiveWords: ["frog", "school", "bedroom"], },
       { image: "https://i.imgur.com/RPSGWGD.png",
         text:
-          'My mother just chuckled when I yelled out, “I found a frog on my bed.” Now, she knew that I would eventually find one but she let me discover a wonder of Nature that many people miss.',
-        interactiveWords: ["frog", "mother", "Nature"], },
+          'My mother just chuckled when I yelled out, "I found a frog on my bed." Now, she knew that I would eventually find one but she let me discover a wonder of Nature that many people miss.',
+        interactiveWords: ["frog", "mother", "nature"], },
       { image: "https://i.imgur.com/rWx1mrm.png",
         text:
-          "You see, a little earlier that spring, when I was 6 years old; I saw some little, black fish in a pond. Since I didn’t have any pets I went home and asked my mother if I could have one.",
+          "You see, a little earlier that spring, when I was 6 years old; I saw some little, black fish in a pond. Since I didn't have any pets I went home and asked my mother if I could have one.",
         interactiveWords: ["fish", "pond", "mother"], },
       { image: "https://i.imgur.com/Y40D3nf.png",
         text:
@@ -42,7 +44,7 @@ const books = [
         interactiveWords: ["many", "easy", "ran"], },
       { image: "https://i.imgur.com/TQJYDOc.png",
         text:
-          'When I got home, my mother had an old fish bowl filled with water sitting on the corner of my desk. She asked to see the fish, looked, and with a big smile said, “Tadpoles. – Wow! You are in for a surprise.”',
+          'When I got home, my mother had an old fish bowl filled with water sitting on the corner of my desk. She asked to see the fish, looked, and with a big smile said, "Tadpoles. – Wow! You are in for a surprise."',
         interactiveWords: ["home", "mother", "fish", "smile", "surprise"], },
       { image: "https://i.imgur.com/TQJYDOc.png",
         text:
@@ -50,23 +52,23 @@ const books = [
         interactiveWords: ["see", "fish"], },
       { image: "https://i.imgur.com/vfROXNN.png",
         text:
-          'After a few weeks, I noticed some were changing. “Mom,” I yelled with excitement. “Come here, my fish are growing legs.” She came into my room, looked, smiled, and told me to keep watching.',
-        interactiveWords: ["few", "weeks", "Mom", "here", "fish", "legs", "looked", "smiled"], },
+          'After a few weeks, I noticed some were changing. "Mom," I yelled with excitement. "Come here, my fish are growing legs." She came into my room, looked, smiled, and told me to keep watching.',
+        interactiveWords: ["few", "weeks", "mom", "here", "fish", "legs", "looked", "smiled"], },
       { image: "https://i.imgur.com/YSEyB8a.png",
         text:
-          'After several more weeks, there were more changes. “Mom,” I yelled with excitement. “Come here, my fish are growing front legs and their tail is going away.”',
-        interactiveWords: ["weeks", "Mom", "Come"], },
+          'After several more weeks, there were more changes. "Mom," I yelled with excitement. "Come here, my fish are growing front legs and their tail is going away."',
+        interactiveWords: ["weeks", "mom", "come"], },
       { image: "https://i.imgur.com/BNF9d86.png",
         text:
-          "A week or so later when I got up, I was amazed. There were more changes. My fish didn’t have tails, their legs were bigger, and they didn’t look like the little black fish I had caught earlier in the Spring.",
+          "A week or so later when I got up, I was amazed. There were more changes. My fish didn't have tails, their legs were bigger, and they didn't look like the little black fish I had caught earlier in the Spring.",
         interactiveWords: ["week", "fish", "legs", "little"], },
       { image: "https://i.imgur.com/akDqrhB.png",
         text:
-          'That day, when I returned home from school, is when I yelled out, “I found a frog on my bed.”',
+          'That day, when I returned home from school, is when I yelled out, "I found a frog on my bed."',
         interactiveWords: ["school", "bed", "frog"], },
       { image: "https://i.imgur.com/akDqrhB.png",
         text:
-          '“Surprise,” yelled mom. “You watched a miracle right before your eyes. A fish changed into a frog.”',
+          '"Surprise," yelled mom. "You watched a miracle right before your eyes. A fish changed into a frog."',
         interactiveWords: ["mom", "eyes", "fish", "frog"], },
       { image: "https://i.imgur.com/v3hnEYs.png",
         text: "Off I went.",
@@ -93,48 +95,60 @@ const books = [
     cover: "https://i.imgur.com/qV7B0bL.png",
     pages: [
       { image: "https://i.imgur.com/6v9YvQq.png", text: "There was a tree that whispered in the wind.", interactiveWords: ["tree", "wind"] },
-      { image: "https://i.imgur.com/6v9YvQq.png", text: "Every whisper taught a new word in Auslan.", interactiveWords: ["Auslan", "word"] },
+      { image: "https://i.imgur.com/6v9YvQq.png", text: "Every whisper taught a new word in Auslan.", interactiveWords: ["auslan", "word"] },
       { image: "https://i.imgur.com/6v9YvQq.png", text: "Kids gathered to learn and play happily.", interactiveWords: ["learn", "play"] },
     ],
   },
 ];
 
-/* ----------------------------------------------------------------
-   AUSLAN VIDEO MAPPING
-   - Lowercase keys are recommended (we normalize clicked words).
-   - If a clicked word is not mapped here, no video will open.
-------------------------------------------------------------------*/
-const auslanVideos = {
-  frog: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/32/32980.mp4",
-  school: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/31/31820.mp4",
-  bedroom: "https://www.w3schools.com/html/mov_bbb.mp4",
-  mother: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/23/23491_1.mp4",
-  nature: "https://www.w3schools.com/html/mov_bbb.mp4",
-  fish: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/34/34710.mp4",
-  pond: "https://www.w3schools.com/html/mov_bbb.mp4",
-  pet: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/45/45810_1.mp4",
-  responsibility: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/41/41871_1.mp4",
-  bowl: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/46/46290_1.mp4",
-  few: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/63/63630_1.mp4",
-  home: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/33/33390_1.mp4",
-  many: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/30/30260_1.mp4",
-  easy: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/59/5960.mp4",
-  ran: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/59/59080_1.mp4",
-  smile: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/63/63590_1.mp4",
-  surprise: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/29/29560_1.mp4",
-  see: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/55/5510.mp4",
-  weeks: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/26/26280_1.mp4",
-  here: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/79/7940_1.mp4",
-  legs: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/35/35060.mp4",
-  looked: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/15/15460_1.mp4",
-  mom: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/23/23491_1.mp4",
-  come: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/70/7040_1.mp4",
-  week: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/26/26280_1.mp4",
-  little: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/mp4video/63/63640_1.mp4",
-  eyes: "https://object-store.rc.nectar.org.au/v1/AUTH_92e2f9b70316412697cddc6f3ac0ee4e/staticauslanorgau/auslan/52/5210.mp4",
-};
-
 export default function StoryBook() {
+  /* ----------------------- VIDEO DATA FROM BACKEND ------------------------ */
+  const [auslanVideos, setAuslanVideos] = useState({});
+  const [videosLoading, setVideosLoading] = useState(true);
+  const [videosError, setVideosError] = useState("");
+
+  // Fetch videos from backend API on component mount
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        setVideosLoading(true);
+        setVideosError("");
+        
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: Failed to fetch videos`);
+        }
+        
+        const videos = await response.json();
+        
+        // Create a mapping from filename (without extension) to video URL
+        const videoMapping = {};
+        videos.forEach(video => {
+          if (video.filename && video.url) {
+            // Extract filename without extension and convert to lowercase
+            const key = video.filename
+              .replace(/\.[^/.]+$/, "") // Remove file extension
+              .toLowerCase()
+              .replace(/[^a-z0-9]/g, ""); // Remove special characters, keep only alphanumeric
+            
+            videoMapping[key] = video.url;
+          }
+        });
+        
+        setAuslanVideos(videoMapping);
+        console.log("Loaded video mapping:", videoMapping);
+        
+      } catch (error) {
+        console.error("Failed to fetch videos:", error);
+        setVideosError(error.message);
+      } finally {
+        setVideosLoading(false);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
   /* ----------------------- BOOKSHELF / READER TOGGLE -----------------------
      - selectedBookIndex === null → show bookshelf
      - selectedBookIndex !== null → show reader for that book
@@ -175,11 +189,24 @@ export default function StoryBook() {
 
   // Handle interactive word clicks → open Auslan video if mapped
   const handleWordClick = (raw) => {
-    const clean = String(raw).replace(/[^a-zA-Z]/g, "");
-    const key = clean.toLowerCase();
-    setClickedWord(clean);
-    const src = auslanVideos[key] || auslanVideos[clean] || null;
-    if (src) setVideoSrc(src);
+    if (videosLoading) {
+      console.log("Videos still loading, please wait...");
+      return;
+    }
+
+    const clean = String(raw).replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+    setClickedWord(raw);
+    
+    // Look for video URL in the fetched data
+    const videoUrl = auslanVideos[clean];
+    
+    if (videoUrl) {
+      console.log(`Found video for "${clean}":`, videoUrl);
+      setVideoSrc(videoUrl);
+    } else {
+      console.log(`No video found for "${clean}". Available videos:`, Object.keys(auslanVideos));
+    }
+    
     setTimeout(() => setClickedWord(null), 800);
   };
 
@@ -258,7 +285,7 @@ export default function StoryBook() {
         >
           <img src={currentBook.cover} alt="Cover" style={{ maxWidth: "80%", borderRadius: 12 }} />
           <h2 style={{ marginTop: "1rem", color: "#3e2a12" }}>{currentBook.title}</h2>
-          <p style={{ color: "#6b4e16" }}>Click “Next” or press → to start</p>
+          <p style={{ color: "#6b4e16" }}>Click "Next" or press → to start</p>
         </div>
       );
     }
@@ -284,29 +311,35 @@ export default function StoryBook() {
             const lower = cleanWord.toLowerCase();
             if (interactiveSet.has(lower)) {
               const isClicked = clickedWord === cleanWord;
+              const hasVideo = auslanVideos[cleanWord.toLowerCase().replace(/[^a-z0-9]/g, "")];
+              
               return (
                 <span
                   key={i}
                   onClick={() => handleWordClick(cleanWord)}
                   className={`interactive-word ${isClicked ? "clicked" : ""}`}
                   style={{
-                    color: "#00796B",
-                    cursor: "pointer",
+                    color: hasVideo ? "#00796B" : "#FF9800",
+                    cursor: videosLoading ? "wait" : "pointer",
                     marginRight: "0.2rem",
                     fontWeight: 700,
                     transition: "all .2s",
                     display: "inline-block",
+                    textDecoration: hasVideo ? "none" : "underline",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "#004D40";
-                    e.currentTarget.style.transform = "scale(1.1) rotate(-2deg)";
-                    e.currentTarget.style.textShadow = "0 0 8px #80CBC4";
+                    if (!videosLoading) {
+                      e.currentTarget.style.color = hasVideo ? "#004D40" : "#F57C00";
+                      e.currentTarget.style.transform = "scale(1.1) rotate(-2deg)";
+                      e.currentTarget.style.textShadow = hasVideo ? "0 0 8px #80CBC4" : "0 0 8px #FFB74D";
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "#00796B";
+                    e.currentTarget.style.color = hasVideo ? "#00796B" : "#FF9800";
                     e.currentTarget.style.transform = "none";
                     e.currentTarget.style.textShadow = "none";
                   }}
+                  title={videosLoading ? "Loading videos..." : hasVideo ? "Click to watch Auslan video" : "Video not available"}
                 >
                   {word}{" "}
                 </span>
@@ -380,6 +413,23 @@ export default function StoryBook() {
             Explore our interactive storybooks to learn Auslan words while reading fun tales.
             Click a story below to begin your journey. 💬✨
           </p>
+          
+          {/* Video loading status */}
+          {videosLoading && (
+            <div style={{ marginTop: "1rem", color: "#8d6e63", fontSize: "0.9rem" }}>
+              📼 Loading Auslan videos...
+            </div>
+          )}
+          {videosError && (
+            <div style={{ marginTop: "1rem", color: "#d32f2f", fontSize: "0.9rem" }}>
+              ⚠️ Error loading videos: {videosError}
+            </div>
+          )}
+          {!videosLoading && !videosError && (
+            <div style={{ marginTop: "1rem", color: "#388e3c", fontSize: "0.9rem" }}>
+              ✅ {Object.keys(auslanVideos).length} Auslan videos loaded
+            </div>
+          )}
         </div>
 
         {/* Responsive grid of book cards */}
@@ -396,31 +446,42 @@ export default function StoryBook() {
             <button
               key={b.id}
               onClick={() => setSelectedBookIndex(idx)}
+              disabled={videosLoading}
               style={{
                 border: "none",
-                background: "linear-gradient(180deg,#fff8e1,#ffe0b2)",
+                background: videosLoading 
+                  ? "linear-gradient(180deg,#f5f5f5,#e0e0e0)" 
+                  : "linear-gradient(180deg,#fff8e1,#ffe0b2)",
                 borderRadius: 20,
                 boxShadow: "0 10px 24px rgba(0,0,0,.12)",
-                cursor: "pointer",
+                cursor: videosLoading ? "wait" : "pointer",
                 overflow: "hidden",
                 padding: 14,
                 transition: "transform .22s ease, box-shadow .22s ease",
                 textAlign: "center",
+                opacity: videosLoading ? 0.7 : 1,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-4px) scale(1.02)";
-                e.currentTarget.style.boxShadow = "0 16px 34px rgba(0,0,0,.16)";
+                if (!videosLoading) {
+                  e.currentTarget.style.transform = "translateY(-4px) scale(1.02)";
+                  e.currentTarget.style.boxShadow = "0 16px 34px rgba(0,0,0,.16)";
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0) scale(1)";
-                e.currentTarget.style.boxShadow = "0 10px 24px rgba(0,0,0,.12)";
+                if (!videosLoading) {
+                  e.currentTarget.style.transform = "translateY(0) scale(1)";
+                  e.currentTarget.style.boxShadow = "0 10px 24px rgba(0,0,0,.12)";
+                }
               }}
             >
               <CoverImage src={b.cover} alt={b.title} />
               <div style={{ marginTop: 10, fontWeight: 800, color: "#6b4e16", fontSize: "1.05rem" }}>
                 {b.title}
               </div>
-              <div style={{ fontSize: 12, color: "#8d6e63" }}>{b.pages.length} pages</div>
+              <div style={{ fontSize: 12, color: "#8d6e63" }}>
+                {b.pages.length} pages
+                {videosLoading && " • Loading videos..."}
+              </div>
             </button>
           ))}
         </div>
