@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import Plot from "react-plotly.js";
 
-const API = "https://auslan-backend.onrender.com";
+const API = import.meta.env.VITE_API_BASE_URL || "https://auslan-backend.onrender.com";
 
 export default function YearBarChart() {
   const [data, setData] = useState([]);

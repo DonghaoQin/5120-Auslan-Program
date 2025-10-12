@@ -10,8 +10,8 @@ import React, { useEffect, useMemo, useState } from "react";
    - Keep covers hosted reliably; if a cover fails to load, a placeholder appears.
 ------------------------------------------------------------------*/
 const API_URLS = {
-  frog: "https://auslan-backend.onrender.com/book1/",
-  puppy: "https://auslan-backend.onrender.com/book2/",
+  frog: import.meta.env.VITE_BOOK1_API_URL || "https://auslan-backend.onrender.com/book1/",
+  puppy: import.meta.env.VITE_BOOK2_API_URL || "https://auslan-backend.onrender.com/book2/",
   tree: null  // No API endpoint for this book yet
 };
 
