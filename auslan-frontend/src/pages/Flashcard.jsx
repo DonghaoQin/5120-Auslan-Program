@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 
-const API_URL = import.meta.env.VITE_VIDEOS_API_URL || "https://auslan-backend.onrender.com/videos/";
+const API_URL =
+  import.meta.env.VITE_VIDEOS_API_URL ||
+  "https://auslan-backend.onrender.com/videos/";
 const STORAGE_KEY = "LN_LEARNED_V2";
 
 const CATEGORY_COLORS = {
@@ -36,12 +38,64 @@ const slug = (s) =>
     .replace(/^_|_$/g, "");
 
 const CATEGORY_MAP = (() => {
-  const C1A = ["thank_you", "no", "stop", "help", "seat", "drink", "sleeping", "go_to", "now", "not"];
+  const C1A = [
+    "thank_you",
+    "no",
+    "stop",
+    "help",
+    "seat",
+    "drink",
+    "sleeping",
+    "go_to",
+    "now",
+    "not",
+  ];
   const C1B = ["hello", "bye_bye", "apology", "ask", "welcome", "hi"];
   const C2A = ["mum", "brother", "sister", "baby", "you", "we", "yourself", "people", "our"];
-  const C2B = ["sad", "tired", "love", "smile", "upset", "cute", "like", "bad", "pizza", "dislike", "surprised", "dont_know", "disappointment", "thinking_reflection", "annoying"];
-  const C3A = ["play", "school", "teacher", "friend", "home", "already", "finished", "big", "fun", "copy", "jump_off"];
-  const C3B = ["wash_face", "share", "wait", "come_here", "move", "climb", "wear", "spoon", "look", "bath", "back_of_body", "hairbrush"];
+  const C2B = [
+    "sad",
+    "tired",
+    "love",
+    "smile",
+    "upset",
+    "cute",
+    "like",
+    "bad",
+    "pizza",
+    "dislike",
+    "surprised",
+    "dont_know",
+    "disappointment",
+    "thinking_reflection",
+    "annoying",
+  ];
+  const C3A = [
+    "play",
+    "school",
+    "teacher",
+    "friend",
+    "home",
+    "already",
+    "finished",
+    "big",
+    "fun",
+    "copy",
+    "jump_off",
+  ];
+  const C3B = [
+    "wash_face",
+    "share",
+    "wait",
+    "come_here",
+    "move",
+    "climb",
+    "wear",
+    "spoon",
+    "look",
+    "bath",
+    "back_of_body",
+    "hairbrush",
+  ];
   const C4A = ["what", "why", "who", "how_old"];
   const C4B = ["again", "slow_down", "understand", "nothing"];
   const OTHER = ["auslan", "deaf_mute", "australia", "sign_name", "dog", "apple", "world"];
@@ -59,6 +113,19 @@ const CATEGORY_MAP = (() => {
 })();
 
 const categoryOf = (title) => CATEGORY_MAP[slug(title)] ?? "Other";
+
+// ✅ Manual category order
+const CATEGORY_ORDER = [
+  "Essentials_Survival Signs",
+  "Greetings & Social Basics",
+  "Family Members",
+  "Feelings/Needs",
+  "School/Play",
+  "Everyday/Actions",
+  "Basic Questions",
+  "Interaction Clarification",
+  "Other",
+];
 
 export default function FlashCardBasicWords() {
   const [step, setStep] = useState("category");
@@ -113,15 +180,20 @@ export default function FlashCardBasicWords() {
     return b;
   }, [words]);
 
-  if (loading) return <div style={styles.center}><p>Loading vocabulary...</p></div>;
+  if (loading)
+    return (
+      <div style={styles.center}>
+        <p>Loading vocabulary...</p>
+      </div>
+    );
 
-  // Step 1 — horizontally scrollable category row
+  // Step 1 — single column category list
   if (step === "category") {
     return (
       <div style={styles.page}>
         <h2 style={styles.header}>Choose a Scenario</h2>
         <div style={styles.categoryScroll}>
-          {Object.keys(buckets).map((cat) => (
+          {CATEGORY_ORDER.filter((cat) => buckets[cat]).map((cat) => (
             <button
               key={cat}
               style={{
@@ -172,7 +244,6 @@ export default function FlashCardBasicWords() {
           })}
         </div>
 
-        {/* ✅ Back button moved to bottom with box */}
         <div style={styles.backContainer}>
           <button
             style={{
@@ -228,7 +299,6 @@ export default function FlashCardBasicWords() {
           {isLearned ? "Learned ✅" : "Mark as Learned"}
         </button>
 
-        {/* ✅ Back button at bottom */}
         <div style={styles.backContainer}>
           <button
             style={{
@@ -258,14 +328,18 @@ const styles = {
     textAlign: "center",
   },
   header: { fontSize: 20, marginBottom: "1rem", color: "#111827" },
+
+  // ✅ Single-column layout for categories
   categoryScroll: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+    display: "flex",
+    flexDirection: "column",
     gap: "12px",
+    alignItems: "center",
+    paddingBottom: "1rem",
   },
+
   categoryCard: {
-    flex: "0 0 auto",
-    whiteSpace: "nowrap",
+    width: "80%",
     background: "#fff",
     border: "2px solid #E5E7EB",
     borderRadius: "12px",
@@ -273,6 +347,7 @@ const styles = {
     fontWeight: 600,
     cursor: "pointer",
     boxShadow: "0 2px 5px rgba(0,0,0,0.08)",
+    textAlign: "center",
   },
   wordGrid: {
     display: "grid",
