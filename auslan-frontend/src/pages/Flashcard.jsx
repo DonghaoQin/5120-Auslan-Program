@@ -6,7 +6,7 @@ const API_URL =
 const STORAGE_KEY = "LN_LEARNED_V2";
 
 const CATEGORY_COLORS = {
-  "Essentials_Survival Signs": "#66D6BC",
+  "Essentials Survival Signs": "#66D6BC",
   "Greetings & Social Basics": "#F7A940",
   "Family Members": "#9895FF",
   "Feelings/Needs": "#3B82F6",
@@ -17,7 +17,6 @@ const CATEGORY_COLORS = {
   Other: "#6B7280",
 };
 
-// Convert hex → rgba with alpha for transparent background
 function transparent(hex, alpha = 0.3) {
   const c = hex.substring(1);
   const num = parseInt(c, 16);
@@ -38,69 +37,17 @@ const slug = (s) =>
     .replace(/^_|_$/g, "");
 
 const CATEGORY_MAP = (() => {
-  const C1A = [
-    "thank_you",
-    "no",
-    "stop",
-    "help",
-    "seat",
-    "drink",
-    "sleeping",
-    "go_to",
-    "now",
-    "not",
-  ];
+  const C1A = ["thank_you", "no", "stop", "help", "seat", "drink", "sleeping", "go_to", "now", "not"];
   const C1B = ["hello", "bye_bye", "apology", "ask", "welcome", "hi"];
   const C2A = ["mum", "brother", "sister", "baby", "you", "we", "yourself", "people", "our"];
-  const C2B = [
-    "sad",
-    "tired",
-    "love",
-    "smile",
-    "upset",
-    "cute",
-    "like",
-    "bad",
-    "pizza",
-    "dislike",
-    "surprised",
-    "dont_know",
-    "disappointment",
-    "thinking_reflection",
-    "annoying",
-  ];
-  const C3A = [
-    "play",
-    "school",
-    "teacher",
-    "friend",
-    "home",
-    "already",
-    "finished",
-    "big",
-    "fun",
-    "copy",
-    "jump_off",
-  ];
-  const C3B = [
-    "wash_face",
-    "share",
-    "wait",
-    "come_here",
-    "move",
-    "climb",
-    "wear",
-    "spoon",
-    "look",
-    "bath",
-    "back_of_body",
-    "hairbrush",
-  ];
+  const C2B = ["sad", "tired", "love", "smile", "upset", "cute", "like", "bad", "pizza", "dislike", "surprised", "dont_know", "disappointment", "thinking_reflection", "annoying"];
+  const C3A = ["play", "school", "teacher", "friend", "home", "already", "finished", "big", "fun", "copy", "jump_off"];
+  const C3B = ["wash_face", "share", "wait", "come_here", "move", "climb", "wear", "spoon", "look", "bath", "back_of_body", "hairbrush"];
   const C4A = ["what", "why", "who", "how_old"];
   const C4B = ["again", "slow_down", "understand", "nothing"];
   const OTHER = ["auslan", "deaf_mute", "australia", "sign_name", "dog", "apple", "world"];
   const m = {};
-  C1A.forEach((k) => (m[k] = "Essentials_Survival Signs"));
+  C1A.forEach((k) => (m[k] = "Essentials Survival Signs"));
   C1B.forEach((k) => (m[k] = "Greetings & Social Basics"));
   C2A.forEach((k) => (m[k] = "Family Members"));
   C2B.forEach((k) => (m[k] = "Feelings/Needs"));
@@ -114,7 +61,6 @@ const CATEGORY_MAP = (() => {
 
 const categoryOf = (title) => CATEGORY_MAP[slug(title)] ?? "Other";
 
-// ✅ Manual category order
 const CATEGORY_ORDER = [
   "Essentials_Survival Signs",
   "Greetings & Social Basics",
@@ -180,6 +126,25 @@ export default function FlashCardBasicWords() {
     return b;
   }, [words]);
 
+  const clearCategoryLearned = (category) => {
+    if (window.confirm(`Clear learned marks for ${category}?`)) {
+      const filtered = [...learned].filter(
+        (title) => categoryOf(title) !== category
+      );
+      setLearned(new Set(filtered));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+    }
+  };
+
+  const clearAllLearned = () => {
+    if (window.confirm("Clear all learned words?")) {
+      setLearned(new Set());
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  };
+
+  const learnedWords = words.filter((w) => learned.has(w.title));
+
   if (loading)
     return (
       <div style={styles.center}>
@@ -187,7 +152,7 @@ export default function FlashCardBasicWords() {
       </div>
     );
 
-  // Step 1 — single column category list
+  // Step 1 — Scenario list
   if (step === "category") {
     return (
       <div style={styles.page}>
@@ -209,11 +174,17 @@ export default function FlashCardBasicWords() {
             </button>
           ))}
         </div>
+
+        <div style={styles.backContainer}>
+          <button style={styles.learnedBtn} onClick={() => setStep("learned")}>
+             View Learned Words
+          </button>
+        </div>
       </div>
     );
   }
 
-  // Step 2 — words view
+  // Step 2 — Words in category
   if (step === "words" && selectedCategory) {
     const items = buckets[selectedCategory] || [];
     const catColor = CATEGORY_COLORS[selectedCategory] || "#ccc";
@@ -255,12 +226,68 @@ export default function FlashCardBasicWords() {
           >
             ⬅ Back to Categories
           </button>
+          <button
+            style={{
+              ...styles.clearBtn,
+              borderColor: catColor,
+              color: catColor,
+            }}
+            onClick={() => clearCategoryLearned(selectedCategory)}
+          >
+              Clear Learned in This Scenario
+          </button>
         </div>
       </div>
     );
   }
 
-  // Step 3 — video
+  //  Step 3 — Learned Words page
+  if (step === "learned") {
+    return (
+      <div style={styles.page}>
+        <h2 style={styles.header}>Learned Words</h2>
+        {learnedWords.length === 0 ? (
+          <p>No words marked as learned yet.</p>
+        ) : (
+          <div style={styles.wordGrid}>
+            {learnedWords.map((w) => (
+              <button
+                key={w.id}
+                style={{
+                  ...styles.wordCard,
+                  borderColor: CATEGORY_COLORS[categoryOf(w.title)],
+                  background: transparent(
+                    CATEGORY_COLORS[categoryOf(w.title)],
+                    0.3
+                  ),
+                }}
+                onClick={() => {
+                  setSelectedWord(w);
+                  setStep("video");
+                }}
+              >
+                {w.title.replace("_", " ")}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div style={styles.backContainer}>
+          <button style={styles.backBtn} onClick={() => setStep("category")}>
+            ⬅ Back to Categories
+          </button>
+          {/* ✅ NEW CLEAR BUTTON HERE */}
+          {learnedWords.length > 0 && (
+            <button style={styles.clearBtn} onClick={clearAllLearned}>
+              🧹 Clear All Learned Words
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Step 4 — Video view
   if (step === "video" && selectedWord) {
     const cat = categoryOf(selectedWord.title);
     const color = CATEGORY_COLORS[cat] || "#999";
@@ -296,7 +323,7 @@ export default function FlashCardBasicWords() {
             })
           }
         >
-          {isLearned ? "Learned ✅" : "Mark as Learned"}
+          {isLearned ? "Learned " : "Mark as Learned"}
         </button>
 
         <div style={styles.backContainer}>
@@ -328,8 +355,6 @@ const styles = {
     textAlign: "center",
   },
   header: { fontSize: 20, marginBottom: "1rem", color: "#111827" },
-
-  // ✅ Single-column layout for categories
   categoryScroll: {
     display: "flex",
     flexDirection: "column",
@@ -337,7 +362,6 @@ const styles = {
     alignItems: "center",
     paddingBottom: "1rem",
   },
-
   categoryCard: {
     width: "80%",
     background: "#fff",
@@ -368,6 +392,8 @@ const styles = {
     marginTop: "1.5rem",
     display: "flex",
     justifyContent: "center",
+    flexWrap: "wrap",
+    gap: "10px",
   },
   backBtn: {
     background: "white",
@@ -377,6 +403,27 @@ const styles = {
     cursor: "pointer",
     fontSize: 16,
     transition: "all 0.2s ease",
+  },
+  clearBtn: {
+    background: "#FFF",
+    border: "2px solid #FCA5A5",
+    borderRadius: "10px",
+    padding: "0.8rem 1.2rem",
+    fontWeight: 600,
+    cursor: "pointer",
+    fontSize: 15,
+    transition: "0.2s all ease",
+  },
+  learnedBtn: {
+    background: "#D1FAE5",
+    color: "#065F46",
+    border: "2px solid #6EE7B7",
+    borderRadius: "10px",
+    padding: "0.8rem 1.2rem",
+    fontWeight: 600,
+    cursor: "pointer",
+    fontSize: 16,
+    transition: "0.2s all ease",
   },
   video: {
     maxWidth: "100%",
