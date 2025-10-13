@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Plot from "react-plotly.js";
 
-const API = "https://auslan-backend.onrender.com";
+const API = import.meta.env.VITE_API_BASE_URL || "https://auslan-backend.onrender.com";
 
 export default function PyramidAnimated({ height = 520 }) {
   const [rows, setRows] = useState([]);

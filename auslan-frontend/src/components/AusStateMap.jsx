@@ -5,7 +5,7 @@ import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps
 const geoUrl =
   "https://raw.githubusercontent.com/rowanhogan/australian-states/master/states.geojson";
 
-const API = import.meta.env.VITE_API_BASE || "https://auslan-backend.onrender.com";
+const API = import.meta.env.VITE_API_BASE_URL || "https://auslan-backend.onrender.com";
 const ENDPOINT = `${API}/map/state-pop-2021`; // returns {states:[{name,value}]}
 
 // Utility: lighten/darken a hex color by percentage (negative = darker)

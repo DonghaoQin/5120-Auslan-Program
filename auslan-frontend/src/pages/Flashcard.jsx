@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
 
-const API_URL = "https://auslan-backend.onrender.com/videos/";
+const API_URL =
+  import.meta.env.VITE_VIDEOS_API_URL ||
+  "https://auslan-backend.onrender.com/videos/";
 const STORAGE_KEY = "LN_LEARNED_V2";
 
 const CATEGORY_COLORS = {
-  "Essentials_Survival Signs": "#66D6BC",
+  "Essentials Survival Signs": "#66D6BC",
   "Greetings & Social Basics": "#F7A940",
   "Family Members": "#9895FF",
   "Feelings/Needs": "#3B82F6",
@@ -15,7 +17,6 @@ const CATEGORY_COLORS = {
   Other: "#6B7280",
 };
 
-// Convert hex → rgba with alpha for transparent background
 function transparent(hex, alpha = 0.3) {
   const c = hex.substring(1);
   const num = parseInt(c, 16);
@@ -46,7 +47,7 @@ const CATEGORY_MAP = (() => {
   const C4B = ["again", "slow_down", "understand", "nothing"];
   const OTHER = ["auslan", "deaf_mute", "australia", "sign_name", "dog", "apple", "world"];
   const m = {};
-  C1A.forEach((k) => (m[k] = "Essentials_Survival Signs"));
+  C1A.forEach((k) => (m[k] = "Essentials Survival Signs"));
   C1B.forEach((k) => (m[k] = "Greetings & Social Basics"));
   C2A.forEach((k) => (m[k] = "Family Members"));
   C2B.forEach((k) => (m[k] = "Feelings/Needs"));
@@ -59,6 +60,18 @@ const CATEGORY_MAP = (() => {
 })();
 
 const categoryOf = (title) => CATEGORY_MAP[slug(title)] ?? "Other";
+
+const CATEGORY_ORDER = [
+  "Essentials_Survival Signs",
+  "Greetings & Social Basics",
+  "Family Members",
+  "Feelings/Needs",
+  "School/Play",
+  "Everyday/Actions",
+  "Basic Questions",
+  "Interaction Clarification",
+  "Other",
+];
 
 export default function FlashCardBasicWords() {
   const [step, setStep] = useState("category");
@@ -113,15 +126,39 @@ export default function FlashCardBasicWords() {
     return b;
   }, [words]);
 
-  if (loading) return <div style={styles.center}><p>Loading vocabulary...</p></div>;
+  const clearCategoryLearned = (category) => {
+    if (window.confirm(`Clear learned marks for ${category}?`)) {
+      const filtered = [...learned].filter(
+        (title) => categoryOf(title) !== category
+      );
+      setLearned(new Set(filtered));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+    }
+  };
 
-  // Step 1 — horizontally scrollable category row
+  const clearAllLearned = () => {
+    if (window.confirm("Clear all learned words?")) {
+      setLearned(new Set());
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  };
+
+  const learnedWords = words.filter((w) => learned.has(w.title));
+
+  if (loading)
+    return (
+      <div style={styles.center}>
+        <p>Loading vocabulary...</p>
+      </div>
+    );
+
+  // Step 1 — Scenario list
   if (step === "category") {
     return (
       <div style={styles.page}>
         <h2 style={styles.header}>Choose a Scenario</h2>
         <div style={styles.categoryScroll}>
-          {Object.keys(buckets).map((cat) => (
+          {CATEGORY_ORDER.filter((cat) => buckets[cat]).map((cat) => (
             <button
               key={cat}
               style={{
@@ -137,11 +174,17 @@ export default function FlashCardBasicWords() {
             </button>
           ))}
         </div>
+
+        <div style={styles.backContainer}>
+          <button style={styles.learnedBtn} onClick={() => setStep("learned")}>
+             View Learned Words
+          </button>
+        </div>
       </div>
     );
   }
 
-  // Step 2 — words view
+  // Step 2 — Words in category
   if (step === "words" && selectedCategory) {
     const items = buckets[selectedCategory] || [];
     const catColor = CATEGORY_COLORS[selectedCategory] || "#ccc";
@@ -172,7 +215,6 @@ export default function FlashCardBasicWords() {
           })}
         </div>
 
-        {/* ✅ Back button moved to bottom with box */}
         <div style={styles.backContainer}>
           <button
             style={{
@@ -184,12 +226,68 @@ export default function FlashCardBasicWords() {
           >
             ⬅ Back to Categories
           </button>
+          <button
+            style={{
+              ...styles.clearBtn,
+              borderColor: catColor,
+              color: catColor,
+            }}
+            onClick={() => clearCategoryLearned(selectedCategory)}
+          >
+              Clear Learned in This Scenario
+          </button>
         </div>
       </div>
     );
   }
 
-  // Step 3 — video
+  //  Step 3 — Learned Words page
+  if (step === "learned") {
+    return (
+      <div style={styles.page}>
+        <h2 style={styles.header}>Learned Words</h2>
+        {learnedWords.length === 0 ? (
+          <p>No words marked as learned yet.</p>
+        ) : (
+          <div style={styles.wordGrid}>
+            {learnedWords.map((w) => (
+              <button
+                key={w.id}
+                style={{
+                  ...styles.wordCard,
+                  borderColor: CATEGORY_COLORS[categoryOf(w.title)],
+                  background: transparent(
+                    CATEGORY_COLORS[categoryOf(w.title)],
+                    0.3
+                  ),
+                }}
+                onClick={() => {
+                  setSelectedWord(w);
+                  setStep("video");
+                }}
+              >
+                {w.title.replace("_", " ")}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div style={styles.backContainer}>
+          <button style={styles.backBtn} onClick={() => setStep("category")}>
+            ⬅ Back to Categories
+          </button>
+          {/* ✅ NEW CLEAR BUTTON HERE */}
+          {learnedWords.length > 0 && (
+            <button style={styles.clearBtn} onClick={clearAllLearned}>
+              🧹 Clear All Learned Words
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Step 4 — Video view
   if (step === "video" && selectedWord) {
     const cat = categoryOf(selectedWord.title);
     const color = CATEGORY_COLORS[cat] || "#999";
@@ -225,10 +323,9 @@ export default function FlashCardBasicWords() {
             })
           }
         >
-          {isLearned ? "Learned ✅" : "Mark as Learned"}
+          {isLearned ? "Learned " : "Mark as Learned"}
         </button>
 
-        {/* ✅ Back button at bottom */}
         <div style={styles.backContainer}>
           <button
             style={{
@@ -260,14 +357,13 @@ const styles = {
   header: { fontSize: 20, marginBottom: "1rem", color: "#111827" },
   categoryScroll: {
     display: "flex",
-    overflowX: "auto",
+    flexDirection: "column",
     gap: "12px",
+    alignItems: "center",
     paddingBottom: "1rem",
-    justifyContent: "flex-start",
   },
   categoryCard: {
-    flex: "0 0 auto",
-    whiteSpace: "nowrap",
+    width: "80%",
     background: "#fff",
     border: "2px solid #E5E7EB",
     borderRadius: "12px",
@@ -275,6 +371,7 @@ const styles = {
     fontWeight: 600,
     cursor: "pointer",
     boxShadow: "0 2px 5px rgba(0,0,0,0.08)",
+    textAlign: "center",
   },
   wordGrid: {
     display: "grid",
@@ -295,6 +392,8 @@ const styles = {
     marginTop: "1.5rem",
     display: "flex",
     justifyContent: "center",
+    flexWrap: "wrap",
+    gap: "10px",
   },
   backBtn: {
     background: "white",
@@ -304,6 +403,27 @@ const styles = {
     cursor: "pointer",
     fontSize: 16,
     transition: "all 0.2s ease",
+  },
+  clearBtn: {
+    background: "#FFF",
+    border: "2px solid #FCA5A5",
+    borderRadius: "10px",
+    padding: "0.8rem 1.2rem",
+    fontWeight: 600,
+    cursor: "pointer",
+    fontSize: 15,
+    transition: "0.2s all ease",
+  },
+  learnedBtn: {
+    background: "#D1FAE5",
+    color: "#065F46",
+    border: "2px solid #6EE7B7",
+    borderRadius: "10px",
+    padding: "0.8rem 1.2rem",
+    fontWeight: 600,
+    cursor: "pointer",
+    fontSize: 16,
+    transition: "0.2s all ease",
   },
   video: {
     maxWidth: "100%",
