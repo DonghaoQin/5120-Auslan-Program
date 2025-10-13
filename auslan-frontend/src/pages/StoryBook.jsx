@@ -277,12 +277,15 @@ export default function StoryBook() {
             flex: 1,
             padding: "1rem",
             textAlign: "center",
-            background: "#FFE0B2",
+            background: bg,
             borderRadius: "16px",
-            boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
+            boxShadow: "0 10px 24px rgba(0,0,0,0.10)",
             minHeight: 420,
+            transform: "scale(0.67)",            
+            transformOrigin: "top center",       
           }}
         >
+
           <img src={currentBook.cover} alt="Cover" style={{ maxWidth: "80%", borderRadius: 12 }} />
           <h2 style={{ marginTop: "1rem", color: "#3e2a12" }}>{currentBook.title}</h2>
           <p style={{ color: "#6b4e16" }}>Click "Next" or press → to start</p>
