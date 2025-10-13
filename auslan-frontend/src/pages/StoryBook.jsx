@@ -3,7 +3,19 @@ import React, { useEffect, useMemo, useState } from "react";
 /* ----------------------------------------------------------------
    BOOK LIST (DATA)
    TEAM NOTE:
-   - Add new books by pushing objects into the `books` array below.
+   - Add new books by pushing objects i      {
+      {
+           {
+        image: "https://i.imgur.com/xHDKqoB.png",
+        text: "\"Wait here,\" said the musician... shoved them down inside his shirt and his trousers and under his hat.",
+        interactiveWords: ["few", "words", "help", "free", "idea", "shirt", "trousers", "once"]
+      },age: "https://i.imgur.com/LpeDW30.png",
+        text: "The wolf did and suddenly... \"I shall follow your instructions absolutely,\" answered the fox.",
+        interactiveWords: ["wolf", "Wait", "here", "wish", "instructions", "foot", "one", "Give", "ground", "like", "trust", "animal", "again"]
+      },   image: "https://i.imgur.com/5pE07Ss.png",
+        text: "The musician saw the wolf approaching... \"If you want to learn to play the fiddle, put your front paws into this split,\" said the musician.",
+        interactiveWords: ["wolf", "friend", "wish", "instructions", "and", "music", "ground", "like", "trust"]
+      },he `books` array below.
    - Each book requires: id (string), title (string), cover (URL),
      and pages (array). Each page needs: image (URL), text (string),
      and optional interactiveWords (array of keywords to trigger Auslan videos).
@@ -12,6 +24,7 @@ import React, { useEffect, useMemo, useState } from "react";
 const API_URLS = {
   frog: import.meta.env.VITE_BOOK1_API_URL || "https://auslan-backend.onrender.com/book1/",
   puppy: import.meta.env.VITE_BOOK2_API_URL || "https://auslan-backend.onrender.com/book2/",
+  musician: import.meta.env.VITE_BOOK3_API_URL || "https://auslan-backend.onrender.com/book3/",
   tree: null  // No API endpoint for this book yet
 };
 
@@ -189,60 +202,61 @@ const books = [
 
 
 
-  // Book 3:
-{
-  title: "The Marvellous Musician",
-  cover: "https://i.imgur.com/GiWCj3N.png",
-  pages: [  {
-    img: "https://i.imgur.com/rO6UmRa.png",
-    text: `Long ago there was a horrible musician... The cat only stayed for the eels.`,
-    keywords: ["cat", "shared"]
-  },
-  {
-    img: "https://i.imgur.com/Lm0daDE.png",
-    text: `One day he had been fishing... Soon a wolf pricked up its ears and headed in the direction of the music.`,
-    keywords: ["music", "one", "home", "animal", "friend", "ears", "myself", "wolf"]
-  },
-  {
-    img: "https://i.imgur.com/5pE07Ss.png",
-    text: `The musician saw the wolf approaching... “If you want to learn to play the fiddle, put your front paws into this split,” said the musician.`,
-    keywords: ["wolf", "friend", "wish", "instructions", "and", "music", "ground", "like", "trust"]
-  },
-  {
-    img: "https://i.imgur.com/LpeDW30.png",
-    text: `The wolf did and suddenly... “I shall follow your instructions absolutely,” answered the fox.`,
-    keywords: ["wolf", "Wait", "here", "wish", "instructions", "foot", "one", "Give", "ground", "like", "trust", "animal", "again"]
-  },
-  {
-    img: "https://i.imgur.com/JJAgWlq.png",
-    text: `"Wait here," said the musician... The poor little hare could hardly move.`,
-    keywords: ["Wait", "animal", "friend", "around", "move", "again", "little", "neck"]
-  },
-  {
-    img: "https://i.imgur.com/xHDKqoB.png",
-    text: `“Wait here,” said the musician... shoved them down inside his shirt and his trousers and under his hat.`,
-    keywords: ["few", "words", "help", "free", "idea", "shirt", "trousers", "once"]
-  },
-  {
-    img: "https://i.imgur.com/undefined.png", // optional final image
-    text: `The musician squirmed and fidgeted... And that serves the musician right. The End.`,
-    keywords: ["never", "night", "forest"]
-  }
-
-  ]
-},
+  // Book 3: The Marvellous Musician
+  // {
+  //   id: "musician",
+  //   title: "The Marvellous Musician",
+  //   cover: "https://i.imgur.com/GiWCj3N.png",
+  //   pages: [
+  //     {
+  //       image: "https://i.imgur.com/rO6UmRa.png",
+  //       text: "Long ago there was a horrible musician... The cat only stayed for the eels.",
+  //       interactiveWords: ["cat", "shared"]
+  //     },
+  //     {
+  //       image: "https://i.imgur.com/Lm0daDE.png",
+  //       text: "One day he had been fishing... Soon a wolf pricked up its ears and headed in the direction of the music.",
+  //       interactiveWords: ["music", "one", "home", "animal", "friend", "ears", "myself", "wolf"]
+  //     },
+  //     {
+  //       img: "https://i.imgur.com/5pE07Ss.png",
+  //       text: `The musician saw the wolf approaching... “If you want to learn to play the fiddle, put your front paws into this split,” said the musician.`,
+  //       keywords: ["wolf", "friend", "wish", "instructions", "and", "music", "ground", "like", "trust"]
+  //     },
+  //     {
+  //       img: "https://i.imgur.com/LpeDW30.png",
+  //       text: `The wolf did and suddenly... “I shall follow your instructions absolutely,” answered the fox.`,
+  //       keywords: ["wolf", "Wait", "here", "wish", "instructions", "foot", "one", "Give", "ground", "like", "trust", "animal", "again"]
+  //     },
+  //     {
+  //       image: "https://i.imgur.com/JJAgWlq.png",
+  //       text: "\"Wait here,\" said the musician... The poor little hare could hardly move.",
+  //       interactiveWords: ["Wait", "animal", "friend", "around", "move", "again", "little", "neck"]
+  //     },
+  //     {
+  //       img: "https://i.imgur.com/xHDKqoB.png",
+  //       text: `“Wait here,” said the musician... shoved them down inside his shirt and his trousers and under his hat.`,
+  //       keywords: ["few", "words", "help", "free", "idea", "shirt", "trousers", "once"]
+  //     },
+  //     {
+  //       image: "https://i.imgur.com/GiWCj3N.png",
+  //       text: "The musician squirmed and fidgeted... And that serves the musician right. The End.",
+  //       interactiveWords: ["never", "night", "forest"]
+  //     }
+  //   ]
+  // },
 
   // Book 3: Sample placeholder
-  {
-    id: "tree",
-    title: "The Magic Tree",
-    cover: "https://i.imgur.com/qV7B0bL.png",
-    pages: [
-      { image: "https://i.imgur.com/6v9YvQq.png", text: "There was a tree that whispered in the wind.", interactiveWords: ["tree", "wind"] },
-      { image: "https://i.imgur.com/6v9YvQq.png", text: "Every whisper taught a new word in Auslan.", interactiveWords: ["auslan", "word"] },
-      { image: "https://i.imgur.com/6v9YvQq.png", text: "Kids gathered to learn and play happily.", interactiveWords: ["learn", "play"] },
-    ],
-  },
+  // {
+  //   id: "tree",
+  //   title: "The Magic Tree",
+  //   cover: "https://i.imgur.com/qV7B0bL.png",
+  //   pages: [
+  //     { image: "https://i.imgur.com/6v9YvQq.png", text: "There was a tree that whispered in the wind.", interactiveWords: ["tree", "wind"] },
+  //     { image: "https://i.imgur.com/6v9YvQq.png", text: "Every whisper taught a new word in Auslan.", interactiveWords: ["auslan", "word"] },
+  //     { image: "https://i.imgur.com/6v9YvQq.png", text: "Kids gathered to learn and play happily.", interactiveWords: ["learn", "play"] },
+  //   ],
+  // },
 ];
 
 export default function StoryBook() {
