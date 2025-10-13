@@ -672,6 +672,28 @@ export default function Home() {
           );
         })()}
       </section>
+
+      {/* ===== Simple Footer ===== */}
+      <footer style={{
+        backgroundColor: "#fffefeff",
+        color: "black",
+        textAlign: "center",
+        padding: "20px 16px",
+        marginTop: "24px"
+      }}>
+        <p style={{margin: "0 0 8px"}}>
+          HelloAuslan is a student-led project from Monash University, designed to help families learn Auslan easily and interactively.
+        </p>
+
+        <p style={{margin: "0 0 8px"}}>
+          Contact us: <a href="mailto:helloauslan.team@gmail.com" style={{color: "black", textDecoration: "underline"}}>helloauslan.team@gmail.com</a>
+        </p>
+
+        <p style={{margin: 0}}>
+          © Copyright HelloAuslan {new Date().getFullYear()}
+        </p>
+      </footer>
     </div>
   );
 }
+
