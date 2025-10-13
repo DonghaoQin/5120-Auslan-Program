@@ -77,10 +77,14 @@ const books = [
       { image: "https://i.imgur.com/v3hnEYs.png",
         text: "Off I went.",
         interactiveWords: [], },
+      
+      { image: "https://i.imgur.com/RJdKJEu.png",
+        text: "Review the words we learned today: frog, school, bedroom, mom, nature, fish, pond, pet, responsibility, bowl, few, home, many, easy, ran, smile, surprise, see, weeks, mom, here, legs, looked, little, eyes.",
+        interactiveWords: ["frog", "school", "bedroom", "mom", "nature", "fish", "pond", "pet", "responsibility", "bowl", "few", "home", "many", "easy", "ran", "smile", "surprise", "see", "weeks", "mom", "here", "legs", "looked", "little", "eyes"], },
     ],
   },
 
-  // Book 2: Sample placeholder (replace with real content/cover)
+  // Book 2:
   {
   title: "Baba the Monkey and Lexa the Tiger",
   cover: "https://i.imgur.com/ZjL7ucN.png",
@@ -180,6 +184,51 @@ const books = [
       text: "So now there is a new friend on the street. Sophie and Josh are so excited. They want to show their new friend Lexa to their other friend, Tom. They hope Lexa does not become invisible again!",
       interactiveWords: ["friend", "new", "now"]
     }
+  ]
+},
+
+
+
+  // Book 3:
+{
+  title: "The Marvellous Musician",
+  cover: "https://i.imgur.com/GiWCj3N.png",
+  pages: [  {
+    img: "https://i.imgur.com/rO6UmRa.png",
+    text: `Long ago there was a horrible musician... The cat only stayed for the eels.`,
+    keywords: ["cat", "shared"]
+  },
+  {
+    img: "https://i.imgur.com/Lm0daDE.png",
+    text: `One day he had been fishing... Soon a wolf pricked up its ears and headed in the direction of the music.`,
+    keywords: ["music", "one", "home", "animal", "friend", "ears", "myself", "wolf"]
+  },
+  {
+    img: "https://i.imgur.com/5pE07Ss.png",
+    text: `The musician saw the wolf approaching... “If you want to learn to play the fiddle, put your front paws into this split,” said the musician.`,
+    keywords: ["wolf", "friend", "wish", "instructions", "and", "music", "ground", "like", "trust"]
+  },
+  {
+    img: "https://i.imgur.com/LpeDW30.png",
+    text: `The wolf did and suddenly... “I shall follow your instructions absolutely,” answered the fox.`,
+    keywords: ["wolf", "Wait", "here", "wish", "instructions", "foot", "one", "Give", "ground", "like", "trust", "animal", "again"]
+  },
+  {
+    img: "https://i.imgur.com/JJAgWlq.png",
+    text: `"Wait here," said the musician... The poor little hare could hardly move.`,
+    keywords: ["Wait", "animal", "friend", "around", "move", "again", "little", "neck"]
+  },
+  {
+    img: "https://i.imgur.com/xHDKqoB.png",
+    text: `“Wait here,” said the musician... shoved them down inside his shirt and his trousers and under his hat.`,
+    keywords: ["few", "words", "help", "free", "idea", "shirt", "trousers", "once"]
+  },
+  {
+    img: "https://i.imgur.com/undefined.png", // optional final image
+    text: `The musician squirmed and fidgeted... And that serves the musician right. The End.`,
+    keywords: ["never", "night", "forest"]
+  }
+
   ]
 },
 
