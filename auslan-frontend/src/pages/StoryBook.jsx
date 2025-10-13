@@ -377,7 +377,7 @@ export default function StoryBook() {
         flex: 1,
         padding: "1rem",
         textAlign: "center",
-        background: bg,           // ✅ 与普通页一致
+        background: bg,           
         borderRadius: "16px",
         boxShadow: "0 10px 24px rgba(0,0,0,0.10)",
         minHeight: 420,
