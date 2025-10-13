@@ -371,27 +371,30 @@ export default function StoryBook() {
   const Page = ({ page, bg }) => {
     if (!page) return <div style={{ flex: 1 }} />;
     if (page.cover) {
-      return (
-        <div
-          style={{
-            flex: 1,
-            padding: "1rem",
-            textAlign: "center",
-            background: bg,
-            borderRadius: "16px",
-            boxShadow: "0 10px 24px rgba(0,0,0,0.10)",
-            minHeight: 420,
-            transform: "scale(0.67)",            
-            transformOrigin: "top center",       
-          }}
-        >
-
-          <img src={currentBook.cover} alt="Cover" style={{ maxWidth: "80%", borderRadius: 12 }} />
-          <h2 style={{ marginTop: "1rem", color: "#3e2a12" }}>{currentBook.title}</h2>
-          <p style={{ color: "#6b4e16" }}>Click "Next" or press → to start</p>
-        </div>
-      );
-    }
+  return (
+    <div
+      style={{
+        flex: 1,
+        padding: "1rem",
+        textAlign: "center",
+        background: bg,           // ✅ 与普通页一致
+        borderRadius: "16px",
+        boxShadow: "0 10px 24px rgba(0,0,0,0.10)",
+        minHeight: 420,
+      }}
+    >
+      <img 
+        src={currentBook.cover} 
+        alt="Cover" 
+        style={{ maxWidth: "100%", borderRadius: "12px" }} 
+      />
+      <p style={{ fontSize: "1.1rem", lineHeight: "1.6", marginTop: "0.6rem", color: "#333" }}>
+        <strong>{currentBook.title}</strong><br />
+        Click “Next” or press → to start your story!
+      </p>
+    </div>
+  );
+}
 
     const interactiveSet = new Set((page.interactiveWords || []).map((w) => String(w).toLowerCase()));
 
@@ -601,21 +604,31 @@ export default function StoryBook() {
 
   // Reader view
   return (
-    <div style={{ padding: "2rem", fontFamily: "'Comic Sans MS', cursive", perspective: "1200px" }}>
-      {/* Two-page book area */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          transformStyle: "preserve-3d",
-          gap: 14,
-          marginTop: "4rem",
-          ...flipStyle,
-        }}
-      >
-        <Page page={leftPage} bg="#E0F7FA" />
-        <Page page={rightPage} bg="#FFF3E0" />
-      </div>
+  <div 
+    style={{ 
+      padding: "2rem", 
+      fontFamily: "'Comic Sans MS', cursive", 
+      perspective: "1200px",
+      transform: "scale(0.85)",        // 👈 整体缩小
+      transformOrigin: "top center",   // 👈 缩放中心设在上方中间
+      transition: "transform 0.3s ease"// 👈 平滑缩放
+    }}
+  >
+    {/* Two-page book area */}
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        transformStyle: "preserve-3d",
+        gap: 14,
+        marginTop: "4rem",
+        ...flipStyle,
+      }}
+    >
+      <Page page={leftPage} bg="#E0F7FA" />
+      <Page page={rightPage} bg="#FFF3E0" />
+    </div>
+
 
       {/* Navigation bar */}
       <div
