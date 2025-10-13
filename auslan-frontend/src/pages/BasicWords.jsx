@@ -14,7 +14,7 @@ const RIGHT_W = 600;               // Fixed right detail panel width
 const GAP = 24;                    // Gap between main column and right panel
 
 /** Backend endpoint */
-const API_URL = "https://auslan-backend.onrender.com/videos/";
+const API_URL = import.meta.env.VITE_VIDEOS_API_URL || "https://auslan-backend.onrender.com/videos/";
 
 /** Category UI colors */
 const CATEGORY_COLORS = {

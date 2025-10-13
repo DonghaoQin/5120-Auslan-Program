@@ -47,7 +47,7 @@ const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
 const choiceN = (arr, n) => shuffle(arr).slice(0, n);
 
 export default function WordQuiz({ totalQuestions = 10 }) {
-  const API_URL = "https://auslan-backend.onrender.com/videos/";
+  const API_URL = import.meta.env.VITE_VIDEOS_API_URL || "https://auslan-backend.onrender.com/videos/";
 
   const [mode, setMode] = useState("intro");
   const [loading, setLoading] = useState(false);

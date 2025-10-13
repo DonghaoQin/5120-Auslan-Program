@@ -9,7 +9,11 @@ import React, { useEffect, useMemo, useState } from "react";
      and optional interactiveWords (array of keywords to trigger Auslan videos).
    - Keep covers hosted reliably; if a cover fails to load, a placeholder appears.
 ------------------------------------------------------------------*/
-const API_URL = "https://auslan-backend.onrender.com/book1/";
+const API_URLS = {
+  frog: import.meta.env.VITE_BOOK1_API_URL || "https://auslan-backend.onrender.com/book1/",
+  puppy: import.meta.env.VITE_BOOK2_API_URL || "https://auslan-backend.onrender.com/book2/",
+  tree: null  // No API endpoint for this book yet
+};
 
 const books = [
   // Book 1: Existing "I Found a Frog."
@@ -78,15 +82,106 @@ const books = [
 
   // Book 2: Sample placeholder (replace with real content/cover)
   {
-    id: "puppy",
-    title: "The Lost Puppy",
-    cover: "https://i.imgur.com/3q2hJXj.png",
-    pages: [
-      { image: "https://i.imgur.com/8vU8GxS.png", text: "Once I found a little puppy near the park.", interactiveWords: ["puppy", "park"] },
-      { image: "https://i.imgur.com/8vU8GxS.png", text: "We asked neighbours for help and followed the tiny paw prints.", interactiveWords: ["help"] },
-      { image: "https://i.imgur.com/8vU8GxS.png", text: "Finally, we reunited the puppy with its family!", interactiveWords: ["family"] },
-    ],
-  },
+  title: "Baba the Monkey and Lexa the Tiger",
+  cover: "https://i.imgur.com/ZjL7ucN.png",
+  pages: [
+    {
+      image: "https://i.imgur.com/dIoYLpc.png",
+      text: "Sophie and Ashley have a new friend. His name is Baba, the Monkey. Sometimes he can be very naughty. But he is really a very nice monkey. Today, he meets two new friends.",
+      interactiveWords: ["friend", "Monkey", "nice", "two"]
+    },
+    {
+      image: "https://i.imgur.com/ss8jDSJ.png",
+      text: "Sophie walks with Baba down the street towards Josh’s house. Well, Sophie is walking. But Baba does not walk. He likes to run and jump and do cartwheels down the pavement.",
+      interactiveWords: ["street", "house", "jump"]
+    },
+    {
+      image: "https://i.imgur.com/JJrMulb.png",
+      text: "Sophie knocks on Josh’s front door. Hmmm! No answer. “I wonder if Josh is in the garden behind his house.” says Sophie. Baba is still doing cartwheels on the pavement.",
+      interactiveWords: ["knock", "garden", "house"]
+    },
+    {
+      image: "https://i.imgur.com/pHpXMu5.png",
+      text: "“Come on, Baba.” says Sophie. She and Baba walk around to the garden behind Josh’s house. Hmmm! No Josh. But Sophie hears Josh’s voice. She looks up; his bedroom window is open.",
+      interactiveWords: ["garden", "voice", "bedroom", "open"]
+    },
+    {
+      image: "https://i.imgur.com/gKM0KYX.png",
+      text: "“Josh!” shouts Sophie. “Josh!” For once Baba stops running and jumping and doing cartwheels. He stands still and looks up at the window. The voice from Josh’s bedroom stops.",
+      interactiveWords: ["bedroom", "voice", "shouts", "stops"]
+    },
+    {
+      image: "https://i.imgur.com/zeS7vLc.png",
+      text: "There he is! Josh pops his head out of his bedroom window. “Hi Sophie,” says Josh. “Who is your new friend?” “This is Baba.” answers Sophie. “Do you want to come out and play?”",
+      interactiveWords: ["bedroom", "window", "friend"]
+    },
+    {
+      image: "https://i.imgur.com/4KMQjqF.png",
+      text: "“I can’t,” says Josh. “I have a problem in my bedroom.” “What is it?” asks Sophie. She and Baba both look up at Josh. “I have an invisible tiger in my room!”",
+      interactiveWords: ["problem", "bedroom", "room"]
+    },
+    {
+      image: "https://i.imgur.com/pK87BL5.png",
+      text: "“What!” say Sophie and Baba at the same time. “It’s true,” says Josh. “Come on up. The back door is open.” So Sophie and Baba go through the back door of Josh’s house. They go upstairs to his bedroom.",
+      interactiveWords: ["time", "house", "bedroom", "open"]
+    },
+    {
+      image: "https://i.imgur.com/ewwlvWi.png",
+      text: "Sophie knocks on Josh’s bedroom door. He opens the door and says, “Quick! Come in fast!” Sophie and Baba go into Josh’s bedroom and he closes the door quickly.",
+      interactiveWords: ["knocks", "bedroom", "fast", "Quick"]
+    },
+    {
+      image: "https://i.imgur.com/Mr9UtOo.png",
+      text: "Sophie says, “Josh - this is Baba. Baba - this is Josh.” Then she asks, “Why do we have to come in quickly?” “I don’t want the tiger to escape,” answers Josh.",
+      interactiveWords: ["Why"]
+    },
+    {
+      image: "https://i.imgur.com/6kV1jaW.png",
+      text: "Sophie and Baba look at each other. Then they start to laugh. “Josh,” says Sophie. “Are you sure you’re okay? There’s no tiger in here.” Suddenly they hear a roar!",
+      interactiveWords: ["laugh", "look", "laugh"]
+    },
+    {
+      image: "https://i.imgur.com/YsciMt8.png",
+      text: "“I am Lexa, the Tiger.” says a voice. Sophie and Baba are scared. They jump back. Their mouths and their eyes are wide open. “See,” says Josh. “There is a tiger in my bedroom.”",
+      interactiveWords: ["voice", "scared", "jump", "See", "bedroom"]
+    },
+    {
+      image: "https://i.imgur.com/0RVkOfM.png",
+      text: "“And not just any tiger,” says Lexa. “I am a special tiger.” “Why are you special?” asks Baba. “And how do we know you’re a tiger?” says Sophie. “We can’t even see you.”",
+      interactiveWords: ["Why", "see"]
+    },
+    {
+      image: "https://i.imgur.com/F6tSoIv.png",
+      text: "“Don’t make her angry!” says Josh. “She is already in a bad mood.” Lexa roars again. Josh and Sophie and Baba all take a step backwards. They are scared.",
+      interactiveWords: ["angry", "roars", "scared"]
+    },
+    {
+      image: "https://i.imgur.com/aE9J4ki.png",
+      text: "“So you want to see me?” asks Lexa. “Watch this!” And suddenly, there she is, standing in Josh’s bedroom; a very pretty tiger with beautiful stripes.",
+      interactiveWords: ["see", "beautiful", "bedroom", "stripes"]
+    },
+    {
+      image: "https://i.imgur.com/Ik9rhVu.png",
+      text: "Sophie and Baba and Josh all say, “Wow!” Lexa is pretty, but she is not happy. “Why are you in a bad mood?” asks Sophie. “Because my paw hurts,” answers Lexa.",
+      interactiveWords: ["asks", "and"]
+    },
+    {
+      image: "https://i.imgur.com/KB9DXFs.png",
+      text: "“Let me see,” says Sophie. Lexa puts out her paw and Sophie holds it. Sophie looks very closely at Lexa’s paw. “I think I see the problem,” says Sophie. “It’s a thorn.",
+      interactiveWords: ["see", "holds", "problem"]
+    },
+    {
+      image: "https://i.imgur.com/hBzAbpV.png",
+      text: "“A thorn?” asks Lexa. “I can help you,” says Sophie. She has small fingers so she can easily pull out the thorn. “Is that better now?” asks Sophie. “Yes,” answers Lexa. “Thank you so much!”",
+      interactiveWords: ["help", "fingers", "better", "Thank"]
+    },
+    {
+      image: "https://i.imgur.com/B7JCHEs.png",
+      text: "So now there is a new friend on the street. Sophie and Josh are so excited. They want to show their new friend Lexa to their other friend, Tom. They hope Lexa does not become invisible again!",
+      interactiveWords: ["friend", "new", "now"]
+    }
+  ]
+},
 
   // Book 3: Sample placeholder
   {
@@ -114,16 +209,21 @@ export default function StoryBook() {
         setVideosLoading(true);
         setVideosError("");
         
-        const response = await fetch(API_URL);
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: Failed to fetch videos`);
-        }
-        
-        const videos = await response.json();
-        
-        // Create a mapping from filename (without extension) to video URL
         const videoMapping = {};
-        videos.forEach(video => {
+        
+        // Fetch videos for all books with API endpoints
+        for (const [bookId, apiUrl] of Object.entries(API_URLS)) {
+          if (!apiUrl) continue;
+          
+          const response = await fetch(apiUrl);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: Failed to fetch videos for ${bookId}`);
+          }
+          
+          const videos = await response.json();
+          
+          // Create a mapping from filename (without extension) to video URL
+          videos.forEach(video => {
           if (video.filename && video.url) {
             // Extract filename without extension and convert to lowercase
             const key = video.filename
@@ -138,7 +238,7 @@ export default function StoryBook() {
         setAuslanVideos(videoMapping);
         console.log("Loaded video mapping:", videoMapping);
         
-      } catch (error) {
+      } }catch (error) {
         console.error("Failed to fetch videos:", error);
         setVideosError(error.message);
       } finally {

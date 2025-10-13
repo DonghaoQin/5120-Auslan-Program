@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 
-const API_URL = "https://auslan-backend.onrender.com/videos/";
+const API_URL = import.meta.env.VITE_VIDEOS_API_URL || "https://auslan-backend.onrender.com/videos/";
 const STORAGE_KEY = "LN_LEARNED_V2";
 
 const CATEGORY_COLORS = {
