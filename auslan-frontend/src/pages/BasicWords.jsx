@@ -477,7 +477,7 @@ export default function BasicWords() {
         .qr-container.zoomed .qr-text {
           opacity: 1;
           transform: translateY(0);
-          font-size: 12px;
+          font-size: 11.5px;
           max-width: 160px;
           margin-bottom: 12px;
         }
