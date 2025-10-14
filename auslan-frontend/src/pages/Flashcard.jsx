@@ -234,7 +234,7 @@ export default function FlashCardBasicWords() {
             }}
             onClick={() => clearCategoryLearned(selectedCategory)}
           >
-              Clear Learned in This Scenario
+              Clean
           </button>
         </div>
       </div>
@@ -279,7 +279,7 @@ export default function FlashCardBasicWords() {
           {/* ✅ NEW CLEAR BUTTON HERE */}
           {learnedWords.length > 0 && (
             <button style={styles.clearBtn} onClick={clearAllLearned}>
-              🧹 Clear All Learned Words
+              Clean
             </button>
           )}
         </div>
