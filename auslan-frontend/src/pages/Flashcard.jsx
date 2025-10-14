@@ -224,7 +224,7 @@ export default function FlashCardBasicWords() {
             }}
             onClick={() => setStep("category")}
           >
-            ⬅ Back to Categories
+            Back to Categories
           </button>
           <button
             style={{
@@ -274,7 +274,7 @@ export default function FlashCardBasicWords() {
 
         <div style={styles.backContainer}>
           <button style={styles.backBtn} onClick={() => setStep("category")}>
-            ⬅ Back to Categories
+            Back to Categories
           </button>
           {/* ✅ NEW CLEAR BUTTON HERE */}
           {learnedWords.length > 0 && (
