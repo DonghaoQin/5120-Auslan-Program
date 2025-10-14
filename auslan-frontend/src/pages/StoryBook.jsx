@@ -1,17 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-/* ----------------------------------------------------------------
-   BOOK LIST (DATA)
-   TEAM NOTE:
-   - Add new books by pushing objects into the `books` array below.
-   - Each book requires: id (string), title (string), cover (URL),
-     and pages (array). Each page needs: image (URL), text (string),
-     and optional interactiveWords (array of keywords to trigger Auslan videos).
-   - Keep covers hosted reliably; if a cover fails to load, a placeholder appears.
-------------------------------------------------------------------*/
 const API_URLS = {
   frog: import.meta.env.VITE_BOOK1_API_URL || "https://auslan-backend.onrender.com/book1/",
   puppy: import.meta.env.VITE_BOOK2_API_URL || "https://auslan-backend.onrender.com/book2/",
+  musician: import.meta.env.VITE_BOOK3_API_URL || "https://auslan-backend.onrender.com/book3/",
   tree: null  // No API endpoint for this book yet
 };
 
@@ -189,60 +181,107 @@ const books = [
 
 
 
-  // Book 3:
 {
+  id: "musician",
   title: "The Marvellous Musician",
   cover: "https://i.imgur.com/GiWCj3N.png",
-  pages: [  {
-    img: "https://i.imgur.com/rO6UmRa.png",
-    text: `Long ago there was a horrible musician... The cat only stayed for the eels.`,
-    keywords: ["cat", "shared"]
-  },
-  {
-    img: "https://i.imgur.com/Lm0daDE.png",
-    text: `One day he had been fishing... Soon a wolf pricked up its ears and headed in the direction of the music.`,
-    keywords: ["music", "one", "home", "animal", "friend", "ears", "myself", "wolf"]
-  },
-  {
-    img: "https://i.imgur.com/5pE07Ss.png",
-    text: `The musician saw the wolf approaching... “If you want to learn to play the fiddle, put your front paws into this split,” said the musician.`,
-    keywords: ["wolf", "friend", "wish", "instructions", "and", "music", "ground", "like", "trust"]
-  },
-  {
-    img: "https://i.imgur.com/LpeDW30.png",
-    text: `The wolf did and suddenly... “I shall follow your instructions absolutely,” answered the fox.`,
-    keywords: ["wolf", "Wait", "here", "wish", "instructions", "foot", "one", "Give", "ground", "like", "trust", "animal", "again"]
-  },
-  {
-    img: "https://i.imgur.com/JJAgWlq.png",
-    text: `"Wait here," said the musician... The poor little hare could hardly move.`,
-    keywords: ["Wait", "animal", "friend", "around", "move", "again", "little", "neck"]
-  },
-  {
-    img: "https://i.imgur.com/xHDKqoB.png",
-    text: `“Wait here,” said the musician... shoved them down inside his shirt and his trousers and under his hat.`,
-    keywords: ["few", "words", "help", "free", "idea", "shirt", "trousers", "once"]
-  },
-  {
-    img: "https://i.imgur.com/undefined.png", // optional final image
-    text: `The musician squirmed and fidgeted... And that serves the musician right. The End.`,
-    keywords: ["never", "night", "forest"]
-  }
+  pages:  [
+    {
+      image: "https://i.imgur.com/rO6UmRa.png",
+      text: `Long ago there was a horrible musician. He had a straggly beard and wore a red top hat. 
 
+He loved playing the fiddle. His cat hated the sound. The only thing the cat and the musician shared was their love of eating eels. The cat only stayed for the eels.`,
+      
+interactiveWords:  ["cat", "shared"]},
+    {
+      image: "https://i.imgur.com/Lm0daDE.png",
+      text: `One day he had been fishing and had a basket of live, squirmy, slippery, slimy eels. As he walked home, he thought about how he loved boiled eels. 
+
+He suddenly said to himself, “Maybe here in the woods I might find myself a new animal friend?”
+
+Then he took out his fiddle and played a lovely tune. 
+
+Soon a wolf pricked up its ears and headed in the direction of the music.`
+        ,interactiveWords:  ["music", "one", "home", "animal", "friend", "ears", "myself", "wolf"]
+  },
+    {
+      image: "https://i.imgur.com/5pE07Ss.png",
+      text: `The musician saw the wolf approaching and thought, “A wolf is not the kind of friend I wanted.” 
+
+The wolf trotted up and said, “That music made me wish I could play the fiddle.”
+
+“Do what I tell you and you will play any tune in days,” answered the musician.
+
+“Mega brilliant, maestro” replied the wolf, “I shall follow your instructions to the letter”.
+
+They arrived at an oak tree, which had a split up the middle.
+
+“If you want to learn to play the fiddle, put your front paws into this split in the tree trunk,” said the musician.`
+    ,
+  interactiveWords:  ["wolf", "friend", "wish", "instructions", "and", "music", "ground", "like", "trust"]
+  },
+    {
+      image: "https://i.imgur.com/LpeDW30.png",
+      text: `The wolf did and suddenly the musician jammed his paws into it. 
+
+“Wait here,” said the musician, and off he went.
+
+“I’m stuck! But he is a marvellous musician and he knows best,” thought the poor old wolf.
+
+As the musician strolled through the forest, he thought he might find a different animal friend.
+
+So, he played another tune. Soon a fox’s ears pricked up and it loped toward the music. 
+
+“Not a fox”, thought the musician, “not really the kind of friend I wanted”.`
+   , interactiveWords:  ["wolf", "Wait", "here", "wish", "instructions", "foot", "one", "Give", "ground", "like", "trust", "animal", "again"]
+   },
+    {
+      image: "https://i.imgur.com/JJAgWlq.png",
+      text: `“Wait here,” said the musician, and off he went.
+
+“I’m stuck! But he is a marvellous musician and I must trust him,” thought the poor fox.
+
+The musician thought, “Let’s see if I can find another animal friend.” 
+
+Once again, he played a tune. A pretty little hare came hopping up.
+
+“Not a hare,” thought the musician, “he won’t be much of a friend”.
+
+“What a marvellous musician you are,” said the little hare, “can you teach me to play?”`
+    , interactiveWords:  ["Wait", "animal", "friend", "around", "move", "again", "little", "neck"]
+  },
+    {
+      image: "https://i.imgur.com/xHDKqoB.png",
+      text: `The wolf realised that he had been fooled and was very angry. He pushed and pulled and freed his paw from the split in the tree and off he ran to find the musician.
+
+The little fox saw him and called out, “Brother wolf, please come and help me.” The wolf bit into the string and freed the little fox. Off they went together to have a few words with the musician. 
+
+On their way they found the poor tied-up hare and set him free. Then off they all went to have a few words with the musician.
+
+“He made fools of us all and tricked us,” growled the wolf.
+
+“He deserves to be taught a lesson,” muttered the fox.`,
+interactiveWords:  ["few", "words", "help", "free", "idea", "shirt", "trousers", "once"]
+    },
+    {
+      image: "https://i.imgur.com/xHDKqoB.png",
+      text: `The musician squirmed and fidgeted, shrieked and hopped about and made such faces that the animals laughed out loud.
+
+“Not such a marvellous musician after all, is he?” chuckled the fox.
+
+They all went back into the forest, laughing their heads off. And the musician was left there, feeling and looking very foolish and red-faced.
+
+For as long as he lived, he never played the fiddle in the forest and never caught another eel. 
+
+His cat got fed up and left one night and never came back.
+
+And that serves the musician right.
+
+The End.`
+, interactiveWords:  ["never", "night", "forest"]
+    }
   ]
-},
-
-  // Book 3: Sample placeholder
-  {
-    id: "tree",
-    title: "The Magic Tree",
-    cover: "https://i.imgur.com/qV7B0bL.png",
-    pages: [
-      { image: "https://i.imgur.com/6v9YvQq.png", text: "There was a tree that whispered in the wind.", interactiveWords: ["tree", "wind"] },
-      { image: "https://i.imgur.com/6v9YvQq.png", text: "Every whisper taught a new word in Auslan.", interactiveWords: ["auslan", "word"] },
-      { image: "https://i.imgur.com/6v9YvQq.png", text: "Kids gathered to learn and play happily.", interactiveWords: ["learn", "play"] },
-    ],
-  },
+}
 ];
 
 export default function StoryBook() {
