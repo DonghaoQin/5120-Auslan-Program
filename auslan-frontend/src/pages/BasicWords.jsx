@@ -18,7 +18,7 @@ const API_URL = import.meta.env.VITE_VIDEOS_API_URL || "https://auslan-backend.o
 
 /** Category UI colors */
 const CATEGORY_COLORS = {
-  "1A. Essentials_Survival Signs": { bg: "#E6F7F2", bar: "#86E3CB", border: "#66D6BC" },
+  "1A. Essential Survival Signs": { bg: "#E6F7F2", bar: "#86E3CB", border: "#66D6BC" },
   "1B. Greetings & Social Basics": { bg: "#FFF4E0", bar: "#FFC36E", border: "#F7A940" },
   "2A. Family Members": { bg: "#ECEAFF", bar: "#B7B4FF", border: "#9895FF" },
   "2B. Feelings/Needs": { bg: "#F0F4FF", bar: "#93C5FD", border: "#3B82F6" },
@@ -53,7 +53,7 @@ const CATEGORY_MAP = (() => {
   const OTHER = ["auslan","deaf_mute","australia","sign_name","dog","apple","world"];
 
   const m = {};
-  C1A.forEach(k => m[k] = "1A. Essentials_Survival Signs");
+  C1A.forEach(k => m[k] = "1A. Essential Survival Signs");
   C1B.forEach(k => m[k] = "1B. Greetings & Social Basics");
   C2A.forEach(k => m[k] = "2A. Family Members");
   C2B.forEach(k => m[k] = "2B. Feelings/Needs");
@@ -170,7 +170,7 @@ export default function BasicWords() {
 
   /** Category list used by UI */
   const categories = [
-    "1A. Essentials_Survival Signs",
+    "1A. Essential Survival Signs",
     "1B. Greetings & Social Basics",
     "2A. Family Members",
     "2B. Feelings/Needs",

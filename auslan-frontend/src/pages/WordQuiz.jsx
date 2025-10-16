@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const CATEGORY_COLORS = {
-  "1A. Essentials_Survival Signs": { bar: "#66D6BC" },
+  "1A. Essential Survival Signs": { bar: "#66D6BC" },
   "1B. Greetings & Social Basics": { bar: "#F7A940" },
   "2A. Family Members": { bar: "#9895FF" },
   "2B. Feelings/Needs": { bar: "#3B82F6" },
@@ -15,7 +15,7 @@ const CATEGORY_COLORS = {
 };
 const CATEGORIES = [
   "All Terms",
-  "1A. Essentials_Survival Signs",
+  "1A. Essential Survival Signs",
   "1B. Greetings & Social Basics",
   "2A. Family Members",
   "2B. Feelings/Needs",
@@ -30,7 +30,7 @@ const slug = (s) => (s || "").toString().trim().toLowerCase().replace(/\s+/g, "_
 const CATEGORY_MAP = (() => {
   const map = {};
   const add = (arr, name) => arr.forEach((x) => (map[x] = name));
-  add(["thank_you", "no", "stop", "help", "seat", "drink", "sleeping", "go_to", "now", "not"], "1A. Essentials_Survival Signs");
+  add(["thank_you", "no", "stop", "help", "seat", "drink", "sleeping", "go_to", "now", "not"], "1A. Essential Survival Signs");
   add(["hello", "bye_bye", "apology", "ask", "welcome", "hi"], "1B. Greetings & Social Basics");
   add(["mum", "brother", "sister", "baby", "you", "we", "yourself", "people", "our"], "2A. Family Members");
   add(["sad", "tired", "love", "smile", "upset", "cute", "like", "bad", "pizza", "dislike", "surprised", "dont_know", "disappointment", "thinking_reflection", "annoying"], "2B. Feelings/Needs");
@@ -357,7 +357,7 @@ export default function WordQuiz({ totalQuestions = 10 }) {
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }} className="fade-in-up">
         {CATEGORIES.map((c, idx) => {
           const colorMap = {
-            "1A. Essentials_Survival Signs": "#10B981",
+            "1A. Essential Survival Signs": "#10B981",
             "1B. Greetings & Social Basics": "#F59E0B",
             "2A. Family Members": "#3B82F6",
             "2B. Feelings/Needs": "#8B5CF6",

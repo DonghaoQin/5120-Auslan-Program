@@ -137,7 +137,7 @@ export default function LettersNumbers() {
         /* Fixed right detail panel */
         .ln-fixed-right {
           position: fixed;
-          top: ${TOP_GAP + SEARCH_BLOCK_H}px;
+          top: ${TOP_GAP + SEARCH_BLOCK_H }px;
           right: calc((100vw - ${MAX_W}px) / 2);
           width: ${RIGHT_W}px;
           height: calc(100vh - ${TOP_GAP + SEARCH_BLOCK_H}px);
