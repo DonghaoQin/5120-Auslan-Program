@@ -105,7 +105,7 @@ export default function PyramidAnimated({ height = 520 }) {
       orientation: "h",
       y: yLabels,
       x: animateNow ? maleX : zeros,
-      name: "Boys 👦",
+      name: "Male 👦",
       marker: {
         color: maleColors,
         line: {
@@ -115,7 +115,7 @@ export default function PyramidAnimated({ height = 520 }) {
         opacity: 0.9,
       },
       width: maleWidths,
-      hovertemplate: "Age: %{y} years<br>Boys count: %{customdata:,}<br>👦<extra></extra>",
+      hovertemplate: "Age: %{y} years<br>Male count: %{customdata:,}<br><extra></extra>",
       customdata: maleAbs,
       hoverlabel: {
         bgcolor: "rgba(255, 255, 255, 0.95)",
@@ -135,7 +135,7 @@ export default function PyramidAnimated({ height = 520 }) {
       orientation: "h",
       y: yLabels,
       x: animateNow ? femaleX : zeros,
-      name: "Girls 👧",
+      name: "Female 👧",
       marker: {
         color: femaleColors,
         line: {
@@ -145,7 +145,7 @@ export default function PyramidAnimated({ height = 520 }) {
         opacity: 0.9,
       },
       width: femaleWidths,
-      hovertemplate: "Age: %{y} years<br>Girls count: %{customdata:,}<br>👧<extra></extra>",
+      hovertemplate: "Age: %{y} years<br>Female count: %{customdata:,}<br><extra></extra>",
       customdata: femaleAbs,
       hoverlabel: {
         bgcolor: "rgba(255, 255, 255, 0.95)",
