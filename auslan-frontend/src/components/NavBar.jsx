@@ -16,7 +16,7 @@ export default function NavBar() {
       <nav className="navbar">
         {/* 左侧：项目名 */}
         <Link to="/home" className="brand">
-          Hello Auslan!
+          Hello Auslan
         </Link>
 
         {/* 右侧：按钮 */}
