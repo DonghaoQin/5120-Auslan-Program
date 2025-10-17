@@ -6,7 +6,7 @@ const API_URL =
 const STORAGE_KEY = "LN_LEARNED_V2";
 
 const CATEGORY_COLORS = {
-  "Essentials Survival Signs": "#66D6BC",
+  "Essential Survival Signs": "#66D6BC",
   "Greetings & Social Basics": "#F7A940",
   "Family Members": "#9895FF",
   "Feelings/Needs": "#3B82F6",
@@ -47,7 +47,7 @@ const CATEGORY_MAP = (() => {
   const C4B = ["again", "slow_down", "understand", "nothing"];
   const OTHER = ["auslan", "deaf_mute", "australia", "sign_name", "dog", "apple", "world"];
   const m = {};
-  C1A.forEach((k) => (m[k] = "Essentials Survival Signs"));
+  C1A.forEach((k) => (m[k] = "Essential Survival Signs"));
   C1B.forEach((k) => (m[k] = "Greetings & Social Basics"));
   C2A.forEach((k) => (m[k] = "Family Members"));
   C2B.forEach((k) => (m[k] = "Feelings/Needs"));
@@ -62,7 +62,7 @@ const CATEGORY_MAP = (() => {
 const categoryOf = (title) => CATEGORY_MAP[slug(title)] ?? "Other";
 
 const CATEGORY_ORDER = [
-  "Essentials_Survival Signs",
+  "Essential Survival Signs",
   "Greetings & Social Basics",
   "Family Members",
   "Feelings/Needs",
